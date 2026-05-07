@@ -560,6 +560,15 @@ function registerServiceWorker() {
   navigator.serviceWorker.register("./sw.js").catch(() => {});
 }
 
+function scrollReviewStageIntoView() {
+  if (state.dashboard !== "human" || !window.matchMedia("(max-width: 760px)").matches) {
+    return;
+  }
+  window.requestAnimationFrame(() => {
+    elements.reviewStage.scrollIntoView({ block: "start", behavior: "auto" });
+  });
+}
+
 configureStorageStatus(setStorageStatus);
 configureRenderActions({ toggleTag });
 
@@ -571,6 +580,7 @@ elements.dashboardSwitch.addEventListener("click", (event) => {
   state.dashboard = button.dataset.dashboard;
   saveState();
   render();
+  scrollReviewStageIntoView();
 });
 
 elements.reviewerName.addEventListener("input", () => {
@@ -591,6 +601,7 @@ elements.reviewModeTabs.addEventListener("click", (event) => {
   resetReviewPanels();
   saveState();
   render();
+  scrollReviewStageIntoView();
 });
 
 elements.endlessToggle.addEventListener("click", () => {

@@ -261,6 +261,24 @@ test("Rapid decisions are locked and mobile filter labels stay readable", async 
   });
   expect(headerHasClearance).toBe(true);
 
+  await page.getByRole("button", { name: "Refine" }).click();
+  await expect(page.locator("#signalPanel")).toBeVisible();
+  const refineClearsActions = await page.evaluate(() => {
+    const sheet = document.querySelector("#signalPanel").getBoundingClientRect();
+    const actions = document.querySelector(".swipe-actions").getBoundingClientRect();
+    return sheet.bottom <= actions.top - 4;
+  });
+  expect(refineClearsActions).toBe(true);
+  await page.getByRole("button", { name: "Scores" }).click();
+  const scoreSheetClearsActions = await page.evaluate(() => {
+    const sheet = document.querySelector("#signalPanel").getBoundingClientRect();
+    const actions = document.querySelector(".swipe-actions").getBoundingClientRect();
+    return sheet.bottom <= actions.top - 4;
+  });
+  expect(scoreSheetClearsActions).toBe(true);
+  await page.getByRole("button", { name: "Refine" }).click();
+  await expect(page.locator("#signalPanel")).toBeHidden();
+
   const lockState = await page.locator("#acceptButton").evaluate((button) => {
     const click = new MouseEvent("click", { bubbles: true, cancelable: true });
     button.dispatchEvent(click);
@@ -449,10 +467,18 @@ test("Remix deck starts another local session without overwriting exports", asyn
 });
 
 test("Pairwise mode stores comparison rows without creating swipe reviews", async ({ page }) => {
+  await page.setViewportSize({ width: 390, height: 844 });
   await resetApp(page);
 
+  await page.locator("#reviewModeTabs").scrollIntoViewIfNeeded();
+  await page.evaluate(() => window.scrollBy(0, 240));
   await page.getByRole("button", { name: "Pairwise" }).click();
   await expect(page.locator("#pairwiseStage")).toBeVisible();
+  const pairwiseStageIsInView = await page.locator("#pairwiseStage").evaluate((stage) => {
+    const rect = stage.getBoundingClientRect();
+    return rect.top >= 0 && rect.top < window.innerHeight * 0.45;
+  });
+  expect(pairwiseStageIsInView).toBe(true);
   await page.getByRole("button", { name: "Pick left" }).click();
   await expect.poll(() => reviewCount(page)).toBe(0);
 

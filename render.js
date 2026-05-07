@@ -38,6 +38,7 @@ export const elements = {
   dashboardSwitch: document.querySelector("#dashboardSwitch"),
   humanDashboard: document.querySelector("#humanDashboard"),
   agentDashboard: document.querySelector("#agentDashboard"),
+  reviewStage: document.querySelector(".review-stage"),
   reviewerName: document.querySelector("#reviewerName"),
   reviewModeTabs: document.querySelector("#reviewModeTabs"),
   endlessToggle: document.querySelector("#endlessToggle"),
