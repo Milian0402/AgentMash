@@ -138,6 +138,7 @@ const vercel = JSON.parse(await read("vercel.json"));
 const index = await read("index.html");
 const support = await read("support.html");
 const app = await read("app.js");
+const styles = await read("styles.css");
 const serviceWorker = await read("sw.js");
 const headers = await read("_headers");
 const netlify = await read("netlify.toml");
@@ -175,6 +176,7 @@ check(index.includes("refineButton") && index.includes('id="signalPanel" hidden'
 check(index.includes("detailsButton") && index.includes('id="detailSheet" hidden'), "card details are hidden behind a details sheet by default");
 check(index.includes("keeperList") && index.includes("Keepers"), "deck completion has keepers summary");
 check(index.includes("emptyRemixButton") && app.includes("remixCurrentDeck"), "deck completion can start a local remix session");
+check(app.includes("variantForRemix") && app.includes("first-line") && styles.includes("is-thumbnail"), "remix sessions create glance variants");
 check(app.includes("humanAddButton") && app.includes("openAddArtifactPanel"), "human add-artifact entry exists");
 check(app.includes('state.dashboard = "human";'), "added artifacts return to human deck");
 check(app.includes("window.confirm") && app.includes("Reset this local AgentMash profile"), "reset requires confirmation");

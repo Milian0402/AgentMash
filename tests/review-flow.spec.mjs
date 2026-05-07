@@ -132,6 +132,12 @@ test("Remix deck starts another local session without overwriting exports", asyn
   let profile = await page.evaluate((key) => JSON.parse(localStorage.getItem(key)), storageKey);
   expect(profile.items).toHaveLength(8);
   expect(profile.reviews).toHaveLength(4);
+  expect(profile.items.slice(0, 4).map((item) => item.variant)).toEqual([
+    "thumbnail",
+    "thumbnail",
+    "first-line",
+    "thumbnail"
+  ]);
 
   await page.getByRole("button", { name: /Nope/ }).click();
   await expect.poll(() => reviewCount(page)).toBe(5);
@@ -142,6 +148,10 @@ test("Remix deck starts another local session without overwriting exports", asyn
 
   await page.getByRole("button", { name: "Export workspace" }).click();
   await expect(page.locator("#datasetStatus")).toHaveText("5 rows");
+
+  const packet = await page.locator("#packetPreview").evaluate((node) => JSON.parse(node.textContent));
+  expect(packet.request.variant).toBe("thumbnail");
+  expect(packet.evalRow.artifact.variant).toBe("thumbnail");
 });
 
 test("Uploaded images are stored in IndexedDB instead of localStorage", async ({ page }) => {

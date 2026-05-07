@@ -709,6 +709,26 @@ body[data-dashboard="human"] .workspace {
   object-fit: cover;
 }
 
+.preview-image.is-thumbnail img,
+.preview-website.is-thumbnail .site-mock,
+.preview-logo.is-thumbnail .logo-board,
+.preview-product.is-thumbnail .product-scene {
+  transform: scale(0.72);
+  transform-origin: center;
+}
+
+.preview-website.is-thumbnail .site-mock {
+  align-self: center;
+}
+
+.preview-logo.is-thumbnail .logo-board {
+  width: min(54%, 220px);
+}
+
+.preview-product.is-thumbnail .product-scene {
+  width: min(62%, 270px);
+}
+
 .preview-website {
   background: #fbfcf8;
   padding: 18px;
@@ -1060,6 +1080,17 @@ body[data-dashboard="human"] .workspace {
   margin: 0;
   color: #dbe2d5;
   line-height: 1.45;
+}
+
+.preview-copy.is-first-line .copy-card {
+  min-height: 62%;
+  align-content: center;
+}
+
+.preview-copy.is-first-line .copy-text {
+  font-size: clamp(1.45rem, 4vw, 2.75rem);
+  font-weight: 850;
+  line-height: 1.08;
 }
 
 .preview-product {

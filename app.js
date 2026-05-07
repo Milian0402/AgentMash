@@ -13,6 +13,7 @@ const PREVIOUS_STORAGE_KEYS = [
 ];
 
 const artifactTypes = ["website", "logo", "copy", "product"];
+const artifactVariants = ["original", "thumbnail", "first-line"];
 const ALLOWED_IMAGE_TYPES = ["image/png", "image/jpeg", "image/webp"];
 const MAX_IMAGE_BYTES = 2_500_000;
 const quickTags = [
@@ -342,6 +343,7 @@ function normalizeItem(item) {
     body: cleanText(item.body || item.copy || item.description),
     question: cleanText(item.question) || defaultQuestion(type),
     agent: normalizeAgent(item.agent),
+    variant: normalizeVariant(item.variant),
     imageKey: cleanText(item.imageKey) || (imageData ? createShortId("image") : ""),
     imageData,
     createdAt: cleanText(item.createdAt) || new Date().toISOString()
@@ -404,6 +406,10 @@ function normalizeScores(candidate = {}) {
 
 function normalizeTags(tags) {
   return Array.isArray(tags) ? tags.filter((tag) => quickTags.includes(tag)) : [];
+}
+
+function normalizeVariant(variant) {
+  return artifactVariants.includes(variant) ? variant : "original";
 }
 
 function saveState() {
@@ -1027,9 +1033,11 @@ function packetItemForRender(activeItem) {
 }
 
 function renderPreview(item) {
+  const variant = normalizeVariant(item.variant);
+  const variantClass = previewVariantClass(item);
   if (item.imageData) {
     return `
-      <div class="preview-image" aria-label="${escapeHtml(typeLabel(item.type))} image preview">
+      <div class="preview-image${variantClass}" aria-label="${escapeHtml(typeLabel(item.type))} image preview">
         <img src="${item.imageData}" alt="${escapeHtml(item.title)}" />
       </div>
     `;
@@ -1037,7 +1045,7 @@ function renderPreview(item) {
 
   if (item.imageKey) {
     return `
-      <div class="preview-image" aria-label="${escapeHtml(typeLabel(item.type))} image preview">
+      <div class="preview-image${variantClass}" aria-label="${escapeHtml(typeLabel(item.type))} image preview">
         <span class="help-text">Image loading from this browser.</span>
       </div>
     `;
@@ -1045,7 +1053,7 @@ function renderPreview(item) {
 
   if (item.type === "logo") {
     return `
-      <div class="preview-logo" aria-label="Generated logo preview">
+      <div class="preview-logo${variantClass}" aria-label="Generated logo preview">
         <div class="logo-board">
           <div class="logo-lockup">
             <div class="logo-mark"></div>
@@ -1066,12 +1074,15 @@ function renderPreview(item) {
   }
 
   if (item.type === "copy") {
+    const copyText = variant === "first-line"
+      ? firstLine(item.body || item.prompt || "Paste copy to judge the voice, clarity, and action.")
+      : item.body || item.prompt || "Paste copy to judge the voice, clarity, and action.";
     return `
-      <div class="preview-copy" aria-label="Generated copy preview">
+      <div class="preview-copy${variantClass}" aria-label="Generated copy preview">
         <div class="copy-card">
-          <span class="copy-kicker">Generated copy</span>
+          <span class="copy-kicker">${variant === "first-line" ? "First line only" : "Generated copy"}</span>
           <p class="copy-headline">${escapeHtml(shortTitle(item.title, 48))}</p>
-          <p class="copy-text">${escapeHtml(item.body || item.prompt || "Paste copy to judge the voice, clarity, and action.")}</p>
+          <p class="copy-text">${escapeHtml(copyText)}</p>
         </div>
       </div>
     `;
@@ -1079,7 +1090,7 @@ function renderPreview(item) {
 
   if (item.type === "product") {
     return `
-      <div class="preview-product" aria-label="Generated product image preview">
+      <div class="preview-product${variantClass}" aria-label="Generated product image preview">
         <div class="product-scene">
           <div class="product-shadow"></div>
           <div class="product-object">
@@ -1095,7 +1106,7 @@ function renderPreview(item) {
   }
 
   return `
-    <div class="preview-website" aria-label="Generated website preview">
+    <div class="preview-website${variantClass}" aria-label="Generated website preview">
       <div class="browser-bar">
         <span class="browser-dot"></span>
         <span class="browser-dot"></span>
@@ -1127,6 +1138,15 @@ function renderPreview(item) {
       </div>
     </div>
   `;
+}
+
+function previewVariantClass(item) {
+  const variant = normalizeVariant(item.variant);
+  return variant === "original" ? "" : ` is-${variant}`;
+}
+
+function firstLine(value) {
+  return String(value).split(/[.\n]/).map((part) => part.trim()).find(Boolean) || String(value);
 }
 
 function renderLiveScore() {
@@ -1268,6 +1288,7 @@ function remixCurrentDeck() {
   const remixItems = sourceItems.map((item) => ({
     ...item,
     id: createId(),
+    variant: variantForRemix(item),
     agent: {
       ...item.agent,
       runId: createShortId("remix"),
@@ -1286,6 +1307,13 @@ function remixCurrentDeck() {
   isDetailSheetOpen = false;
   saveState();
   render();
+}
+
+function variantForRemix(item) {
+  if (normalizeVariant(item.variant) !== "original") {
+    return "original";
+  }
+  return item.type === "copy" ? "first-line" : "thumbnail";
 }
 
 function openAddArtifactPanel() {
@@ -1602,6 +1630,7 @@ function buildEvalRow(item, review) {
     createdAt: review.createdAt,
     artifact: {
       artifactId: item.id,
+      variant: normalizeVariant(item.variant),
       type: item.type,
       title: item.title,
       prompt: item.prompt,
@@ -1657,6 +1686,7 @@ function signalStrengthFormula() {
 function requestEnvelope(item) {
   return {
     artifactId: item.id,
+    variant: normalizeVariant(item.variant),
     type: item.type,
     title: item.title,
     prompt: item.prompt,
