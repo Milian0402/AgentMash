@@ -17,6 +17,7 @@ Make AgentMash good enough to launch publicly as a serious app.
 - Privacy, terms, support, publishing, 404, manifest, icons, service worker, and static host config are present.
 - PWA manifest includes mobile and desktop screenshots.
 - Public build script packages `_site/` without internal launch docs, submission drafts, scripts, or repo metadata.
+- Dedicated Apple touch icon is present for iOS home-screen install polish.
 - Store listing, App Store submission prep, and privacy/data safety drafts are present.
 - Draft store submission image assets are present in `store/submission`.
 - App data stays local unless the user imports, exports, copies, or downloads it.
@@ -34,6 +35,8 @@ Make AgentMash good enough to launch publicly as a serious app.
 - Manifest screenshots point to tracked screenshot assets.
 - Public manifest screenshots point to `assets/screenshots`.
 - `npm run check` builds `_site/` and verifies internal files are not packaged.
+- Apple touch icon is linked from `index.html`, cached by `sw.js`, and sized at 180 by 180.
+- `npm run serve:build` served `_site/`; `/` and `assets/icons/apple-touch-icon.png` returned 200, while `store/completion-audit.md` returned 404.
 - Draft submission assets are sized for Apple iPhone 6.9, Apple iPhone 6.5, Google phone, and Google Play feature graphic planning.
 - GitHub repo is private at `https://github.com/Milian0402/AgentMash`.
 

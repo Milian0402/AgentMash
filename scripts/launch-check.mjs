@@ -34,6 +34,7 @@ const requiredFiles = [
   "assets/icons/app-icon-192.png",
   "assets/icons/app-icon-512.png",
   "assets/icons/app-icon-1024.png",
+  "assets/icons/apple-touch-icon.png",
   "assets/screenshots/mobile-review.png",
   "assets/screenshots/desktop-review.png",
   "store/screenshots/mobile-review.png",
@@ -63,6 +64,7 @@ const appShellFiles = [
   "./assets/icons/app-icon-192.png",
   "./assets/icons/app-icon-512.png",
   "./assets/icons/app-icon-1024.png",
+  "./assets/icons/apple-touch-icon.png",
   "./assets/screenshots/mobile-review.png",
   "./assets/screenshots/desktop-review.png",
   "./privacy.html",
@@ -80,6 +82,7 @@ const securityHeaders = [
   "Content-Security-Policy"
 ];
 const submissionPngSizes = {
+  "assets/icons/apple-touch-icon.png": "180x180",
   "store/submission/apple-iphone-6-9-human-review.png": "1290x2796",
   "store/submission/apple-iphone-6-5-human-review.png": "1242x2688",
   "store/submission/google-phone-human-review.png": "1080x1920",
@@ -157,6 +160,7 @@ check(
   "manifest screenshot metadata is complete"
 );
 check(index.includes("<title>AgentMash</title>") && index.includes("<h1>AgentMash</h1>"), "index brands AgentMash");
+check(index.includes('rel="apple-touch-icon"') && index.includes("assets/icons/apple-touch-icon.png"), "index links Apple touch icon");
 check(hasAll(index, ["support.html", "privacy.html", "terms.html", "publishing.html"]), "footer links key pages");
 check(app.includes("humanAddButton") && app.includes("openAddArtifactPanel"), "human add-artifact entry exists");
 check(app.includes('state.dashboard = "human";'), "added artifacts return to human deck");
@@ -168,6 +172,7 @@ check(hasAll(JSON.stringify(vercel), securityHeaders), "vercel config defines se
 check(headers.includes("connect-src 'self'") && headers.includes("form-action 'self'"), "CSP blocks outside connections and forms");
 check(headers.includes("payment=()"), "permissions policy blocks payment permission");
 check(packageJson.scripts?.build === "node scripts/build-site.mjs", "package has local public build script");
+check(packageJson.scripts?.["serve:build"] === "python3 -m http.server 5178 --directory _site", "package has build preview script");
 check(pagesWorkflow.includes("npm run build"), "GitHub Pages workflow uses public build script");
 check(!pagesWorkflow.includes(" store"), "GitHub Pages workflow does not copy internal store docs directly");
 check(readme.includes("store/public-launch-audit.md"), "README links public launch audit");

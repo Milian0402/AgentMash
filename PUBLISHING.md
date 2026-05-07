@@ -10,6 +10,7 @@ No deployment, paid account, domain purchase, app-store submission, or human out
 - `main` contains the static app.
 - Local preview runs with `npm run serve`.
 - Public package builds with `npm run build` into `_site/`.
+- Public package preview runs with `npm run serve:build`.
 - Syntax check runs with `npm run check`.
 - Privacy, terms, support, app metadata, icons, and offline caching are present.
 - Manifest screenshots, store copy, app-store submission prep, privacy/data safety drafts, and draft submission images are present.
