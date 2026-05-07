@@ -431,6 +431,7 @@ function render() {
 
 function renderDashboardShell() {
   const isAgent = state.dashboard === "agent";
+  document.body.dataset.dashboard = state.dashboard;
   elements.humanDashboard.hidden = isAgent;
   elements.agentDashboard.hidden = !isAgent;
   elements.dashboardSwitch.querySelectorAll("[data-dashboard]").forEach((button) => {
@@ -1174,7 +1175,7 @@ function typeLabel(type) {
 }
 
 function agentLine(agent) {
-  return `${agent.requesterName} submitted ${agent.runId}. Return: ${agent.returnMode} -> ${agent.returnTarget || "local export"}.`;
+  return `${agent.requesterName} / ${agent.runId}`;
 }
 
 function shortTitle(value, maxLength) {
