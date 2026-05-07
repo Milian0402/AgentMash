@@ -56,6 +56,14 @@ Then visit `http://localhost:5177`.
 npm run check
 ```
 
+## Launch Check
+
+```sh
+npm run check:launch
+```
+
+This verifies required pages, app metadata, offline shell files, static-host security headers, local-only network constraints, and AgentMash naming.
+
 ## Publish Prep
 
 - `manifest.webmanifest`: PWA metadata.

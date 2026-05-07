@@ -10,6 +10,7 @@
   "license": "UNLICENSED",
   "scripts": {
     "serve": "python3 -m http.server 5177",
-    "check": "node --check app.js && node --check sw.js"
+    "check": "node --check app.js && node --check sw.js && node --check scripts/launch-check.mjs && npm run check:launch",
+    "check:launch": "node scripts/launch-check.mjs"
   }
 }

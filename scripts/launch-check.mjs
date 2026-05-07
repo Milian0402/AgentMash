@@ -1,0 +1,148 @@
+import { access, readFile } from "node:fs/promises";
+
+const requiredFiles = [
+  "index.html",
+  "styles.css",
+  "app.js",
+  "sw.js",
+  "manifest.webmanifest",
+  "support.html",
+  "privacy.html",
+  "terms.html",
+  "publishing.html",
+  "404.html",
+  "README.md",
+  "PUBLISHING.md",
+  "store/public-launch-audit.md",
+  "store/release-checklist.md",
+  "store/research-and-cost-guide.md",
+  "store/agent-customer-model.md",
+  "store/app-store-listing.md",
+  "_headers",
+  "netlify.toml",
+  "vercel.json",
+  "assets/app-icon.svg",
+  "assets/icons/app-icon-192.png",
+  "assets/icons/app-icon-512.png",
+  "assets/icons/app-icon-1024.png"
+];
+
+const textFiles = requiredFiles.filter((file) => !file.endsWith(".png"));
+const htmlPages = [
+  "index.html",
+  "support.html",
+  "privacy.html",
+  "terms.html",
+  "publishing.html",
+  "404.html"
+];
+const appShellFiles = [
+  "./",
+  "./index.html",
+  "./styles.css",
+  "./app.js",
+  "./manifest.webmanifest",
+  "./assets/app-icon.svg",
+  "./assets/icons/app-icon-192.png",
+  "./assets/icons/app-icon-512.png",
+  "./assets/icons/app-icon-1024.png",
+  "./privacy.html",
+  "./support.html",
+  "./terms.html",
+  "./publishing.html",
+  "./404.html"
+];
+const securityHeaders = [
+  "X-Frame-Options",
+  "X-Content-Type-Options",
+  "Referrer-Policy",
+  "Permissions-Policy",
+  "Cross-Origin-Opener-Policy",
+  "Content-Security-Policy"
+];
+
+let failures = 0;
+
+function check(condition, message) {
+  if (condition) {
+    console.log(`ok - ${message}`);
+    return;
+  }
+  failures += 1;
+  console.error(`fail - ${message}`);
+}
+
+async function exists(path) {
+  try {
+    await access(path);
+    return true;
+  } catch {
+    return false;
+  }
+}
+
+async function read(path) {
+  return readFile(path, "utf8");
+}
+
+function hasAll(haystack, needles) {
+  return needles.every((needle) => haystack.includes(needle));
+}
+
+for (const file of requiredFiles) {
+  check(await exists(file), `${file} exists`);
+}
+
+const packageJson = JSON.parse(await read("package.json"));
+const manifest = JSON.parse(await read("manifest.webmanifest"));
+const vercel = JSON.parse(await read("vercel.json"));
+const index = await read("index.html");
+const app = await read("app.js");
+const serviceWorker = await read("sw.js");
+const headers = await read("_headers");
+const netlify = await read("netlify.toml");
+const readme = await read("README.md");
+const audit = await read("store/public-launch-audit.md");
+
+check(packageJson.name === "agentmash", "package name is agentmash");
+check(packageJson.repository?.url === "https://github.com/Milian0402/AgentMash.git", "package repo points to AgentMash");
+check(manifest.name === "AgentMash" && manifest.short_name === "AgentMash", "manifest uses AgentMash");
+check(manifest.display === "standalone" && manifest.orientation === "portrait", "manifest is app-like");
+check(manifest.icons.every((icon) => requiredFiles.includes(icon.src)), "manifest icons are tracked");
+check(index.includes("<title>AgentMash</title>") && index.includes("<h1>AgentMash</h1>"), "index brands AgentMash");
+check(hasAll(index, ["support.html", "privacy.html", "terms.html", "publishing.html"]), "footer links key pages");
+check(app.includes("humanAddButton") && app.includes("openAddArtifactPanel"), "human add-artifact entry exists");
+check(app.includes('state.dashboard = "human";'), "added artifacts return to human deck");
+check(serviceWorker.includes('const CACHE_NAME = "agentmash-v'), "service worker cache is AgentMash scoped");
+check(hasAll(serviceWorker, appShellFiles), "service worker app shell includes launch pages and icons");
+check(hasAll(headers, securityHeaders), "_headers defines security headers");
+check(hasAll(netlify, securityHeaders), "netlify config defines security headers");
+check(hasAll(JSON.stringify(vercel), securityHeaders), "vercel config defines security headers");
+check(headers.includes("connect-src 'self'") && headers.includes("form-action 'self'"), "CSP blocks outside connections and forms");
+check(headers.includes("payment=()"), "permissions policy blocks payment permission");
+check(readme.includes("store/public-launch-audit.md"), "README links public launch audit");
+check(audit.includes("Remaining Public Launch Blockers"), "launch audit lists remaining blockers");
+
+const combinedText = (await Promise.all(textFiles.map(read))).join("\n");
+check(!/[^\x00-\x7F]/.test(combinedText), "text files are ASCII");
+check(!/Nice or Not|is-it-nice/.test(combinedText), "old product/repo names are absent");
+check(!/\b(dating|tinder|hinge|mate|mates)\b/i.test(combinedText), "no dating-app wording");
+check(!/mailto:|tel:|XMLHttpRequest|sendBeacon|WebSocket|stripe|paypal|posthog|sentry/i.test(combinedText), "no contact, payment, analytics, or socket hooks");
+
+for (const file of textFiles.filter((file) => file !== "sw.js")) {
+  const content = await read(file);
+  check(!/\bfetch\s*\(/.test(content), `${file} does not fetch`);
+}
+
+for (const page of htmlPages) {
+  const content = await read(page);
+  check(content.includes('<meta name="viewport"'), `${page} has viewport metadata`);
+  check(content.includes('href="styles.css"'), `${page} loads shared styles`);
+}
+
+if (failures) {
+  console.error(`launch check failed: ${failures} issue${failures === 1 ? "" : "s"}`);
+  process.exit(1);
+}
+
+console.log("launch check passed");

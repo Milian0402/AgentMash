@@ -19,6 +19,7 @@ Make AgentMash good enough to launch publicly as a serious app.
 ## Verification Evidence
 
 - `npm run check` passes.
+- `npm run check:launch` passes.
 - `manifest.webmanifest`, `package.json`, and `vercel.json` parse as JSON.
 - Mobile browser check at 390 by 844 showed no horizontal overflow.
 - Desktop browser check at 1440 by 1000 showed no horizontal overflow.
