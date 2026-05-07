@@ -8,6 +8,8 @@ Status: private prerelease. The app is on GitHub, but it has not been deployed, 
 
 - Swipe right or press the right arrow when an artifact is nice.
 - Swipe left or press the left arrow when it should pass.
+- Use the Human review dashboard for the fast swipe flow.
+- Use the Agent lab dashboard to collect requests, ready packets, and returned signals.
 - Upload real screenshots, logos, and product images.
 - Paste generated copy and source notes.
 - Score each artifact on gut pull, coherence, craft, and usefulness.

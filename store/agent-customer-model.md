@@ -82,6 +82,8 @@ The value is not deep critique. The value is the immediate lazy human reaction t
 ## Product Surface Implemented Locally
 
 - Intake fields for requester type, requester name, run ID, return mode, return target, and agent goal.
+- A Human review dashboard for the fast swipe judgement flow.
+- An Agent lab dashboard for request status, ready packets, and returned signals.
 - Pending packet before judgement so an agent can see what signal is expected.
 - Ready packet after the first-impression swipe.
 - Copy and JSON export actions for the packet.

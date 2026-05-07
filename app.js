@@ -1,7 +1,11 @@
-const APP_VERSION = 3;
-const STORAGE_KEY = "nice-or-not.private-profile.v3";
+const APP_VERSION = 4;
+const STORAGE_KEY = "nice-or-not.private-profile.v4";
 const OLD_STORAGE_KEY = "nice-or-not.private-profile.v1";
-const PREVIOUS_STORAGE_KEYS = ["nice-or-not.private-profile.v2", OLD_STORAGE_KEY];
+const PREVIOUS_STORAGE_KEYS = [
+  "nice-or-not.private-profile.v3",
+  "nice-or-not.private-profile.v2",
+  OLD_STORAGE_KEY
+];
 
 const artifactTypes = ["website", "logo", "copy", "product"];
 const quickTags = [
@@ -155,6 +159,7 @@ const defaultState = {
   version: APP_VERSION,
   reviewer: "Private reviewer",
   filter: "all",
+  dashboard: "human",
   items: sampleItems,
   reviews: [],
   currentItemId: sampleItems[0].id,
@@ -170,6 +175,9 @@ let pendingImageData = "";
 let deferredInstallPrompt = null;
 
 const elements = {
+  dashboardSwitch: document.querySelector("#dashboardSwitch"),
+  humanDashboard: document.querySelector("#humanDashboard"),
+  agentDashboard: document.querySelector("#agentDashboard"),
   reviewerName: document.querySelector("#reviewerName"),
   filterTabs: document.querySelector("#filterTabs"),
   queueCount: document.querySelector("#queueCount"),
@@ -213,6 +221,12 @@ const elements = {
   keeperCount: document.querySelector("#keeperCount"),
   passCount: document.querySelector("#passCount"),
   reviewedCount: document.querySelector("#reviewedCount"),
+  agentTotalRequests: document.querySelector("#agentTotalRequests"),
+  agentReadyPackets: document.querySelector("#agentReadyPackets"),
+  agentPendingRequests: document.querySelector("#agentPendingRequests"),
+  agentAvgConfidence: document.querySelector("#agentAvgConfidence"),
+  agentRequestList: document.querySelector("#agentRequestList"),
+  agentSignalList: document.querySelector("#agentSignalList"),
   historyList: document.querySelector("#historyList"),
   packetStatus: document.querySelector("#packetStatus"),
   packetPreview: document.querySelector("#packetPreview"),
@@ -255,6 +269,7 @@ function normalizeState(candidate) {
     version: APP_VERSION,
     reviewer: cleanText(candidate.reviewer) || defaultState.reviewer,
     filter,
+    dashboard: ["human", "agent"].includes(candidate.dashboard) ? candidate.dashboard : "human",
     items,
     reviews,
     currentItemId,
@@ -369,6 +384,7 @@ function render() {
   const filtered = filteredItems();
   const activeType = activeItem ? activeItem.type : state.filter === "all" ? "website" : state.filter;
 
+  renderDashboardShell();
   elements.reviewerName.value = state.reviewer;
   elements.queueCount.textContent = `${pending.length}`;
   elements.stageEyebrow.textContent = `${typeLabel(activeType)} judgement`;
@@ -381,6 +397,7 @@ function render() {
   renderTags();
   renderMetrics();
   renderHistory();
+  renderAgentDashboard();
   renderLiveScore();
 
   elements.emptyState.hidden = Boolean(activeItem);
@@ -410,6 +427,17 @@ function render() {
   elements.swipeCard.classList.remove("swipe-nice", "swipe-pass", "is-dragging");
   renderFeedbackPacket(packetItemForRender(activeItem));
   saveState();
+}
+
+function renderDashboardShell() {
+  const isAgent = state.dashboard === "agent";
+  elements.humanDashboard.hidden = isAgent;
+  elements.agentDashboard.hidden = !isAgent;
+  elements.dashboardSwitch.querySelectorAll("[data-dashboard]").forEach((button) => {
+    const active = button.dataset.dashboard === state.dashboard;
+    button.classList.toggle("active", active);
+    button.setAttribute("aria-pressed", active ? "true" : "false");
+  });
 }
 
 function renderTabs() {
@@ -524,7 +552,7 @@ function renderHistory() {
 
     const verdict = document.createElement("span");
     verdict.className = `history-verdict${review.verdict === "pass" ? " pass" : ""}`;
-    verdict.textContent = review.verdict === "nice" ? "Nice" : "Pass";
+    verdict.textContent = review.verdict === "nice" ? "Nice" : "Nope";
 
     const score = document.createElement("span");
     score.textContent = `${review.score} / ${review.grade}`;
@@ -546,6 +574,108 @@ function renderHistory() {
 
     row.append(title, meta);
     elements.historyList.append(row);
+  });
+}
+
+function renderAgentDashboard() {
+  const reviewByItem = new Map(state.reviews.map((review) => [review.itemId, review]));
+  const readyCount = state.reviews.length;
+  const pendingCount = state.items.filter((item) => !reviewByItem.has(item.id)).length;
+  const avgScore = readyCount
+    ? Math.round(state.reviews.reduce((sum, review) => sum + review.score, 0) / readyCount)
+    : 0;
+
+  elements.agentTotalRequests.textContent = `${state.items.length} requests`;
+  elements.agentReadyPackets.textContent = `${readyCount}`;
+  elements.agentPendingRequests.textContent = `${pendingCount}`;
+  elements.agentAvgConfidence.textContent = `${avgScore}`;
+
+  elements.agentRequestList.replaceChildren();
+  const requests = [...state.items].sort((a, b) => b.createdAt.localeCompare(a.createdAt));
+  if (!requests.length) {
+    const empty = document.createElement("p");
+    empty.className = "help-text";
+    empty.textContent = "No agent requests yet.";
+    elements.agentRequestList.append(empty);
+  }
+
+  requests.forEach((item) => {
+    const review = reviewByItem.get(item.id);
+    const row = document.createElement("article");
+    row.className = `agent-request${review ? " ready" : ""}`;
+
+    const top = document.createElement("div");
+    top.className = "agent-request-top";
+
+    const title = document.createElement("div");
+    const name = document.createElement("strong");
+    name.textContent = item.title;
+    const meta = document.createElement("span");
+    meta.textContent = `${item.agent.requesterName} / ${item.agent.runId}`;
+    title.append(name, meta);
+
+    const status = document.createElement("span");
+    status.className = `count-pill${review ? " ready-pill" : ""}`;
+    status.textContent = review ? "Ready" : "Waiting";
+    top.append(title, status);
+
+    const signal = document.createElement("p");
+    signal.textContent = review
+      ? `${review.verdict === "nice" ? "Nice" : "Nope"} at ${review.score}. ${review.recommendation}`
+      : item.agent.goal || "Waiting for a human first-impression swipe.";
+
+    const footer = document.createElement("div");
+    footer.className = "agent-request-footer";
+    const returnTarget = document.createElement("span");
+    returnTarget.textContent = `${item.agent.returnMode} -> ${item.agent.returnTarget || "local export"}`;
+    const inspect = document.createElement("button");
+    inspect.type = "button";
+    inspect.className = "mini-button";
+    inspect.textContent = review ? "View packet" : "View request";
+    inspect.addEventListener("click", () => {
+      state.lastPacketItemId = item.id;
+      state.dashboard = "agent";
+      saveState();
+      render();
+    });
+    footer.append(returnTarget, inspect);
+
+    row.append(top, signal, footer);
+    elements.agentRequestList.append(row);
+  });
+
+  renderAgentSignals(reviewByItem);
+}
+
+function renderAgentSignals(reviewByItem) {
+  elements.agentSignalList.replaceChildren();
+  const recent = [...state.reviews].reverse().slice(0, 8);
+
+  if (!recent.length) {
+    const empty = document.createElement("p");
+    empty.className = "help-text";
+    empty.textContent = "No returned human signals yet.";
+    elements.agentSignalList.append(empty);
+    return;
+  }
+
+  recent.forEach((review) => {
+    const item = state.items.find((candidate) => candidate.id === review.itemId);
+    if (!item || !reviewByItem.has(item.id)) {
+      return;
+    }
+
+    const row = document.createElement("article");
+    row.className = "signal-item";
+
+    const verdict = document.createElement("strong");
+    verdict.textContent = `${review.verdict === "nice" ? "Nice" : "Nope"} / ${review.score}`;
+
+    const detail = document.createElement("p");
+    detail.textContent = `${item.agent.runId}: ${review.tags.length ? review.tags.join(", ") : review.grade}`;
+
+    row.append(verdict, detail);
+    elements.agentSignalList.append(row);
   });
 }
 
@@ -719,7 +849,7 @@ function undoLastReview() {
 function animateDecision(verdict) {
   const x = verdict === "nice" ? window.innerWidth : -window.innerWidth;
   const rotation = verdict === "nice" ? 12 : -12;
-  elements.swipeBadge.textContent = verdict === "nice" ? "Nice" : "Pass";
+  elements.swipeBadge.textContent = verdict === "nice" ? "Nice" : "Nope";
   elements.swipeCard.style.transform = `translateX(${x}px) rotate(${rotation}deg)`;
   elements.swipeCard.style.opacity = "0";
 
@@ -1107,7 +1237,7 @@ function onPointerMove(event) {
   elements.swipeCard.style.transform = `translateX(${deltaX}px) rotate(${rotation}deg)`;
   elements.swipeCard.classList.toggle("swipe-nice", isNice);
   elements.swipeCard.classList.toggle("swipe-pass", isPass);
-  elements.swipeBadge.textContent = isNice ? "Nice" : isPass ? "Pass" : "";
+  elements.swipeBadge.textContent = isNice ? "Nice" : isPass ? "Nope" : "";
 }
 
 function onPointerUp(event) {
@@ -1139,6 +1269,16 @@ function registerServiceWorker() {
   }
   navigator.serviceWorker.register("./sw.js").catch(() => {});
 }
+
+elements.dashboardSwitch.addEventListener("click", (event) => {
+  const button = event.target.closest("button[data-dashboard]");
+  if (!button) {
+    return;
+  }
+  state.dashboard = button.dataset.dashboard;
+  saveState();
+  render();
+});
 
 elements.reviewerName.addEventListener("input", () => {
   state.reviewer = elements.reviewerName.value.trim() || defaultState.reviewer;

@@ -1,4 +1,4 @@
-const CACHE_NAME = "nice-or-not-v5";
+const CACHE_NAME = "nice-or-not-v6";
 const APP_SHELL = [
   "./",
   "./index.html",
