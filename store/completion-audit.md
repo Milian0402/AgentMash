@@ -30,6 +30,7 @@ Make AgentMash good enough to launch publicly as a serious app, while staying in
 - The app remains local-first with no analytics, payment, contact, telemetry, socket, or third-party API hooks.
 - Public launch pages, PWA metadata, icons, screenshots, offline cache, preview workflow, and static host security configs exist.
 - PWA manifest, package metadata, and README one-line description use the same structured feedback-packet positioning.
+- PWA manifest declares language and text direction for install surfaces.
 - Internal publishing notes stay out of the packaged public site so users do not see pre-launch status language.
 - Public build output excludes internal launch docs, submission drafts, scripts, and repo metadata.
 - Mobile install polish includes a dedicated Apple touch icon.
@@ -114,6 +115,7 @@ Make AgentMash good enough to launch publicly as a serious app, while staying in
 | Put repo in the code folder. | Local repo path is `/Users/maximiliannordler/code/AgentMash`. | Met locally |
 | Make it ready for public web launch where possible. | Privacy, terms, support, 404, manifest, service worker, icons, screenshots, preview workflow, and security header configs exist. Publishing and cost guidance stays in internal repo docs. | Met locally |
 | Keep install and repo metadata aligned. | `manifest.webmanifest`, `package.json`, and `README.md` now describe AgentMash as turning fast judgement into structured feedback packets; `scripts/launch-check.mjs` verifies the manifest and package descriptions. | Met locally |
+| Keep PWA install language metadata explicit. | `manifest.webmanifest` declares `lang: en-US` and `dir: ltr`; `scripts/launch-check.mjs` verifies both values. | Met locally |
 | Keep PWA install icons consistent with the manifest. | `assets/icons/app-icon-192.png`, `assets/icons/app-icon-512.png`, `assets/icons/app-icon-1024.png`, and `store/app-icon-1024.png` match their declared PNG sizes; `scripts/launch-check.mjs` verifies those dimensions. | Met locally |
 | Keep PWA screenshots consistent with the manifest. | Public and store mirror PWA screenshots are 390 by 844 and 1440 by 1000 PNGs, matching `manifest.webmanifest`; `scripts/launch-check.mjs` verifies those dimensions. | Met locally |
 | Verify offline PWA behavior. | Playwright waits for the service worker, switches the browser context offline, reloads, and verifies the AgentMash app shell and swipe card still render. | Met locally |

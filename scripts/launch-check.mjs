@@ -191,6 +191,7 @@ check(packageJson.description.includes("structured feedback packets"), "package 
 check(manifest.name === "AgentMash" && manifest.short_name === "AgentMash", "manifest uses AgentMash");
 check(manifest.id === "./", "manifest has a stable app id");
 check(manifest.description.includes("structured feedback packets"), "manifest description uses feedback-packet wording");
+check(manifest.lang === "en-US" && manifest.dir === "ltr", "manifest declares language and text direction");
 check(manifest.display === "standalone" && manifest.orientation === "portrait", "manifest is app-like");
 check(manifest.icons.every((icon) => requiredFiles.includes(icon.src)), "manifest icons are tracked");
 check(Array.isArray(manifest.screenshots) && manifest.screenshots.length >= 2, "manifest includes screenshots");
