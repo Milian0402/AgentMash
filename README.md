@@ -9,7 +9,7 @@ Status: public-beta candidate. The app is on GitHub, but it has not been deploye
 - Swipe right or press the right arrow when an artifact is nice.
 - Swipe left or press the left arrow when it should pass.
 - Use the Human review dashboard for the fast swipe flow.
-- Use the Agent lab dashboard to collect requests, ready packets, and returned signals.
+- Use the Export workspace to collect ready packets and JSONL rows from local review data.
 - Add artifacts from the human deck or the lab request form.
 - Upload real screenshots, logos, and product images.
 - Paste generated copy and source notes.

@@ -26,7 +26,7 @@ The local codebase is prepared for that path: product name, icon, manifest, scre
 
 Review notes draft:
 
-AgentMash is a local-first review tool for AI-generated websites, logos, copy, and product images. It stores review data on device, does not require an account, does not send data to a server, and does not include analytics, ads, payments, AI API calls, or third-party tracking. Test by opening the app, swiping a demo artifact, editing scores/tags/notes, switching to Agent lab, and downloading a JSON feedback packet or JSONL eval row.
+AgentMash is a local-first review tool for AI-generated websites, logos, copy, and product images. It stores review data on device, does not require an account, does not send data to a server, and does not include analytics, ads, payments, AI API calls, or third-party tracking. Test by opening the app, swiping a demo artifact, editing scores/tags/notes, switching to Export workspace, and downloading a JSON feedback packet or JSONL eval row.
 
 Apple-specific requirements still owned by the user:
 

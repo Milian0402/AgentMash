@@ -113,7 +113,7 @@ The value is not deep critique. The value is the immediate lazy human reaction t
 
 - Intake fields for requester type, requester name, run ID, return mode, return target, and agent goal.
 - A Human review dashboard for the fast swipe judgement flow.
-- An Agent lab dashboard for request status, ready packets, and returned signals.
+- A local Export workspace for reviewed artifacts, ready packets, JSON downloads, and JSONL rows.
 - Lab-ready eval rows with `humanSignal`, `agentUse`, preference label, signal strength, failure modes, and repair instruction.
 - Schema v2 packets and eval rows use `signalStrength` for the score-extremity signal.
 - Pending packet before judgement so an agent can see what signal is expected.

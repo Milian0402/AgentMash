@@ -11,7 +11,7 @@ Make AgentMash good enough to launch publicly as a serious app.
 - Product name and private GitHub repository are `AgentMash`.
 - Local repo path is `/Users/maximiliannordler/code/AgentMash`.
 - Human review dashboard is phone-first and supports swipe, buttons, keyboard shortcuts, undo, scoring, tags, and notes.
-- Agent lab dashboard collects requests, ready packets, JSON downloads, and JSONL eval rows.
+- Export workspace collects ready packets, JSON downloads, and JSONL eval rows from local review data.
 - Add Artifact is reachable from the human dashboard and returns to the swipe deck after submit.
 - Starter artifacts are credible launch examples instead of placeholder-only cards.
 - Privacy, terms, support, publishing, 404, manifest, icons, service worker, and static host config are present.
@@ -27,7 +27,8 @@ Make AgentMash good enough to launch publicly as a serious app.
 - `saveState()` strips image data before writing profile state and shows a visible local-storage-full warning if browser storage rejects the save.
 - Reviewer name edits show a visible saved/not-saved status.
 - Feedback packets use `agentmash.feedback.v2`, `signalStrength`, and a top-level `signalStrengthFormula`.
-- Agent Lab zero-item and zero-review states are covered by Playwright and show zero ready packets, zero waiting items, no average signal, zero retry queue, empty packet status, and zero dataset rows.
+- Export workspace zero-item and zero-review states are covered by Playwright and show zero ready exports, zero unjudged items, no average signal, empty packet status, and zero dataset rows.
+- Agent-facing surface was reframed as a local export workspace, removing inbound-traffic wording such as request queue, waiting on humans, returned signals, and retry queue.
 - Store listing, App Store submission prep, and privacy/data safety drafts are present.
 - Draft store submission image assets are present in `store/submission`.
 - App data stays local unless the user imports, exports, copies, or downloads it.
@@ -36,7 +37,7 @@ Make AgentMash good enough to launch publicly as a serious app.
 
 - `npm run check` passes.
 - `npm run check:launch` passes.
-- `npm run check` now includes Playwright e2e coverage for Nice, Undo, Nope, v2 packet shape, empty Agent Lab state, and IndexedDB image storage.
+- `npm run check` now includes Playwright e2e coverage for Nice, Undo, Nope, v2 packet shape, empty Export workspace state, and IndexedDB image storage.
 - `manifest.webmanifest`, `package.json`, and `vercel.json` parse as JSON.
 - Mobile browser check at 390 by 844 showed no horizontal overflow.
 - Desktop browser check at 1440 by 1000 showed no horizontal overflow.
@@ -59,7 +60,7 @@ Make AgentMash good enough to launch publicly as a serious app.
 - Playwright upload smoke test passed: SVG rejected, over-2.5 MB PNG rejected, small PNG accepted, and console errors stayed at zero.
 - Playwright e2e test passed: a tiny PNG upload stored an `imageKey` in `localStorage`, left `imageData` empty in `localStorage`, and stored the data URL in IndexedDB.
 - Playwright e2e test passed: Nice, Undo, and Nope produced a ready `agentmash.feedback.v2` packet with `signalStrength`, no `confidence` field, and `agentmash.eval-row.v2`.
-- Playwright e2e test passed: zero items and zero reviews rendered empty Agent Lab counts and an empty packet without stale metrics.
+- Playwright e2e test passed: zero items and zero reviews rendered empty Export workspace counts and an empty packet without stale metrics.
 - `npm run serve:build` served `_site/`; `/` and `assets/icons/apple-touch-icon.png` returned 200, while `store/completion-audit.md` returned 404.
 - Draft submission assets are sized for Apple iPhone 6.9, Apple iPhone 6.5, Google phone, and Google Play feature graphic planning.
 - GitHub repo is private at `https://github.com/Milian0402/AgentMash`.
@@ -76,7 +77,7 @@ Passed checks:
 - Nice swipe saves one review.
 - Undo clears that review.
 - Nope swipe creates a completed review.
-- Agent lab opens.
+- Export workspace opens.
 - Packet status becomes ready.
 - JSONL preview includes `preference_label`.
 - Packet preview includes `humanJudgement` and `verdict`.
@@ -107,4 +108,4 @@ Passed checks:
 
 - Paid plans, billing, auth, server storage, lab customer accounts, webhooks, or polling endpoints.
 - Legal review.
-- Agent Lab wording scope is pending the user's A/B decision; no inbound-traffic language change has been made yet.
+- No backend, inbound agent submission, polling, webhook, or customer pipeline exists; the current second dashboard is a local export workspace.

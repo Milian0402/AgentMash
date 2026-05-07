@@ -237,7 +237,6 @@ const elements = {
   agentReadyPackets: document.querySelector("#agentReadyPackets"),
   agentPendingRequests: document.querySelector("#agentPendingRequests"),
   agentAvgConfidence: document.querySelector("#agentAvgConfidence"),
-  agentRetryQueue: document.querySelector("#agentRetryQueue"),
   agentRequestList: document.querySelector("#agentRequestList"),
   datasetStatus: document.querySelector("#datasetStatus"),
   datasetPreview: document.querySelector("#datasetPreview"),
@@ -760,16 +759,14 @@ function renderAgentDashboard() {
   const readyCount = state.reviews.length;
   const pendingCount = state.items.filter((item) => !reviewByItem.has(item.id)).length;
   const evalRows = buildEvalRows();
-  const retryCount = evalRows.filter((row) => row.agentUse.recommendedAction !== "ship_or_keep").length;
   const avgSignalStrength = evalRows.length
     ? Math.round(evalRows.reduce((sum, row) => sum + row.humanSignal.signalStrength, 0) / evalRows.length * 100)
     : null;
 
-  elements.agentTotalRequests.textContent = `${state.items.length} requests`;
+  elements.agentTotalRequests.textContent = `${state.items.length} artifacts`;
   elements.agentReadyPackets.textContent = `${readyCount}`;
   elements.agentPendingRequests.textContent = `${pendingCount}`;
   elements.agentAvgConfidence.textContent = avgSignalStrength === null ? "None" : `${avgSignalStrength}%`;
-  elements.agentRetryQueue.textContent = `${retryCount}`;
   renderDatasetPreview(evalRows);
   renderAgentUsePanel(evalRows);
 
@@ -778,7 +775,7 @@ function renderAgentDashboard() {
   if (!requests.length) {
     const empty = document.createElement("p");
     empty.className = "help-text";
-    empty.textContent = "No agent requests yet.";
+    empty.textContent = "No exportable artifacts yet.";
     elements.agentRequestList.append(empty);
   }
 
@@ -799,13 +796,13 @@ function renderAgentDashboard() {
 
     const status = document.createElement("span");
     status.className = `count-pill${review ? " ready-pill" : ""}`;
-    status.textContent = review ? "Ready" : "Waiting";
+    status.textContent = review ? "Ready" : "Unjudged";
     top.append(title, status);
 
     const signal = document.createElement("p");
     signal.textContent = review
       ? `${review.verdict === "nice" ? "Nice" : "Nope"} at ${review.score}. ${repairInstructionFor(item, review)}`
-      : item.agent.goal || "Waiting for a human first-impression swipe.";
+      : item.agent.goal || "Swipe this artifact to unlock export data.";
 
     if (review) {
       const chips = document.createElement("div");
@@ -832,7 +829,7 @@ function renderAgentDashboard() {
     const inspect = document.createElement("button");
     inspect.type = "button";
     inspect.className = "mini-button";
-    inspect.textContent = review ? "View packet" : "View request";
+    inspect.textContent = review ? "View packet" : "View item";
     inspect.addEventListener("click", () => {
       state.lastPacketItemId = item.id;
       state.dashboard = "agent";
@@ -854,7 +851,7 @@ function renderDatasetPreview(evalRows) {
   elements.downloadDatasetButton.disabled = evalRows.length === 0;
 
   if (!evalRows.length) {
-    elements.datasetPreview.textContent = "No lab-ready rows yet. Swipe at least one request to create JSONL eval data.";
+    elements.datasetPreview.textContent = "No export rows yet. Swipe at least one artifact to create JSONL eval data.";
     return;
   }
 
@@ -878,7 +875,7 @@ function renderAgentUsePanel(evalRows) {
     : [
         ["Eval rows", `${evalRows.length}`],
         ["Training signals", evalRows.length ? signalCoverage(evalRows).join(", ") : "None yet"],
-        ["Next useful action", evalRows.length ? "Export JSONL or inspect ready packets." : "Collect a human swipe."]
+        ["Next useful action", evalRows.length ? "Export JSONL or inspect ready packets." : "Swipe an artifact."]
       ];
 
   rows.forEach(([label, value]) => {
@@ -913,7 +910,7 @@ function renderAgentSignals(reviewByItem) {
   if (!recent.length) {
     const empty = document.createElement("p");
     empty.className = "help-text";
-    empty.textContent = "No returned human signals yet.";
+    empty.textContent = "No review signals yet.";
     elements.agentSignalList.append(empty);
     return;
   }
@@ -1440,7 +1437,7 @@ function buildPendingPacket(item) {
     return {
       schema: "agentmash.feedback.v2",
       status: "empty",
-      message: "No active agent request.",
+      message: "No active artifact.",
       signalStrengthFormula: signalStrengthFormula()
     };
   }

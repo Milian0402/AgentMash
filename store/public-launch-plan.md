@@ -40,7 +40,7 @@ This keeps the app launchable without paying for a domain, app-store accounts, h
 - Installable manifest with app icons and screenshots.
 - Offline service worker.
 - Human review dashboard.
-- Agent lab dashboard.
+- Export workspace dashboard.
 - Local-only privacy model.
 - Export and import.
 - JSON feedback packets.
@@ -96,7 +96,7 @@ For each artifact, verify:
 - Scoring saves.
 - Tags save.
 - Notes save.
-- Agent lab shows a ready packet.
+- Export workspace shows a ready packet.
 - JSON download works.
 - JSONL dataset row is valid.
 

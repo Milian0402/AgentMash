@@ -45,7 +45,7 @@
 
         <nav class="dashboard-switch" id="dashboardSwitch" aria-label="Dashboard">
           <button class="dashboard-tab active" type="button" data-dashboard="human">Human review</button>
-          <button class="dashboard-tab" type="button" data-dashboard="agent">Agent lab</button>
+          <button class="dashboard-tab" type="button" data-dashboard="agent">Export workspace</button>
         </nav>
 
         <div class="topbar-actions">
@@ -205,34 +205,30 @@
           <section class="panel agent-command">
             <div class="section-title-row">
               <div>
-                <p class="eyebrow">Agent and lab collection</p>
-                <h2>Human intuition feed</h2>
+                <p class="eyebrow">Local export workspace</p>
+                <h2>Review signal exports</h2>
               </div>
-              <span id="agentTotalRequests" class="count-pill">0 requests</span>
+              <span id="agentTotalRequests" class="count-pill">0 artifacts</span>
             </div>
 
             <div class="agent-metrics">
               <div class="metric">
-                <span class="metric-label">Ready packets</span>
+                <span class="metric-label">Ready exports</span>
                 <strong id="agentReadyPackets">0</strong>
               </div>
               <div class="metric">
-                <span class="metric-label">Waiting on humans</span>
+                <span class="metric-label">Not yet judged</span>
                 <strong id="agentPendingRequests">0</strong>
               </div>
               <div class="metric">
                 <span class="metric-label">Avg signal</span>
                 <strong id="agentAvgConfidence">0</strong>
               </div>
-              <div class="metric">
-                <span class="metric-label">Retry queue</span>
-                <strong id="agentRetryQueue">0</strong>
-              </div>
             </div>
 
             <div class="section-block">
               <div class="section-title-row">
-                <h2>Request Queue</h2>
+                <h2>Export Items</h2>
                 <span class="count-pill">Live local data</span>
               </div>
               <div id="agentRequestList" class="agent-list"></div>
@@ -254,7 +250,7 @@
           <aside class="panel agent-return-panel">
             <section class="section-block packet-block">
               <div class="section-title-row">
-                <h2>Agent Return Packet</h2>
+                <h2>Feedback Packet</h2>
                 <span id="packetStatus" class="count-pill">Pending</span>
               </div>
               <pre id="packetPreview" class="packet-preview" aria-label="Structured feedback packet"></pre>
@@ -265,12 +261,12 @@
             </section>
 
             <section class="section-block">
-              <h2>Agent Use</h2>
+              <h2>Export Use</h2>
               <div id="agentUseList" class="agent-use-list"></div>
             </section>
 
             <section class="section-block">
-              <h2>Returned Signals</h2>
+              <h2>Review Signals</h2>
               <div id="agentSignalList" class="history-list"></div>
             </section>
 

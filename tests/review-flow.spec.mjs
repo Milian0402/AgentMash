@@ -34,7 +34,7 @@ test("Nice, Undo, and Nope produce a v2 feedback packet", async ({ page }) => {
   await page.getByRole("button", { name: /Nope/ }).click();
   await expect.poll(() => reviewCount(page)).toBe(1);
 
-  await page.getByRole("button", { name: "Agent lab" }).click();
+  await page.getByRole("button", { name: "Export workspace" }).click();
   await expect(page.locator("#packetStatus")).toHaveText("Ready");
 
   const packet = await page.locator("#packetPreview").evaluate((node) => JSON.parse(node.textContent));
@@ -53,7 +53,7 @@ test("Nice, Undo, and Nope produce a v2 feedback packet", async ({ page }) => {
   expect(packet.return.deliveryStatus).toBe("local_ready");
 });
 
-test("Agent dashboard empty state reads correctly with zero items and reviews", async ({ page }) => {
+test("Export workspace empty state reads correctly with zero items and reviews", async ({ page }) => {
   await page.goto(appUrl);
   await page.evaluate((key) => {
     localStorage.setItem(
@@ -75,12 +75,11 @@ test("Agent dashboard empty state reads correctly with zero items and reviews", 
   }, storageKey);
   await page.reload();
 
-  await expect(page.locator("#agentTotalRequests")).toHaveText("0 requests");
+  await expect(page.locator("#agentTotalRequests")).toHaveText("0 artifacts");
   await expect(page.locator("#agentReadyPackets")).toHaveText("0");
   await expect(page.locator("#agentPendingRequests")).toHaveText("0");
   await expect(page.locator("#agentAvgConfidence")).toHaveText("None");
-  await expect(page.locator("#agentRetryQueue")).toHaveText("0");
-  await expect(page.locator("#agentRequestList")).toContainText("No agent requests yet.");
+  await expect(page.locator("#agentRequestList")).toContainText("No exportable artifacts yet.");
   await expect(page.locator("#datasetStatus")).toHaveText("0 rows");
   await expect(page.locator("#packetStatus")).toHaveText("Empty");
 
@@ -88,7 +87,7 @@ test("Agent dashboard empty state reads correctly with zero items and reviews", 
   expect(packet).toMatchObject({
     schema: "agentmash.feedback.v2",
     status: "empty",
-    message: "No active agent request."
+    message: "No active artifact."
   });
 });
 
