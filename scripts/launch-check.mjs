@@ -171,6 +171,7 @@ check(index.includes('accept="image/png,image/jpeg,image/webp"') && !index.inclu
 check(hasAll(index, ["support.html", "privacy.html", "terms.html", "publishing.html"]), "footer links key pages");
 check(index.includes("Export workspace") && index.includes("Local export workspace"), "agent-facing surface is framed as local export workspace");
 check(!/Agent lab|Request Queue|Waiting on humans|Returned Signals|Retry queue|No agent requests/i.test(index), "export workspace avoids inbound-traffic wording");
+check(index.includes("refineButton") && index.includes('id="signalPanel" hidden'), "rubric and note panel is hidden behind Refine by default");
 check(app.includes("humanAddButton") && app.includes("openAddArtifactPanel"), "human add-artifact entry exists");
 check(app.includes('state.dashboard = "human";'), "added artifacts return to human deck");
 check(app.includes("window.confirm") && app.includes("Reset this local AgentMash profile"), "reset requires confirmation");
@@ -181,6 +182,7 @@ check(app.includes("Local storage full") && app.includes("setStorageStatus"), "l
 check(app.includes("signalStrengthFormula") && app.includes("agentmash.feedback.v2"), "feedback packets use schema v2 with signal strength formula");
 check(!app.includes("confidenceFor") && !app.includes(".confidence"), "app output no longer uses confidence field");
 check(!app.includes("agentRetryQueue") && !app.includes("Retry queue"), "retry queue metric is removed");
+check(app.includes("renderRefinePanel") && app.includes("isRefineOpen = false"), "decision flow returns to fast loop after refinement");
 check(
   hasAll(app, ["ALLOWED_IMAGE_TYPES", "MAX_IMAGE_BYTES", "safeImageData", "Choose a PNG, JPG, or WebP image"]),
   "image uploads are type and size constrained"

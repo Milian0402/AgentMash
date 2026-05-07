@@ -183,6 +183,7 @@ let pendingImageKey = "";
 let deferredInstallPrompt = null;
 let imageDbPromise = null;
 let reviewerStatusTimer = null;
+let isRefineOpen = false;
 
 const elements = {
   dashboardSwitch: document.querySelector("#dashboardSwitch"),
@@ -222,6 +223,8 @@ const elements = {
   acceptButton: document.querySelector("#acceptButton"),
   undoButton: document.querySelector("#undoButton"),
   scoreControls: document.querySelector("#scoreControls"),
+  refineButton: document.querySelector("#refineButton"),
+  signalPanel: document.querySelector("#signalPanel"),
   liveScore: document.querySelector("#liveScore"),
   liveGrade: document.querySelector("#liveGrade"),
   tagRow: document.querySelector("#tagRow"),
@@ -572,6 +575,7 @@ function render() {
   renderHistory();
   renderAgentDashboard();
   renderLiveScore();
+  renderRefinePanel();
 
   elements.emptyState.hidden = Boolean(activeItem);
   elements.swipeCard.hidden = !activeItem;
@@ -670,6 +674,12 @@ function renderScoreControls() {
     wrapper.append(title, helper, row);
     elements.scoreControls.append(wrapper);
   });
+}
+
+function renderRefinePanel() {
+  elements.signalPanel.hidden = !isRefineOpen;
+  elements.refineButton.classList.toggle("active", isRefineOpen);
+  elements.refineButton.setAttribute("aria-expanded", isRefineOpen ? "true" : "false");
 }
 
 function renderTags() {
@@ -1110,6 +1120,7 @@ function decide(verdict) {
   state.activeTags = [];
   state.draftScores = defaultScoresForNext(verdict, scores);
   state.lastPacketItemId = item.id;
+  isRefineOpen = false;
   setCurrentToNext();
   saveState();
   pulseDevice();
@@ -1916,6 +1927,10 @@ elements.artifactType.addEventListener("change", () => {
 });
 elements.artifactImage.addEventListener("change", handleImageSelection);
 elements.artifactForm.addEventListener("submit", addArtifact);
+elements.refineButton.addEventListener("click", () => {
+  isRefineOpen = !isRefineOpen;
+  renderRefinePanel();
+});
 elements.rejectButton.addEventListener("click", () => decide("pass"));
 elements.acceptButton.addEventListener("click", () => decide("nice"));
 elements.undoButton.addEventListener("click", undoLastReview);

@@ -75,6 +75,7 @@
                 <span>Left: nope</span>
                 <span>Right: nice</span>
               </div>
+              <button class="mini-button refine-toggle" id="refineButton" type="button" aria-controls="signalPanel" aria-expanded="false">Refine</button>
             </div>
 
             <div class="deck-area">
@@ -115,7 +116,7 @@
               </button>
             </div>
 
-            <div class="signal-panel">
+            <div class="signal-panel" id="signalPanel" hidden>
               <div class="signal-panel-header">
                 <span>Signal tuning</span>
                 <span>Optional detail</span>
@@ -127,7 +128,7 @@
                   <strong id="liveGrade">Promising</strong>
                 </div>
                 <div>
-                  <span class="metric-label">Confidence</span>
+                  <span class="metric-label">Signal</span>
                   <strong id="liveScore">60</strong>
                 </div>
               </div>
