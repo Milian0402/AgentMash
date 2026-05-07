@@ -9,16 +9,18 @@ No deployment, paid account, domain purchase, app-store submission, or human out
 - Private GitHub repo exists.
 - `main` contains the static app.
 - Local preview runs with `npm run serve`.
+- Public package builds with `npm run build` into `_site/`.
 - Syntax check runs with `npm run check`.
 - Privacy, terms, support, app metadata, icons, and offline caching are present.
 - Manifest screenshots, store copy, app-store submission prep, privacy/data safety drafts, and draft submission images are present.
 - A manual GitHub Pages workflow is present, but it does not run on push.
+- The public package excludes internal `store/` launch docs, submission drafts, scripts, and repo metadata.
 
 ## Free Web Publishing Paths
 
 These can be free at small scale, but always confirm limits before enabling them.
 
-- GitHub Pages: good first choice because the repo is already on GitHub. The included workflow is manual so it does not consume Actions minutes unless started.
+- GitHub Pages: good first preview choice because the repo is already on GitHub. The included workflow is manual so it does not consume Actions minutes unless started. GitHub Pages does not apply the custom security header configs in this repo.
 - Netlify: `netlify.toml` is ready for static hosting and security headers.
 - Vercel: `vercel.json` is ready for static hosting and security headers.
 - Cloudflare Pages: `_headers` is ready for static hosting and security headers.
@@ -36,6 +38,8 @@ These can be free at small scale, but always confirm limits before enabling them
 
 ## Public Website Checklist
 
+- Run `npm run build`.
+- Confirm `_site/` contains public app files only.
 - Pick a final public URL.
 - Decide whether to buy a domain.
 - Add a real support contact to `support.html` and link it from `privacy.html`.

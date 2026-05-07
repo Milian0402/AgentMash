@@ -16,6 +16,7 @@ Make AgentMash good enough to launch publicly as a serious app.
 - Starter artifacts are credible launch examples instead of placeholder-only cards.
 - Privacy, terms, support, publishing, 404, manifest, icons, service worker, and static host config are present.
 - PWA manifest includes mobile and desktop screenshots.
+- Public build script packages `_site/` without internal launch docs, submission drafts, scripts, or repo metadata.
 - Store listing, App Store submission prep, and privacy/data safety drafts are present.
 - Draft store submission image assets are present in `store/submission`.
 - App data stays local unless the user imports, exports, copies, or downloads it.
@@ -31,6 +32,8 @@ Make AgentMash good enough to launch publicly as a serious app.
 - No third-party analytics, payments, telemetry, sockets, or API calls were found. The only network fetch is the service worker same-origin cache path.
 - Store screenshots were refreshed in `store/screenshots/`.
 - Manifest screenshots point to tracked screenshot assets.
+- Public manifest screenshots point to `assets/screenshots`.
+- `npm run check` builds `_site/` and verifies internal files are not packaged.
 - Draft submission assets are sized for Apple iPhone 6.9, Apple iPhone 6.5, Google phone, and Google Play feature graphic planning.
 - GitHub repo is private at `https://github.com/Milian0402/AgentMash`.
 

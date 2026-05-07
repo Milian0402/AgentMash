@@ -56,6 +56,14 @@ Then visit `http://localhost:5177`.
 npm run check
 ```
 
+## Build
+
+```sh
+npm run build
+```
+
+This writes the public static site to `_site/`. Internal launch docs, submission drafts, scripts, and repo metadata are not packaged.
+
 ## Launch Check
 
 ```sh
@@ -69,6 +77,7 @@ This verifies required pages, app metadata, offline shell files, static-host sec
 - `manifest.webmanifest`: PWA metadata.
 - `sw.js`: offline app shell cache.
 - `assets/icons`: installable PNG app icons.
+- `assets/screenshots`: public PWA screenshots.
 - `support.html`: support page draft.
 - `privacy.html`: privacy page draft.
 - `terms.html`: terms page draft.

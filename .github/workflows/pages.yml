@@ -24,25 +24,7 @@ jobs:
       - name: Configure Pages
         uses: actions/configure-pages@v5
       - name: Prepare static site
-        run: |
-          mkdir _site
-          cp -R \
-            index.html \
-            styles.css \
-            app.js \
-            manifest.webmanifest \
-            sw.js \
-            privacy.html \
-            support.html \
-            terms.html \
-            publishing.html \
-            404.html \
-            robots.txt \
-            _headers \
-            .nojekyll \
-            assets \
-            store \
-            _site/
+        run: npm run build
       - name: Upload static files
         uses: actions/upload-pages-artifact@v3
         with:

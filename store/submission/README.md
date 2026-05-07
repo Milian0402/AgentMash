@@ -11,8 +11,10 @@ These are draft store assets generated from the current PWA screenshots on May 7
 
 ## Source Files
 
-- `store/screenshots/mobile-review.png`: 390 by 844.
-- `store/screenshots/desktop-review.png`: 1440 by 1000.
+- `assets/screenshots/mobile-review.png`: 390 by 844 public PWA screenshot.
+- `assets/screenshots/desktop-review.png`: 1440 by 1000 public PWA screenshot.
+- `store/screenshots/mobile-review.png`: 390 by 844 source screenshot.
+- `store/screenshots/desktop-review.png`: 1440 by 1000 source screenshot.
 - `store/app-icon-1024.png`: 1024 by 1024 source icon.
 
 ## Use

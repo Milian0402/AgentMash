@@ -1,6 +1,8 @@
 import { access, readFile } from "node:fs/promises";
+import { buildDir, blockedBuildEntries, buildSite, publicBuildEntries } from "./build-site.mjs";
 
 const requiredFiles = [
+  ".github/workflows/pages.yml",
   "index.html",
   "styles.css",
   "app.js",
@@ -13,6 +15,7 @@ const requiredFiles = [
   "404.html",
   "README.md",
   "PUBLISHING.md",
+  "scripts/build-site.mjs",
   "store/completion-audit.md",
   "store/public-launch-audit.md",
   "store/public-launch-plan.md",
@@ -31,6 +34,8 @@ const requiredFiles = [
   "assets/icons/app-icon-192.png",
   "assets/icons/app-icon-512.png",
   "assets/icons/app-icon-1024.png",
+  "assets/screenshots/mobile-review.png",
+  "assets/screenshots/desktop-review.png",
   "store/screenshots/mobile-review.png",
   "store/screenshots/desktop-review.png",
   "store/submission/apple-iphone-6-9-human-review.png",
@@ -58,8 +63,8 @@ const appShellFiles = [
   "./assets/icons/app-icon-192.png",
   "./assets/icons/app-icon-512.png",
   "./assets/icons/app-icon-1024.png",
-  "./store/screenshots/mobile-review.png",
-  "./store/screenshots/desktop-review.png",
+  "./assets/screenshots/mobile-review.png",
+  "./assets/screenshots/desktop-review.png",
   "./privacy.html",
   "./support.html",
   "./terms.html",
@@ -143,6 +148,7 @@ check(manifest.display === "standalone" && manifest.orientation === "portrait", 
 check(manifest.icons.every((icon) => requiredFiles.includes(icon.src)), "manifest icons are tracked");
 check(Array.isArray(manifest.screenshots) && manifest.screenshots.length >= 2, "manifest includes screenshots");
 check(manifest.screenshots.every((shot) => requiredFiles.includes(shot.src)), "manifest screenshots are tracked");
+check(manifest.screenshots.every((shot) => shot.src.startsWith("assets/screenshots/")), "manifest screenshots are public assets");
 check(
   hasAll(
     JSON.stringify(manifest.screenshots),
@@ -161,7 +167,9 @@ check(hasAll(netlify, securityHeaders), "netlify config defines security headers
 check(hasAll(JSON.stringify(vercel), securityHeaders), "vercel config defines security headers");
 check(headers.includes("connect-src 'self'") && headers.includes("form-action 'self'"), "CSP blocks outside connections and forms");
 check(headers.includes("payment=()"), "permissions policy blocks payment permission");
-check(hasAll(pagesWorkflow, htmlPages), "GitHub Pages workflow publishes all HTML pages");
+check(packageJson.scripts?.build === "node scripts/build-site.mjs", "package has local public build script");
+check(pagesWorkflow.includes("npm run build"), "GitHub Pages workflow uses public build script");
+check(!pagesWorkflow.includes(" store"), "GitHub Pages workflow does not copy internal store docs directly");
 check(readme.includes("store/public-launch-audit.md"), "README links public launch audit");
 check(readme.includes("store/completion-audit.md"), "README links completion audit");
 check(completionAudit.includes("Prompt-To-Artifact Checklist"), "completion audit has prompt-to-artifact checklist");
@@ -175,6 +183,22 @@ check(!listing.includes("Human taste signals for AI work"), "old over-limit stor
 
 for (const [file, size] of Object.entries(submissionPngSizes)) {
   check((await pngSize(file)) === size, `${file} is ${size}`);
+}
+
+await buildSite({ silent: true });
+
+for (const entry of publicBuildEntries) {
+  check(await exists(`${buildDir}/${entry}`), `${buildDir}/${entry} is packaged`);
+}
+
+for (const entry of blockedBuildEntries) {
+  check(!(await exists(`${buildDir}/${entry}`)), `${buildDir}/${entry} is not packaged`);
+}
+
+const builtManifest = JSON.parse(await read(`${buildDir}/manifest.webmanifest`));
+check(builtManifest.screenshots.every((shot) => shot.src.startsWith("assets/screenshots/")), "built manifest screenshots are public assets");
+for (const shot of builtManifest.screenshots) {
+  check(await exists(`${buildDir}/${shot.src}`), `${buildDir}/${shot.src} exists`);
 }
 
 const combinedText = (await Promise.all(textFiles.map(read))).join("\n");

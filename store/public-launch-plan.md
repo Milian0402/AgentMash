@@ -46,7 +46,9 @@ This keeps the app launchable without paying for a domain, app-store accounts, h
 - JSON feedback packets.
 - JSONL eval rows.
 - Privacy, terms, support, publishing, and 404 pages.
-- Static host headers for GitHub Pages, Netlify, Vercel, and Cloudflare Pages style hosting.
+- Manual GitHub Pages preview workflow.
+- Security header configs for Netlify, Vercel, and Cloudflare Pages style hosting.
+- Public `_site/` build that excludes internal launch docs and submission drafts.
 - Store listing copy and privacy/data safety drafts.
 - Draft store submission screenshots and feature graphic in `store/submission`.
 - Launch verifier through `npm run check`.

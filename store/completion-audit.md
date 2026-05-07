@@ -19,7 +19,8 @@ Make AgentMash good enough to launch publicly as a serious app, while staying in
 - Human review supports fast first-impression judgement through a swipe-card flow.
 - Agent lab turns those human judgements into structured packets and JSONL rows.
 - The app remains local-first with no analytics, payment, contact, telemetry, socket, or third-party API hooks.
-- Public launch pages, PWA metadata, icons, screenshots, offline cache, and static host headers exist.
+- Public launch pages, PWA metadata, icons, screenshots, offline cache, preview workflow, and static host security configs exist.
+- Public build output excludes internal launch docs, submission drafts, scripts, and repo metadata.
 - App Store and Google Play prep is documented without creating paid accounts.
 - Verification covers static files, metadata, security posture, forbidden hooks, launch docs, store assets, and the core runtime flow.
 - Remaining requirements that need user accounts, money, contact details, deployment, or legal decisions are named and not pretended done.
@@ -36,7 +37,8 @@ Make AgentMash good enough to launch publicly as a serious app, while staying in
 | Human review should feel like a modern swipe-card app without relationship-context wording. | `index.html`, `styles.css`, and refreshed screenshots in `store/screenshots`. `npm run check` rejects relationship-app wording. | Met locally |
 | Rename product and repo to AgentMash. | `package.json`, `manifest.webmanifest`, visible HTML, docs, and GitHub remote point to `Milian0402/AgentMash`. | Met locally |
 | Put repo in the code folder. | Local repo path is `/Users/maximiliannordler/code/AgentMash`. | Met locally |
-| Make it ready for public web launch where possible. | Privacy, terms, support, publishing, 404, manifest, service worker, icons, screenshots, security headers, and host configs exist. | Met locally |
+| Make it ready for public web launch where possible. | Privacy, terms, support, publishing, 404, manifest, service worker, icons, screenshots, preview workflow, and security header configs exist. | Met locally |
+| Avoid publishing internal launch docs and submission drafts. | `npm run build` writes `_site/` with only public app files. `npm run check` verifies `store/`, `scripts/`, `.github`, docs, package metadata, and host config files are not packaged. | Met locally |
 | Make it closer to App Store or Google Play readiness without paid setup. | `store/app-store-listing.md`, `store/app-store-submission.md`, `store/privacy-data-safety-draft.md`, and `store/submission` draft assets. | Met locally |
 | Verify core behavior, not just files. | Real browser smoke test on `http://127.0.0.1:5177` passed: title, human dashboard, note save, Nice, Undo, Nope, Agent lab, ready packet, JSONL preview, packet JSON, and download buttons. Console errors: 0. | Met locally |
 | Keep the repo private. | `gh repo view Milian0402/AgentMash` showed `visibility: PRIVATE`. | Met locally |
@@ -44,6 +46,7 @@ Make AgentMash good enough to launch publicly as a serious app, while staying in
 ## Verification Commands
 
 - `npm run check`
+- `npm run build`
 - `git status --short --branch`
 - `curl -sS -o /dev/null -w %{http_code} http://127.0.0.1:5177/`
 - `curl -sS -o /dev/null -w %{http_code} http://127.0.0.1:5177/store/submission/google-play-feature-graphic.png`

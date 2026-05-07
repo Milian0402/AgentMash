@@ -4,6 +4,8 @@
 
 - [ ] Run `npm run check`.
 - [ ] Run `npm run check:launch`.
+- [ ] Run `npm run build`.
+- [ ] Confirm `_site/` excludes internal `store/`, `scripts/`, and repo metadata.
 - [ ] Run the app locally with `npm run serve`.
 - [ ] Test desktop at 1440 by 1000.
 - [ ] Test mobile at 390 by 844.

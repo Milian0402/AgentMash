@@ -70,8 +70,9 @@ Google-specific requirements still owned by the user:
 
 - Source app icon: `store/app-icon-1024.png`
 - Installable icons: `assets/icons/app-icon-192.png`, `assets/icons/app-icon-512.png`, `assets/icons/app-icon-1024.png`
-- PWA/mobile screenshot: `store/screenshots/mobile-review.png` at 390 by 844
-- PWA/desktop screenshot: `store/screenshots/desktop-review.png` at 1440 by 1000
+- Public PWA/mobile screenshot: `assets/screenshots/mobile-review.png` at 390 by 844
+- Public PWA/desktop screenshot: `assets/screenshots/desktop-review.png` at 1440 by 1000
+- Source PWA screenshots: `store/screenshots/mobile-review.png`, `store/screenshots/desktop-review.png`
 - Draft Apple iPhone 6.9 screenshot: `store/submission/apple-iphone-6-9-human-review.png` at 1290 by 2796
 - Draft Apple iPhone 6.5 screenshot: `store/submission/apple-iphone-6-5-human-review.png` at 1242 by 2688
 - Draft Google phone screenshot: `store/submission/google-phone-human-review.png` at 1080 by 1920
