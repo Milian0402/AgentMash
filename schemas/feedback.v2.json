@@ -1,0 +1,364 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://agentmash.local/schemas/feedback.v2.json",
+  "title": "AgentMash Feedback Packet v2",
+  "type": "object",
+  "required": ["schema", "status", "signalStrengthFormula"],
+  "properties": {
+    "schema": {
+      "const": "agentmash.feedback.v2"
+    },
+    "status": {
+      "enum": ["empty", "pending", "ready"]
+    },
+    "message": {
+      "type": "string"
+    },
+    "packetId": {
+      "type": "string"
+    },
+    "generatedAt": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "signalStrengthFormula": {
+      "type": "object",
+      "required": ["name", "description", "expression", "noteBoost", "range"],
+      "properties": {
+        "name": {
+          "const": "score_extremity_plus_annotation"
+        },
+        "description": {
+          "type": "string"
+        },
+        "expression": {
+          "type": "string"
+        },
+        "noteBoost": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1
+        },
+        "range": {
+          "type": "array",
+          "prefixItems": [
+            {
+              "type": "number",
+              "minimum": 0,
+              "maximum": 1
+            },
+            {
+              "type": "number",
+              "minimum": 0,
+              "maximum": 1
+            }
+          ],
+          "minItems": 2,
+          "maxItems": 2
+        }
+      },
+      "additionalProperties": true
+    },
+    "request": {
+      "$ref": "#/$defs/request"
+    },
+    "expectedReturn": {
+      "$ref": "#/$defs/returnEnvelope"
+    },
+    "pendingHumanSignal": {
+      "type": "object"
+    },
+    "humanSignal": {
+      "$ref": "#/$defs/humanSignal"
+    },
+    "humanJudgement": {
+      "type": "object",
+      "required": ["reviewer", "verdict", "preferenceLabel", "signalStrength", "score", "scores", "judgedAt"],
+      "properties": {
+        "reviewer": {
+          "type": "string"
+        },
+        "verdict": {
+          "enum": ["nice", "pass"]
+        },
+        "firstImpression": {
+          "type": "string"
+        },
+        "preferenceLabel": {
+          "enum": ["chosen", "rejected"]
+        },
+        "signalStrength": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1
+        },
+        "score": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 100
+        },
+        "grade": {
+          "type": "string"
+        },
+        "scores": {
+          "$ref": "#/$defs/scores"
+        },
+        "tags": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "note": {
+          "type": "string"
+        },
+        "judgedAt": {
+          "type": "string",
+          "format": "date-time"
+        }
+      },
+      "additionalProperties": true
+    },
+    "pairwiseComparisons": {
+      "type": "array",
+      "items": {
+        "type": "object"
+      }
+    },
+    "interpretation": {
+      "type": "object"
+    },
+    "agentUse": {
+      "$ref": "#/$defs/agentUse"
+    },
+    "evalRow": {
+      "type": "object",
+      "required": ["schema", "rowId", "artifact", "humanSignal", "agentUse"],
+      "properties": {
+        "schema": {
+          "const": "agentmash.eval-row.v2"
+        },
+        "rowId": {
+          "type": "string"
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "artifact": {
+          "type": "object"
+        },
+        "humanSignal": {
+          "$ref": "#/$defs/humanSignal"
+        },
+        "agentUse": {
+          "$ref": "#/$defs/agentUse"
+        }
+      },
+      "additionalProperties": true
+    },
+    "return": {
+      "$ref": "#/$defs/returnEnvelope"
+    }
+  },
+  "allOf": [
+    {
+      "if": {
+        "properties": {
+          "status": {
+            "const": "ready"
+          }
+        }
+      },
+      "then": {
+        "required": ["packetId", "generatedAt", "request", "humanSignal", "humanJudgement", "interpretation", "agentUse", "evalRow", "return"]
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "status": {
+            "const": "pending"
+          }
+        }
+      },
+      "then": {
+        "required": ["request", "expectedReturn", "pendingHumanSignal"]
+      }
+    }
+  ],
+  "$defs": {
+    "request": {
+      "type": "object",
+      "required": ["artifactId", "variant", "type", "title", "runId", "requesterType", "requesterName", "submittedAt"],
+      "properties": {
+        "artifactId": {
+          "type": "string"
+        },
+        "variant": {
+          "enum": ["original", "thumbnail", "first-line", "tagline", "mark-only", "cutout"]
+        },
+        "type": {
+          "enum": ["website", "logo", "copy", "product"]
+        },
+        "title": {
+          "type": "string"
+        },
+        "prompt": {
+          "type": "string"
+        },
+        "body": {
+          "type": "string"
+        },
+        "runId": {
+          "type": "string"
+        },
+        "requesterType": {
+          "enum": ["agent", "lab", "team"]
+        },
+        "requesterName": {
+          "type": "string"
+        },
+        "goal": {
+          "type": "string"
+        },
+        "submittedAt": {
+          "type": "string",
+          "format": "date-time"
+        }
+      },
+      "additionalProperties": true
+    },
+    "scores": {
+      "type": "object",
+      "required": ["gut", "sense", "craft", "useful"],
+      "properties": {
+        "gut": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 10
+        },
+        "sense": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 10
+        },
+        "craft": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 10
+        },
+        "useful": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 10
+        }
+      },
+      "additionalProperties": false
+    },
+    "humanSignal": {
+      "type": "object",
+      "required": ["reviewer", "verdict", "preferenceLabel", "score", "signalStrength", "scoreVector", "judgedAt"],
+      "properties": {
+        "reviewer": {
+          "type": "string"
+        },
+        "verdict": {
+          "enum": ["nice", "pass"]
+        },
+        "preferenceLabel": {
+          "enum": ["chosen", "rejected"]
+        },
+        "firstImpression": {
+          "type": "string"
+        },
+        "score": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 100
+        },
+        "signalStrength": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1
+        },
+        "scoreVector": {
+          "type": "object"
+        },
+        "tags": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "failureModes": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "rationale": {
+          "type": "string"
+        },
+        "judgedAt": {
+          "type": "string",
+          "format": "date-time"
+        }
+      },
+      "additionalProperties": true
+    },
+    "agentUse": {
+      "type": "object",
+      "required": ["trainingUse", "preferenceLabel", "recommendedAction", "repairInstruction", "signalStrength"],
+      "properties": {
+        "trainingUse": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "preferenceLabel": {
+          "enum": ["chosen", "rejected"]
+        },
+        "recommendedAction": {
+          "type": "string"
+        },
+        "repairInstruction": {
+          "type": "string"
+        },
+        "signalStrength": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1
+        },
+        "returnTarget": {
+          "type": "string"
+        }
+      },
+      "additionalProperties": true
+    },
+    "returnEnvelope": {
+      "type": "object",
+      "required": ["mode", "target", "format"],
+      "properties": {
+        "mode": {
+          "enum": ["json", "webhook", "polling", "dataset"]
+        },
+        "target": {
+          "type": "string"
+        },
+        "format": {
+          "const": "application/json"
+        },
+        "deliveryStatus": {
+          "type": "string"
+        },
+        "onlineBehavior": {
+          "type": "string"
+        }
+      },
+      "additionalProperties": true
+    }
+  },
+  "additionalProperties": true
+}

@@ -13,9 +13,10 @@ export const PREVIOUS_STORAGE_KEYS = [
 ];
 
 export const artifactTypes = ["website", "logo", "copy", "product"];
-export const artifactVariants = ["original", "thumbnail", "first-line"];
+export const artifactVariants = ["original", "thumbnail", "first-line", "tagline", "mark-only", "cutout"];
 export const ALLOWED_IMAGE_TYPES = ["image/png", "image/jpeg", "image/webp"];
 export const MAX_IMAGE_BYTES = 2_500_000;
+export const LOCAL_STORAGE_APPROX_LIMIT = 5 * 1024 * 1024;
 export const quickTags = [
   "clear",
   "coherent",
@@ -419,6 +420,10 @@ export function stateForLocalStorage() {
   };
 }
 
+export function localStorageProfileBytes() {
+  return new Blob([JSON.stringify(stateForLocalStorage())]).size;
+}
+
 export function openImageDb() {
   if (!("indexedDB" in window)) {
     return Promise.reject(new Error("IndexedDB unavailable"));
@@ -470,6 +475,27 @@ export async function readImageData(key) {
     request.addEventListener("success", () => resolve(safeImageData(request.result?.data)));
     request.addEventListener("error", () => reject(request.error || new Error("Image store read failed")));
     transaction.addEventListener("abort", () => reject(transaction.error || new Error("Image store read aborted")));
+  });
+}
+
+export async function estimateImageStoreBytes() {
+  const db = await openImageDb();
+  return new Promise((resolve, reject) => {
+    let totalBytes = 0;
+    const transaction = db.transaction(IMAGE_STORE_NAME, "readonly");
+    const request = transaction.objectStore(IMAGE_STORE_NAME).openCursor();
+
+    request.addEventListener("success", () => {
+      const cursor = request.result;
+      if (!cursor) {
+        return;
+      }
+      totalBytes += new Blob([safeImageData(cursor.value?.data)]).size;
+      cursor.continue();
+    });
+    request.addEventListener("error", () => reject(request.error || new Error("Image store estimate failed")));
+    transaction.addEventListener("complete", () => resolve(totalBytes));
+    transaction.addEventListener("abort", () => reject(transaction.error || new Error("Image store estimate aborted")));
   });
 }
 
@@ -596,7 +622,13 @@ export function variantForRemix(item) {
   if (normalizeVariant(item.variant) !== "original") {
     return "original";
   }
-  return item.type === "copy" ? "first-line" : "thumbnail";
+  const variantsByType = {
+    website: "tagline",
+    logo: "mark-only",
+    copy: "first-line",
+    product: "cutout"
+  };
+  return variantsByType[item.type] || "thumbnail";
 }
 
 export function recommendationFor(review) {

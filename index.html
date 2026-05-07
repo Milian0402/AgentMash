@@ -71,6 +71,7 @@
                 <strong id="stageProgress">1 / 4</strong>
                 <span>Drag or tap</span>
               </div>
+              <div class="streak-counter" id="streakCounter" aria-label="Review momentum">0 in a row, 0 today, 0-day streak</div>
               <div class="keyboard-hints" aria-label="Keyboard controls">
                 <span id="keyboardLeftHint">Left: nope</span>
                 <span id="keyboardRightHint">Right: nice</span>
@@ -238,6 +239,23 @@
                 <div class="metric">
                   <span class="metric-label">Nopes</span>
                   <strong id="passCount">0</strong>
+                </div>
+              </div>
+            </section>
+
+            <section class="section-block">
+              <div class="section-title-row">
+                <h2>Storage</h2>
+                <span id="storageHealthStatus" class="count-pill">Healthy</span>
+              </div>
+              <div class="storage-health-grid">
+                <div class="metric">
+                  <span class="metric-label">Local profile</span>
+                  <strong id="localStorageUsage">0 B of ~5 MB</strong>
+                </div>
+                <div class="metric">
+                  <span class="metric-label">Images</span>
+                  <strong id="imageStorageUsage">0 B IndexedDB</strong>
                 </div>
               </div>
             </section>

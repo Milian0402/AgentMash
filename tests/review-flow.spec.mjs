@@ -60,6 +60,9 @@ test("Nice, Undo, and Nope produce a v2 feedback packet", async ({ page }) => {
   await resetApp(page);
 
   await expect(page).toHaveTitle("AgentMash");
+  await expect(page.locator("#streakCounter")).toHaveText("0 in a row, 0 today, 0-day streak");
+  await expect(page.locator("#localStorageUsage")).toContainText("of ~5.0 MB");
+  await expect(page.locator("#imageStorageUsage")).toContainText("IndexedDB");
   await expect(page.locator("#detailSheet")).toBeHidden();
   await page.getByRole("button", { name: "Details" }).click();
   await expect(page.locator("#detailSheet")).toBeVisible();
@@ -72,13 +75,16 @@ test("Nice, Undo, and Nope produce a v2 feedback packet", async ({ page }) => {
   await page.getByLabel("Decision note").fill("Looks generic on first glance.");
   await page.getByRole("button", { name: /Nice/ }).click();
   await expect.poll(() => reviewCount(page)).toBe(1);
+  await expect(page.locator("#streakCounter")).toHaveText("1 in a row, 1 today, 1-day streak");
   await expect(page.locator("#signalPanel")).toBeHidden();
 
   await page.getByRole("button", { name: "Undo" }).click();
   await expect.poll(() => reviewCount(page)).toBe(0);
+  await expect(page.locator("#streakCounter")).toHaveText("0 in a row, 0 today, 0-day streak");
 
   await page.getByRole("button", { name: /Nope/ }).click();
   await expect.poll(() => reviewCount(page)).toBe(1);
+  await expect(page.locator("#streakCounter")).toHaveText("1 in a row, 1 today, 1-day streak");
 
   await page.getByRole("button", { name: "Export workspace" }).click();
   await expect(page.locator("#packetStatus")).toHaveText("Ready");
@@ -169,10 +175,10 @@ test("Remix deck starts another local session without overwriting exports", asyn
   expect(profile.items).toHaveLength(8);
   expect(profile.reviews).toHaveLength(4);
   expect(profile.items.slice(0, 4).map((item) => item.variant)).toEqual([
-    "thumbnail",
-    "thumbnail",
+    "tagline",
+    "mark-only",
     "first-line",
-    "thumbnail"
+    "cutout"
   ]);
 
   await page.getByRole("button", { name: /Nope/ }).click();
@@ -186,8 +192,8 @@ test("Remix deck starts another local session without overwriting exports", asyn
   await expect(page.locator("#datasetStatus")).toHaveText("5 rows");
 
   const packet = await page.locator("#packetPreview").evaluate((node) => JSON.parse(node.textContent));
-  expect(packet.request.variant).toBe("thumbnail");
-  expect(packet.evalRow.artifact.variant).toBe("thumbnail");
+  expect(packet.request.variant).toBe("tagline");
+  expect(packet.evalRow.artifact.variant).toBe("tagline");
 });
 
 test("Pairwise mode stores comparison rows without creating swipe reviews", async ({ page }) => {
@@ -254,7 +260,7 @@ test("Endless mode auto-loops one local variant at a time", async ({ page }) => 
   expect(profile.items).toHaveLength(5);
   expect(profile.items[0]).toMatchObject({
     loopSourceItemId: "site-landing-001",
-    variant: "thumbnail"
+    variant: "tagline"
   });
   expect(profile.items[0].agent.runId).toMatch(/^loop-/);
 
@@ -271,7 +277,7 @@ test("Endless mode auto-loops one local variant at a time", async ({ page }) => 
 
   const packet = await page.locator("#packetPreview").evaluate((node) => JSON.parse(node.textContent));
   expect(packet.request.runId).toMatch(/^loop-/);
-  expect(packet.request.variant).toBe("thumbnail");
+  expect(packet.request.variant).toBe("tagline");
 });
 
 test("Uploaded images are stored in IndexedDB instead of localStorage", async ({ page }) => {
@@ -288,6 +294,7 @@ test("Uploaded images are stored in IndexedDB instead of localStorage", async ({
   const storedImage = await storedImageForKey(page, uploadedItem.imageKey);
 
   expect(storedImage).toContain("data:image/png;base64,");
+  await expect(page.locator("#imageStorageUsage")).toContainText("IndexedDB");
 });
 
 test("Profile export and import roundtrip restores uploaded images", async ({ page }) => {

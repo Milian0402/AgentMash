@@ -20,15 +20,20 @@ Last local verification: May 7, 2026. No deployment, paid account, domain purcha
 - [x] Confirm oversized image upload is rejected.
 - [x] Confirm a small PNG upload stores bytes in IndexedDB, not `localStorage`.
 - [x] Confirm profile export/import restores uploaded image bytes to IndexedDB without storing them in `localStorage`.
+- [x] Confirm storage health reports local profile usage and IndexedDB image usage.
 - [x] Swipe Nice and Nope.
 - [x] Undo a decision.
 - [x] Open and close Details.
 - [x] Open Refine and verify it closes after a decision.
+- [x] Confirm Refine opens as a bottom sheet above the decision controls.
+- [x] Confirm the momentum counter updates after Nice, Undo, and Nope.
+- [x] Confirm the mobile layout uses iOS safe-area inset spacing.
 - [x] Complete a deck and show Keepers.
 - [x] Start a Remix session.
 - [x] Enable Endless mode and verify one loop card is created at a time.
 - [x] Record a Pairwise comparison without creating a swipe review.
 - [x] Export ready JSON and JSONL data.
+- [x] Confirm `schemas/feedback.v2.json` documents the v2 feedback packet contract.
 - [x] Confirm empty Export workspace metrics show zero items, zero rows, and no stale average signal.
 - [x] Confirm no console errors in local smoke testing.
 - [x] Confirm app icons load in the manifest.

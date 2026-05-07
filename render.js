@@ -3,10 +3,13 @@ import {
   calculateScore,
   ensureEndlessItem,
   escapeHtml,
+  estimateImageStoreBytes,
   filteredItems,
   getActiveItem,
   getPairwiseItems,
   gradeFor,
+  LOCAL_STORAGE_APPROX_LIMIT,
+  localStorageProfileBytes,
   normalizeVariant,
   pendingItems,
   quickTags,
@@ -55,6 +58,7 @@ export const elements = {
   stageEyebrow: document.querySelector("#stageEyebrow"),
   stageTitle: document.querySelector("#stageTitle"),
   stageProgress: document.querySelector("#stageProgress"),
+  streakCounter: document.querySelector("#streakCounter"),
   keyboardLeftHint: document.querySelector("#keyboardLeftHint"),
   keyboardRightHint: document.querySelector("#keyboardRightHint"),
   swipeCard: document.querySelector("#swipeCard"),
@@ -102,6 +106,9 @@ export const elements = {
   keeperCount: document.querySelector("#keeperCount"),
   passCount: document.querySelector("#passCount"),
   reviewedCount: document.querySelector("#reviewedCount"),
+  storageHealthStatus: document.querySelector("#storageHealthStatus"),
+  localStorageUsage: document.querySelector("#localStorageUsage"),
+  imageStorageUsage: document.querySelector("#imageStorageUsage"),
   agentTotalRequests: document.querySelector("#agentTotalRequests"),
   agentReadyPackets: document.querySelector("#agentReadyPackets"),
   agentPendingRequests: document.querySelector("#agentPendingRequests"),
@@ -128,6 +135,8 @@ export const elements = {
 };
 
 let reviewerStatusTimer = null;
+let lastMomentumMilestone = 0;
+let storageHealthRequest = 0;
 let isRefineOpen = false;
 let isDetailSheetOpen = false;
 let renderActions = {
@@ -206,10 +215,12 @@ export function render() {
   renderTabs();
   renderReviewModeTabs();
   renderEndlessToggle();
+  renderMomentum();
   renderRubric(activeType);
   renderScoreControls();
   renderTags();
   renderMetrics();
+  renderStorageHealth();
   renderHistory();
   renderAgentDashboard();
   renderLiveScore();
@@ -298,6 +309,65 @@ export function renderEndlessToggle() {
   elements.endlessToggle.classList.toggle("active", enabled);
   elements.endlessToggle.setAttribute("aria-pressed", enabled ? "true" : "false");
   elements.endlessToggle.disabled = state.reviewMode === "pairwise";
+}
+
+export function renderMomentum() {
+  const momentum = reviewMomentum();
+  elements.streakCounter.textContent = `${momentum.currentRun} in a row, ${momentum.todayCount} today, ${momentum.dayStreak}-day streak`;
+  const milestone = [50, 25, 10].find((value) => momentum.currentRun === value || momentum.todayCount === value) || 0;
+  if (milestone && milestone !== lastMomentumMilestone) {
+    lastMomentumMilestone = milestone;
+    elements.streakCounter.classList.remove("milestone-hit");
+    window.requestAnimationFrame(() => {
+      elements.streakCounter.classList.add("milestone-hit");
+      window.setTimeout(() => {
+        elements.streakCounter.classList.remove("milestone-hit");
+      }, 720);
+    });
+  }
+  if (!milestone) {
+    lastMomentumMilestone = 0;
+  }
+}
+
+function reviewMomentum() {
+  const reviews = [...state.reviews]
+    .map((review) => ({
+      ...review,
+      createdDate: new Date(review.createdAt)
+    }))
+    .filter((review) => !Number.isNaN(review.createdDate.getTime()))
+    .sort((a, b) => a.createdDate - b.createdDate);
+
+  const now = new Date();
+  const todayKey = localDayKey(now);
+  const todayCount = reviews.filter((review) => localDayKey(review.createdDate) === todayKey).length;
+  const reviewedDays = new Set(reviews.map((review) => localDayKey(review.createdDate)));
+  let dayStreak = 0;
+  const cursor = new Date(now);
+  while (reviewedDays.has(localDayKey(cursor))) {
+    dayStreak += 1;
+    cursor.setDate(cursor.getDate() - 1);
+  }
+
+  let currentRun = 0;
+  let previousDate = now;
+  for (const review of [...reviews].reverse()) {
+    if (previousDate - review.createdDate > 30 * 60 * 1000) {
+      break;
+    }
+    currentRun += 1;
+    previousDate = review.createdDate;
+  }
+
+  return { currentRun, todayCount, dayStreak };
+}
+
+function localDayKey(date) {
+  const year = date.getFullYear();
+  const month = String(date.getMonth() + 1).padStart(2, "0");
+  const day = String(date.getDate()).padStart(2, "0");
+  return `${year}-${month}-${day}`;
 }
 
 export function renderPairwise(pair) {
@@ -421,6 +491,44 @@ export function renderMetrics() {
   elements.avgScore.textContent = `${Math.round(avgScore)}`;
   elements.keeperCount.textContent = `${keeperCount}`;
   elements.passCount.textContent = `${passCount}`;
+}
+
+export function renderStorageHealth() {
+  const requestId = storageHealthRequest + 1;
+  storageHealthRequest = requestId;
+  const localBytes = localStorageProfileBytes();
+  const localRatio = localBytes / LOCAL_STORAGE_APPROX_LIMIT;
+
+  elements.localStorageUsage.textContent = `${formatBytes(localBytes)} of ~${formatBytes(LOCAL_STORAGE_APPROX_LIMIT)}`;
+  elements.storageHealthStatus.textContent = localRatio > 0.9 ? "Tight" : "Healthy";
+  elements.storageHealthStatus.classList.toggle("warning", localRatio > 0.9);
+  elements.imageStorageUsage.textContent = "Checking IndexedDB";
+
+  estimateImageStoreBytes()
+    .then((imageBytes) => {
+      if (storageHealthRequest !== requestId) {
+        return;
+      }
+      elements.imageStorageUsage.textContent = `${formatBytes(imageBytes)} IndexedDB`;
+    })
+    .catch(() => {
+      if (storageHealthRequest !== requestId) {
+        return;
+      }
+      elements.imageStorageUsage.textContent = "IndexedDB unavailable";
+      elements.storageHealthStatus.textContent = "Limited";
+      elements.storageHealthStatus.classList.add("warning");
+    });
+}
+
+function formatBytes(bytes) {
+  if (bytes < 1024) {
+    return `${bytes} B`;
+  }
+  if (bytes < 1024 * 1024) {
+    return `${Math.round(bytes / 1024)} KB`;
+  }
+  return `${(bytes / (1024 * 1024)).toFixed(bytes < 10 * 1024 * 1024 ? 1 : 0)} MB`;
 }
 
 export function renderCompletionSummary(filtered) {

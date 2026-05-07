@@ -23,6 +23,7 @@ const requiredFiles = [
   "playwright.config.mjs",
   "tests/review-flow.spec.mjs",
   "scripts/build-site.mjs",
+  "schemas/feedback.v2.json",
   "store/completion-audit.md",
   "store/public-launch-audit.md",
   "store/public-launch-plan.md",
@@ -144,6 +145,7 @@ const packageJson = JSON.parse(await read("package.json"));
 const packageLock = JSON.parse(await read("package-lock.json"));
 const manifest = JSON.parse(await read("manifest.webmanifest"));
 const vercel = JSON.parse(await read("vercel.json"));
+const feedbackSchema = JSON.parse(await read("schemas/feedback.v2.json"));
 const index = await read("index.html");
 const support = await read("support.html");
 const app = await read("app.js");
@@ -200,10 +202,17 @@ check(
   "Playwright serves native modules over local HTTP"
 );
 check(index.includes("refineButton") && index.includes('id="signalPanel" hidden'), "rubric and note panel is hidden behind Refine by default");
+check(hasAll(styles, [".first-look-stage .signal-panel", "position: fixed", "bottom-sheet-rise"]), "Refine panel opens as a bottom sheet");
 check(index.includes("detailsButton") && index.includes('id="detailSheet" hidden'), "card details are hidden behind a details sheet by default");
+check(index.includes('id="streakCounter"') && renderModule.includes("renderMomentum") && styles.includes("streak-pop"), "human review includes visible momentum counter");
 check(index.includes("keeperList") && index.includes("Keepers"), "deck completion has keepers summary");
 check(index.includes("emptyRemixButton") && app.includes("remixCurrentDeck"), "deck completion can start a local remix session");
-check(appSurface.includes("variantForRemix") && appSurface.includes("first-line") && styles.includes("is-thumbnail"), "remix sessions create glance variants");
+check(
+  appSurface.includes("variantForRemix")
+    && hasAll(appSurface, ["tagline", "mark-only", "first-line", "cutout"])
+    && hasAll(styles, ["is-tagline", "is-mark-only", "is-first-line", "is-cutout"]),
+  "remix sessions create type-specific glance variants"
+);
 check(index.includes("endlessToggle") && appSurface.includes("ensureEndlessItem") && appSurface.includes("loopSourceItemId"), "endless mode auto-loops one local card at a time");
 check(index.includes("reviewModeTabs") && index.includes("pairwiseStage") && app.includes("choosePairwise"), "human review includes local pairwise mode");
 check(appSurface.includes("agentmash.pairwise-row.v1") && appSurface.includes("pairwiseComparisons"), "pairwise comparisons export as structured rows");
@@ -213,8 +222,15 @@ check(app.includes("window.confirm") && app.includes("Reset this local AgentMash
 check(app.includes("confirmProfileImport") && app.includes("Import this AgentMash profile"), "profile import requires confirmation when local data exists");
 check(app.includes("async function copyText") && app.includes("Copy unavailable"), "copy actions handle clipboard failure");
 check(appSurface.includes("indexedDB") && appSurface.includes("stateForLocalStorage") && appSurface.includes('imageData: ""'), "uploaded image data is kept out of localStorage");
+check(index.includes("storageHealthStatus") && renderModule.includes("estimateImageStoreBytes") && renderModule.includes("localStorageProfileBytes"), "human dashboard shows storage health");
 check(appSurface.includes("Local storage full") && appSurface.includes("setStorageStatus"), "localStorage quota failure surfaces in the UI");
 check(appSurface.includes("signalStrengthFormula") && appSurface.includes("agentmash.feedback.v2"), "feedback packets use schema v2 with signal strength formula");
+check(
+  feedbackSchema.title === "AgentMash Feedback Packet v2"
+    && feedbackSchema.properties?.schema?.const === "agentmash.feedback.v2"
+    && JSON.stringify(feedbackSchema).includes("signalStrength"),
+  "feedback packet JSON Schema documents v2 output"
+);
 check(!appSurface.includes("confidenceFor") && !appSurface.includes(".confidence"), "app output no longer uses confidence field");
 check(!appSurface.includes("agentRetryQueue") && !appSurface.includes("Retry queue"), "retry queue metric is removed");
 check(appSurface.includes("renderRefinePanel") && appSurface.includes("isRefineOpen = false"), "decision flow returns to fast loop after refinement");
@@ -232,6 +248,7 @@ check(netlify.includes('command = "npm run build"') && netlify.includes('publish
 check(vercel.buildCommand === "npm run build" && vercel.outputDirectory === buildDir, "vercel publishes public build output");
 check(headers.includes("connect-src 'self'") && headers.includes("form-action 'self'"), "CSP blocks outside connections and forms");
 check(headers.includes("payment=()"), "permissions policy blocks payment permission");
+check(hasAll(styles, ["safe-area-inset-top", "safe-area-inset-bottom", "--safe-bottom"]), "layout accounts for iOS safe areas");
 check(packageJson.scripts?.build === "node scripts/build-site.mjs", "package has local public build script");
 check(packageJson.scripts?.["serve:build"] === "python3 -m http.server 5178 --directory _site", "package has build preview script");
 check(packageJson.scripts?.check.includes("npm run test:e2e"), "package check runs Playwright e2e tests");

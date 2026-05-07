@@ -13,6 +13,8 @@ Make AgentMash good enough to launch publicly as a serious app.
 - App code is split into native ES modules: thin entry, state/storage, packets/exports, rendering, and gestures.
 - Human review dashboard is phone-first and supports swipe, buttons, keyboard shortcuts, undo, scoring, tags, and notes.
 - Default Human review flow keeps scoring, tags, and notes behind a `Refine` tap so the first-pass loop stays card-first.
+- `Refine` opens as a bottom sheet above the decision controls so users do not scroll below the swipe buttons to adjust scores.
+- Human review shows a compact momentum counter for current run count, today's reviews, and day streak, with subtle 10/25/50 milestone animation.
 - Title, prompt, requester line, and artifact detail are hidden behind a `Details` sheet by default so the card stays focused on one visual object.
 - Export workspace collects ready packets, JSON downloads, and JSONL eval rows from local review data.
 - Add Artifact is reachable from the human dashboard and returns to the swipe deck after submit.
@@ -22,6 +24,7 @@ Make AgentMash good enough to launch publicly as a serious app.
 - Public build script packages `_site/` without internal launch docs, submission drafts, scripts, or repo metadata.
 - GitHub Pages, Netlify, and Vercel configs publish `_site/` instead of repo root.
 - Dedicated Apple touch icon is present for iOS home-screen install polish.
+- Top and bottom spacing use iOS safe-area insets to reduce notch and home-indicator collisions.
 - Public footer and support page expose the current release version for support/debugging.
 - Reset uses profile wording and requires confirmation before clearing local data.
 - Profile import requires confirmation when local data exists, with export-first backup guidance.
@@ -29,12 +32,14 @@ Make AgentMash good enough to launch publicly as a serious app.
 - User image uploads are restricted to PNG, JPG, or WebP files under 2.5 MB and stored in IndexedDB instead of `localStorage`.
 - `saveState()` strips image data before writing profile state and shows a visible local-storage-full warning if browser storage rejects the save.
 - Profile export/import includes uploaded image bytes and restores them to IndexedDB while keeping `localStorage` image-free.
+- Human review shows storage health for local profile usage and IndexedDB image usage.
 - Reviewer name edits show a visible saved/not-saved status.
 - Feedback packets use `agentmash.feedback.v2`, `signalStrength`, and a top-level `signalStrengthFormula`.
+- `schemas/feedback.v2.json` documents the local packet contract for future validation.
 - Refine panel is hidden by default and closes after a decision, keeping the next card in the fast swipe loop.
 - Details sheet is hidden by default and closes after a decision, keeping the next artifact card clean.
 - Deck completion shows a Keepers summary instead of dead air, listing recent artifacts that survived the review flow.
-- Deck completion can start a local Remix session that creates thumbnail or first-line glance variants without overwriting existing export rows.
+- Deck completion can start a local Remix session that creates type-specific tagline, mark-only, first-line, and cutout glance variants without overwriting existing export rows.
 - Endless mode can auto-loop one local glance-variant card at a time when the swipe deck empties, avoiding bulk storage growth.
 - Human review includes Pairwise mode for choosing the stronger of two artifacts without creating normal swipe reviews.
 - Export workspace includes `agentmash.pairwise-row.v1` JSONL rows and optional pairwise context in ready feedback packets.
@@ -52,6 +57,7 @@ Make AgentMash good enough to launch publicly as a serious app.
 - Playwright runs the module app through `npm run serve` at `http://127.0.0.1:5177/`, not a blocked `file://` module load.
 - `npm run check` now includes Playwright e2e coverage for Nice, Undo, Nope, v2 packet shape, Keepers completion state, Remix repeat sessions with variant metadata, Endless auto-looping, Pairwise comparison export, empty Export workspace state, IndexedDB image storage, and profile image export/import.
 - `manifest.webmanifest`, `package.json`, and `vercel.json` parse as JSON.
+- `schemas/feedback.v2.json` parses as JSON and is checked for the `agentmash.feedback.v2` contract.
 - Mobile browser check at 390 by 844 showed no horizontal overflow.
 - Desktop browser check at 1440 by 1000 showed no horizontal overflow.
 - Browser console showed zero errors during human review and add-artifact testing.
@@ -75,10 +81,12 @@ Make AgentMash good enough to launch publicly as a serious app.
 - Playwright e2e test passed: a tiny PNG upload stored an `imageKey` in `localStorage`, left `imageData` empty in `localStorage`, and stored the data URL in IndexedDB.
 - Playwright e2e test passed: profile export bundled uploaded image data, reset cleared the profile, import restored the artifact, `localStorage` kept only the `imageKey`, and IndexedDB contained the restored data URL.
 - Playwright e2e test passed: Nice, Undo, and Nope produced a ready `agentmash.feedback.v2` packet with `signalStrength`, no `confidence` field, and `agentmash.eval-row.v2`.
+- Playwright e2e test passed: the always-visible momentum counter updated through Nice, Undo, and Nope.
+- Playwright e2e test passed: the storage health indicator rendered local profile usage and IndexedDB image status.
 - Playwright e2e test passed: Refine opens the hidden scoring/note panel and the panel closes again after a decision.
 - Playwright e2e test passed: Details opens the hidden artifact detail sheet and closes it again.
 - Playwright e2e test passed: completing the deck after a Nice judgement renders a Keepers summary with the surviving artifact.
-- Playwright e2e test passed: Remix deck doubles local items from 4 to 8, creates thumbnail and first-line variants, keeps the original 4 reviews, adds a fifth review on the next swipe, preserves unique reviewed item IDs, exports variant metadata, and shows 5 JSONL rows.
+- Playwright e2e test passed: Remix deck doubles local items from 4 to 8, creates tagline, mark-only, first-line, and cutout variants, keeps the original 4 reviews, adds a fifth review on the next swipe, preserves unique reviewed item IDs, exports variant metadata, and shows 5 JSONL rows.
 - Playwright e2e test passed: Endless mode creates one local loop card after deck completion, records it as a normal v2 review on swipe, then creates only one next loop card.
 - Playwright e2e test passed: Pairwise mode records a comparison without creating a swipe review, exports `agentmash.pairwise-row.v1`, then keeps normal v2 packets and rows working after returning to Swipe mode.
 - Playwright e2e test passed: zero items and zero reviews rendered empty Export workspace counts and an empty packet without stale metrics.
