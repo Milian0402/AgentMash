@@ -48,11 +48,14 @@ Last local verification: May 7, 2026. No deployment, paid account, domain purcha
 - [x] Confirm dataset-mode return envelopes use `application/x-ndjson`.
 - [x] Confirm Export workspace shows local packet and JSONL contract status.
 - [x] Confirm `schemas/feedback.v2.json` documents the v2 feedback packet contract.
+- [x] Confirm v2 packet validation requires `submittedAt` and image envelope metadata is exported when available.
+- [x] Confirm legacy imported reviews without grade or recommendation still load.
 - [x] Confirm native wrapper handoff exists without installing native dependencies.
 - [x] Confirm empty Export workspace metrics show zero items, zero rows, and no stale average signal.
 - [x] Confirm no console errors in local smoke testing.
 - [x] Confirm app icons load in the manifest.
 - [x] Confirm manifest screenshots load from public assets.
+- [x] Confirm screenshots were refreshed from the current app language and mobile header.
 - [x] Confirm all public HTML pages link the app favicon and Apple touch icon.
 - [x] Confirm all public HTML pages include app-name, color-scheme, and light/dark theme-color metadata.
 - [x] Confirm internal publishing notes are not linked from the app footer or packaged into `_site/`.
@@ -60,6 +63,7 @@ Last local verification: May 7, 2026. No deployment, paid account, domain purcha
 - [x] Confirm support, privacy, terms, publishing, and 404 pages render locally.
 - [x] Confirm no analytics, payment, contact, telemetry, socket, third-party API, or outbound fetch hooks exist in the public app surface.
 - [x] Confirm pending image uploads are written to IndexedDB only after submit.
+- [x] Confirm mobile Refine sheets clear the decision rail and Pairwise mode scrolls back to the review stage.
 
 ## Needs User Action Before Public Website Launch
 

@@ -45,11 +45,21 @@ Webhook and polling channels are deferred until there is authentication, server 
   },
   "request": {
     "artifactId": "string",
+    "variant": "original | thumbnail | first-line | tagline | mark-only | cutout",
     "type": "website | logo | copy | product",
+    "title": "string",
     "runId": "string",
     "requesterType": "agent | lab | team",
     "requesterName": "string",
-    "goal": "string"
+    "goal": "string",
+    "submittedAt": "date-time",
+    "image": {
+      "imageKey": "string",
+      "hasImage": true,
+      "included": true,
+      "mediaType": "image/png",
+      "dataUrl": "data:image/png;base64,..."
+    }
   },
   "humanJudgement": {
     "verdict": "accepted | rejected",
@@ -129,6 +139,9 @@ The Export workspace validates the active feedback packet and JSONL export rows 
 - `agentmash.feedback.v2` renames `confidence` to `signalStrength` because the value measures score extremity plus annotation strength, not statistical confidence.
 - Feedback packets now include top-level `signalStrengthFormula` so agents and labs can interpret the score without reverse-engineering it.
 - `agentmash.eval-row.v2` uses the same `signalStrength` name inside `humanSignal` and `agentUse`.
+- Request and eval-row artifact payloads include `submittedAt`; the local runtime validator requires it so `v2 valid` matches the published schema.
+- Visual artifact payloads include an `image` envelope. If the image is available in IndexedDB, local packet and JSONL exports include the data URL so lab users can evaluate the artifact without a separate image store.
+- `trainingUse` only includes `failure_taxonomy` when failure modes exist, and only includes `prompt_repair` for rejected, weak, or repair-needed outputs. A strong accepted artifact with a note stays a positive example instead of being mislabeled as repair data.
 - `agentmash.pairwise-row.v1` is additive. It does not change the v2 feedback packet or eval-row contract.
 - Return modes are now local-only: `json` and `dataset`. Legacy `webhook` or `polling` values are normalized to `json` in the local app.
 
