@@ -49,6 +49,7 @@ Make AgentMash good enough to launch publicly as a serious app.
 - Export workspace zero-item and zero-review states are covered by Playwright and show zero ready exports, zero unjudged items, no average signal, empty packet status, and zero dataset rows.
 - Agent-facing surface was reframed as a local export workspace, removing inbound-traffic wording such as request queue, waiting on humans, returned signals, and retry queue.
 - Store listing, App Store submission prep, and privacy/data safety drafts are present.
+- Native wrapper handoff is documented for a later Capacitor iOS/Android shell without installing native dependencies.
 - Draft store submission image assets are present in `store/submission`.
 - App data stays local unless the user imports, exports, copies, or downloads it.
 
@@ -61,6 +62,7 @@ Make AgentMash good enough to launch publicly as a serious app.
 - `npm run check` now includes Playwright e2e coverage for Nice, Undo, Nope, v2 packet shape, Keepers completion state, Remix repeat sessions with variant metadata, Endless auto-looping, Pairwise comparison export, empty Export workspace state, IndexedDB image storage, profile image export/import, and a 500-item local stress path.
 - `manifest.webmanifest`, `package.json`, and `vercel.json` parse as JSON.
 - `schemas/feedback.v2.json` parses as JSON and is checked for the `agentmash.feedback.v2` contract.
+- `store/native-wrapper-handoff.md` records the later native shell path, bundle IDs, `_site` web directory, and no-analytics native rules.
 - Mobile browser check at 390 by 844 showed no horizontal overflow.
 - Desktop browser check at 1440 by 1000 showed no horizontal overflow.
 - Browser console showed zero errors during human review and add-artifact testing.

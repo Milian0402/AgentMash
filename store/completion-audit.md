@@ -52,6 +52,7 @@ Make AgentMash good enough to launch publicly as a serious app, while staying in
 - Pairwise mode captures relative preference signals without creating normal swipe reviews.
 - `npm run check` syntax-checks every app module and includes Playwright e2e coverage for review flow, packet shape, Keepers completion state, Remix repeat sessions with variant metadata, Endless auto-looping, Pairwise comparison export, empty Export workspace state, image persistence, profile image export/import, and a 500-item local stress path.
 - App Store and Google Play prep is documented without creating paid accounts.
+- Native wrapper handoff is documented without installing packages or creating native projects.
 - Verification covers static files, metadata, security posture, forbidden hooks, launch docs, store assets, and the core runtime flow.
 - Remaining requirements that need user accounts, money, contact details, deployment, or legal decisions are named and not pretended done.
 
@@ -98,6 +99,7 @@ Make AgentMash good enough to launch publicly as a serious app, while staying in
 | Confirm reviewer name persistence visibly. | `index.html`, `styles.css`, `app.js`, and `render.js` show a saved/not-saved status after reviewer name edits. | Met locally |
 | Add Playwright regression coverage. | `tests/review-flow.spec.mjs` is wired through `npm run check`, uses `npm run serve` for native modules, and covers Nice, Undo, Nope, v2 packet shape, Keepers completion state, Remix repeat sessions with variant metadata, Endless auto-looping, Pairwise comparison export, empty Export workspace state, IndexedDB image persistence, profile image export/import, and the 500-item stress path. | Met locally |
 | Make it closer to App Store or Google Play readiness without paid setup. | `store/app-store-listing.md`, `store/app-store-submission.md`, `store/privacy-data-safety-draft.md`, and `store/submission` draft assets. | Met locally |
+| Prepare native wrapper handoff without changing the zero-dep app. | `store/native-wrapper-handoff.md` names Capacitor as the later shell path, records `com.agentmash.app`, `_site`, setup commands, native v1 privacy rules, and verification steps. No native project or package was installed. | Met locally |
 | Verify core behavior, not just files. | Real browser smoke test on `http://127.0.0.1:5177` passed: title, human dashboard, note save, Nice, Undo, Nope, Export workspace, ready packet, JSONL preview, packet JSON, and download buttons. Console errors: 0. | Met locally |
 | Keep the repo private. | `gh repo view Milian0402/AgentMash` showed `visibility: PRIVATE`. | Met locally |
 

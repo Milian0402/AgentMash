@@ -8,6 +8,8 @@ AgentMash is close to public web launch readiness. It is not yet App Store or Go
 
 The local codebase is prepared for that path: product name, icon, manifest, screenshots, privacy copy, terms, support page, store listing copy, launch audit, and launch checks are present.
 
+Native shell setup is intentionally not installed yet. `store/native-wrapper-handoff.md` records the recommended Capacitor path, bundle IDs, commands, and v1 native rules for when the user decides to add iOS or Android project files.
+
 ## Apple App Store Draft
 
 - App name: AgentMash

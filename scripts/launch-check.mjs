@@ -29,6 +29,7 @@ const requiredFiles = [
   "store/public-launch-plan.md",
   "store/release-checklist.md",
   "store/research-and-cost-guide.md",
+  "store/native-wrapper-handoff.md",
   "store/agent-customer-model.md",
   "store/app-store-listing.md",
   "store/app-store-submission.md",
@@ -165,6 +166,7 @@ const readme = await read("README.md");
 const completionAudit = await read("store/completion-audit.md");
 const audit = await read("store/public-launch-audit.md");
 const listing = await read("store/app-store-listing.md");
+const nativeHandoff = await read("store/native-wrapper-handoff.md");
 
 check(packageJson.name === "agentmash", "package name is agentmash");
 check(packageJson.type === "module", "package uses native ES modules");
@@ -275,9 +277,14 @@ check(audit.includes("Remaining Public Launch Blockers"), "launch audit lists re
 check(audit.includes("Runtime Smoke Evidence"), "launch audit includes runtime smoke evidence");
 check(readme.includes("store/app-store-submission.md"), "README links app store submission prep");
 check(readme.includes("store/privacy-data-safety-draft.md"), "README links privacy and data safety draft");
+check(readme.includes("store/native-wrapper-handoff.md"), "README links native wrapper handoff");
 check(readme.includes("signal strength"), "README describes signal strength output");
 check(listing.includes("Human taste for AI work"), "store subtitle fits App Store limit");
 check(!listing.includes("Human taste signals for AI work"), "old over-limit store subtitle is absent");
+check(
+  hasAll(nativeHandoff, ["Capacitor", "com.agentmash.app", "webDir", "_site", "No native wrapper was created", "Do not add analytics SDKs"]),
+  "native wrapper handoff keeps store-shell setup explicit"
+);
 
 for (const [file, size] of Object.entries(submissionPngSizes)) {
   check((await pngSize(file)) === size, `${file} is ${size}`);

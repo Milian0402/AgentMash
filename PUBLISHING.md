@@ -66,6 +66,7 @@ These can be free at small scale, but always confirm limits before enabling them
 
 - Read `store/app-store-submission.md`.
 - Read `store/privacy-data-safety-draft.md`.
+- Read `store/native-wrapper-handoff.md`.
 - Choose iOS, Android, or both.
 - Create paid developer accounts only when ready.
 - Publish privacy and support pages first.

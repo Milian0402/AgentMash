@@ -38,6 +38,7 @@ Last local verification: May 7, 2026. No deployment, paid account, domain purcha
 - [x] Record a Pairwise comparison without creating a swipe review.
 - [x] Export ready JSON and JSONL data.
 - [x] Confirm `schemas/feedback.v2.json` documents the v2 feedback packet contract.
+- [x] Confirm native wrapper handoff exists without installing native dependencies.
 - [x] Confirm empty Export workspace metrics show zero items, zero rows, and no stale average signal.
 - [x] Confirm no console errors in local smoke testing.
 - [x] Confirm app icons load in the manifest.
@@ -75,6 +76,7 @@ Last local verification: May 7, 2026. No deployment, paid account, domain purcha
 
 - [ ] Read `store/app-store-submission.md`.
 - [ ] Read `store/privacy-data-safety-draft.md`.
+- [ ] Read `store/native-wrapper-handoff.md`.
 - [ ] Decide iOS, Android, web-only, or both stores.
 - [ ] Create developer account only when ready to pay.
 - [ ] Publish `privacy.html` and `support.html` at stable public URLs.

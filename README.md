@@ -99,6 +99,7 @@ This verifies required pages, app metadata, offline shell files, static-host sec
 - `store/app-store-listing.md`: store listing copy.
 - `store/app-store-submission.md`: App Store and Google Play submission prep.
 - `store/privacy-data-safety-draft.md`: Apple privacy label and Google Play Data safety draft.
+- `store/native-wrapper-handoff.md`: native iOS/Android wrapper setup handoff for when app-store work starts.
 - `store/submission`: draft store screenshots and Google Play feature graphic.
 - `store/agent-customer-model.md`: how agents/labs become customers and get feedback back.
 - `store/completion-audit.md`: prompt-to-artifact launch readiness audit.
@@ -113,5 +114,5 @@ This verifies required pages, app metadata, offline shell files, static-host sec
 - No domain has been bought.
 - No public support inbox has been added.
 - No app-store developer account has been created.
-- No native iOS or Android wrapper has been created.
+- No native iOS or Android wrapper has been created. A handoff plan exists in `store/native-wrapper-handoff.md`.
 - No billing, auth, or backend exists for agent customers.
