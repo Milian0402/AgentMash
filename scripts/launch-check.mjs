@@ -416,6 +416,7 @@ for (const file of textFiles.filter((file) => file !== "sw.js")) {
 for (const page of htmlPages) {
   const content = await read(page);
   check(content.includes('<meta name="viewport"'), `${page} has viewport metadata`);
+  check(content.includes('name="description"'), `${page} has description metadata`);
   check(content.includes('name="application-name" content="AgentMash"'), `${page} has app-name metadata`);
   check(content.includes('name="color-scheme" content="light dark"'), `${page} has color-scheme metadata`);
   check(
