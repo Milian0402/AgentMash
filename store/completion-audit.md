@@ -31,6 +31,7 @@ Make AgentMash good enough to launch publicly as a serious app, while staying in
 - Public build output excludes internal launch docs, submission drafts, scripts, and repo metadata.
 - Mobile install polish includes a dedicated Apple touch icon.
 - All public pages link the app icon and Apple touch icon so legal/support pages do not fall back to missing `/favicon.ico` requests.
+- Public HTML pages share AgentMash application-name, light/dark color-scheme, and theme-color metadata.
 - The PWA install prompt is reachable from the default Human review screen without exposing profile import, export, or reset actions there.
 - UI supports automatic light and dark color schemes from the operating system preference.
 - Mobile layout accounts for iOS safe-area insets around the top bar and sticky decision controls.
@@ -101,6 +102,7 @@ Make AgentMash good enough to launch publicly as a serious app, while staying in
 | Keep public status pages scoped to what exists. | `publishing.html` describes future hosted work without naming unavailable backend channels, and `npm run check` rejects webhook or polling wording across public HTML pages. | Met locally |
 | Make the PWA feel install-ready on iOS. | `assets/icons/apple-touch-icon.png` is 180 by 180, linked in `index.html`, cached by `sw.js`, and verified by `npm run check`. | Met locally |
 | Avoid missing favicon polish errors. | `support.html`, `privacy.html`, `terms.html`, `publishing.html`, and `404.html` now link `assets/app-icon.svg` and `assets/icons/apple-touch-icon.png`; `npm run check` verifies every public HTML page links both icons. | Met locally |
+| Keep public pages visually consistent when opened directly. | `index.html`, `support.html`, `privacy.html`, `terms.html`, `publishing.html`, and `404.html` include AgentMash app-name metadata, light/dark color-scheme metadata, and light/dark theme-color entries. `npm run check` verifies this for every public HTML page. | Met locally |
 | Make install prompt reachable in the default flow. | `app.js` handles `beforeinstallprompt` and `appinstalled`, `styles.css` reveals only `Install` inside the Human review topbar when available, and Playwright verifies Import, Export, and Reset remain hidden while Install is visible and clickable. | Met locally |
 | Support OS dark mode. | `index.html` advertises `light dark` color schemes, and `styles.css` uses `@media (prefers-color-scheme: dark)` to switch core variables, panels, controls, preview surfaces, and swipe chrome. `npm run check` verifies the hook exists. | Met locally |
 | Avoid notch and home-indicator collisions. | `index.html` uses `viewport-fit=cover`; `styles.css` applies safe-area inset variables to the top bar, workspace bottom padding, sticky decision controls, and Refine sheet. | Met locally |

@@ -54,6 +54,7 @@ Last local verification: May 7, 2026. No deployment, paid account, domain purcha
 - [x] Confirm app icons load in the manifest.
 - [x] Confirm manifest screenshots load from public assets.
 - [x] Confirm all public HTML pages link the app favicon and Apple touch icon.
+- [x] Confirm all public HTML pages include app-name, color-scheme, and light/dark theme-color metadata.
 - [x] Confirm the install prompt is visible from the Human review screen without exposing other profile actions.
 - [x] Confirm support, privacy, terms, publishing, and 404 pages render locally.
 - [x] Confirm no analytics, payment, contact, telemetry, socket, third-party API, or outbound fetch hooks exist in the public app surface.

@@ -30,6 +30,7 @@ Make AgentMash good enough to launch publicly as a serious app.
 - Public status pages avoid naming unavailable backend return channels.
 - Dedicated Apple touch icon is present for iOS home-screen install polish.
 - Every public HTML page links the favicon and Apple touch icon to avoid missing icon requests.
+- Every public HTML page carries AgentMash app-name, light/dark color-scheme, and theme-color metadata.
 - The PWA install prompt is visible from the default Human review screen without exposing Import, Export, or Reset in that flow.
 - Light and dark modes follow the user's operating system preference.
 - Top and bottom spacing use iOS safe-area insets to reduce notch and home-indicator collisions.
@@ -88,11 +89,12 @@ Make AgentMash good enough to launch publicly as a serious app.
 - Public manifest screenshots point to `assets/screenshots`.
 - `npm run check` builds `_site/` and verifies internal files are not packaged.
 - `_site/` includes all public app modules and `sw.js` caches those module files.
-- `sw.js` cache name was bumped to `agentmash-v24` after public app-shell metadata, packet-contract, and swipe-loop polish changes.
+- `sw.js` cache name was bumped to `agentmash-v25` after public page metadata polish changes.
 - Playwright e2e test passed: after service worker readiness, the app reloaded offline and rendered the AgentMash shell and swipe card.
 - Netlify and Vercel configs are checked for `npm run build` plus `_site/` output.
 - Apple touch icon is linked from `index.html`, cached by `sw.js`, and sized at 180 by 180.
 - `npm run check` verifies `index.html`, support, privacy, terms, publishing, and 404 pages all link the app favicon and Apple touch icon.
+- `npm run check` verifies every public HTML page has AgentMash app-name metadata plus light and dark theme-color metadata.
 - Playwright e2e test passed: a synthetic install prompt showed the `Install` button on Human review, kept Import/Export/Reset hidden, and hid Install after the prompt resolved.
 - `index.html` declares `light dark` color schemes, and `styles.css` includes a dark-mode `prefers-color-scheme` branch.
 - `index.html` and `support.html` show the package version.

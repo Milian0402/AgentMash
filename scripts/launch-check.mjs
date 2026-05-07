@@ -189,6 +189,7 @@ check(
 check(index.includes("<title>AgentMash</title>") && index.includes("<h1>AgentMash</h1>"), "index brands AgentMash");
 check(index.includes(`v${packageJson.version}`) && support.includes(`AgentMash v${packageJson.version}`), "public pages expose package version");
 check(index.includes('rel="apple-touch-icon"') && index.includes("assets/icons/apple-touch-icon.png"), "index links Apple touch icon");
+check(index.includes('name="mobile-web-app-capable"'), "index includes mobile web app install metadata");
 check(index.includes("Reset profile") && !index.includes("Reset demo"), "reset action uses profile wording");
 check(index.includes('name="color-scheme" content="light dark"') && styles.includes("@media (prefers-color-scheme: dark)") && styles.includes("color-scheme: dark"), "app follows OS light and dark color scheme");
 check(index.includes('accept="image/png,image/jpeg,image/webp"') && !index.includes("image/svg+xml"), "user uploads exclude SVG");
@@ -363,6 +364,13 @@ for (const file of textFiles.filter((file) => file !== "sw.js")) {
 for (const page of htmlPages) {
   const content = await read(page);
   check(content.includes('<meta name="viewport"'), `${page} has viewport metadata`);
+  check(content.includes('name="application-name" content="AgentMash"'), `${page} has app-name metadata`);
+  check(content.includes('name="color-scheme" content="light dark"'), `${page} has color-scheme metadata`);
+  check(
+    content.includes('name="theme-color" media="(prefers-color-scheme: light)"') &&
+      content.includes('name="theme-color" media="(prefers-color-scheme: dark)"'),
+    `${page} has light and dark theme-color metadata`
+  );
   check(content.includes('href="styles.css"'), `${page} loads shared styles`);
   check(content.includes('rel="icon"') && content.includes("assets/app-icon.svg"), `${page} links favicon`);
   check(content.includes('rel="apple-touch-icon"') && content.includes("assets/icons/apple-touch-icon.png"), `${page} links Apple touch icon`);
