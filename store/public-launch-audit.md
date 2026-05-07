@@ -30,9 +30,11 @@ Make AgentMash good enough to launch publicly as a serious app.
 - PWA manifest declares `en-US` language and left-to-right text direction for install surfaces.
 - PWA icon PNGs are verified at 192 by 192, 512 by 512, and 1024 by 1024, with the Apple touch icon verified at 180 by 180.
 - Public build script packages `_site/` without internal launch docs, submission drafts, scripts, or repo metadata.
+- `npm run verify:public -- https://YOUR-PUBLIC-URL` is ready for the first live host/domain check after user-owned deployment.
 - Internal publishing notes are not linked from the app footer, packaged into `_site/`, or cached by the service worker.
 - GitHub Pages, Netlify, and Vercel configs publish `_site/` instead of repo root.
 - Public status pages avoid naming unavailable backend return channels.
+- Static host configs set `Cache-Control: no-cache` for `sw.js` and `manifest.webmanifest` so app-shell updates are not held behind stale edge/browser caching.
 - Dedicated Apple touch icon is present for iOS home-screen install polish.
 - Apple startup images are present for common large iPhone PWA launch surfaces.
 - Every public HTML page links the favicon and Apple touch icon to avoid missing icon requests.
@@ -100,6 +102,8 @@ Make AgentMash good enough to launch publicly as a serious app.
 - `npm run check` verifies the PWA manifest language and text direction.
 - `npm run check` verifies PWA icon PNG dimensions match manifest-declared install sizes.
 - `npm run check` verifies public PWA screenshot PNG dimensions match the manifest-declared 390 by 844 and 1440 by 1000 sizes.
+- `npm run check` verifies `_headers`, Netlify, and Vercel keep the service worker and manifest update-friendly with `Cache-Control: no-cache`.
+- `npm run check` syntax-checks the live public URL verifier without contacting any host.
 - `schemas/feedback.v2.json` parses as JSON and is checked for the `agentmash.feedback.v2` contract.
 - The runtime packet schema and app code are checked to keep return modes local-only: `json` and `dataset`.
 - `store/native-wrapper-handoff.md` records the later native shell path, bundle IDs, `_site` web directory, and no-analytics native rules.

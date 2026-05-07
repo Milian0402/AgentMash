@@ -13,8 +13,9 @@
     "serve": "python3 -m http.server 5177",
     "serve:build": "python3 -m http.server 5178 --directory _site",
     "build": "node scripts/build-site.mjs",
-    "check": "node --check app.js && node --check state.js && node --check packet.js && node --check render.js && node --check gestures.js && node --check sw.js && node --check scripts/build-site.mjs && node --check scripts/launch-check.mjs && npm run check:launch && npm run test:e2e",
+    "check": "node --check app.js && node --check state.js && node --check packet.js && node --check render.js && node --check gestures.js && node --check sw.js && node --check scripts/build-site.mjs && node --check scripts/launch-check.mjs && node --check scripts/verify-public-url.mjs && npm run check:launch && npm run test:e2e",
     "check:launch": "node scripts/launch-check.mjs",
+    "verify:public": "node scripts/verify-public-url.mjs",
     "test:e2e": "playwright test"
   },
   "devDependencies": {

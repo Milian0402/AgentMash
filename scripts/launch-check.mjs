@@ -23,6 +23,7 @@ const requiredFiles = [
   "playwright.config.mjs",
   "tests/review-flow.spec.mjs",
   "scripts/build-site.mjs",
+  "scripts/verify-public-url.mjs",
   "schemas/feedback.v2.json",
   "store/completion-audit.md",
   "store/public-launch-audit.md",
@@ -322,6 +323,15 @@ check(hasAll(serviceWorker, appShellFiles), "service worker app shell includes l
 check(hasAll(headers, securityHeaders), "_headers defines security headers");
 check(hasAll(netlify, securityHeaders), "netlify config defines security headers");
 check(hasAll(JSON.stringify(vercel), securityHeaders), "vercel config defines security headers");
+check(hasAll(headers, ["/sw.js", "/manifest.webmanifest", "Cache-Control: no-cache"]), "_headers keeps service worker and manifest update-friendly");
+check(hasAll(netlify, ['for = "/sw.js"', 'for = "/manifest.webmanifest"', 'Cache-Control = "no-cache"']), "netlify keeps service worker and manifest update-friendly");
+check(
+  JSON.stringify(vercel).includes('"source":"/sw.js"') &&
+    JSON.stringify(vercel).includes('"source":"/manifest.webmanifest"') &&
+    JSON.stringify(vercel).includes('"key":"Cache-Control"') &&
+    JSON.stringify(vercel).includes('"value":"no-cache"'),
+  "vercel keeps service worker and manifest update-friendly"
+);
 check(netlify.includes('command = "npm run build"') && netlify.includes('publish = "_site"'), "netlify publishes public build output");
 check(vercel.buildCommand === "npm run build" && vercel.outputDirectory === buildDir, "vercel publishes public build output");
 check(headers.includes("connect-src 'self'") && headers.includes("form-action 'self'"), "CSP blocks outside connections and forms");
@@ -339,7 +349,9 @@ check(
 check(hasAll(styles, ["safe-area-inset-top", "safe-area-inset-bottom", "--safe-bottom"]), "layout accounts for iOS safe areas");
 check(packageJson.scripts?.build === "node scripts/build-site.mjs", "package has local public build script");
 check(packageJson.scripts?.["serve:build"] === "python3 -m http.server 5178 --directory _site", "package has build preview script");
+check(packageJson.scripts?.["verify:public"] === "node scripts/verify-public-url.mjs", "package has public URL verifier script");
 check(packageJson.scripts?.check.includes("npm run test:e2e"), "package check runs Playwright e2e tests");
+check(packageJson.scripts?.check.includes("node --check scripts/verify-public-url.mjs"), "package check syntax-checks public URL verifier");
 check(packageJson.scripts?.["test:e2e"] === "playwright test", "package has Playwright e2e script");
 check(packageJson.devDependencies?.["@playwright/test"], "Playwright is a dev dependency only");
 check(

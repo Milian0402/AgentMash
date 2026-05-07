@@ -78,6 +78,7 @@ Last local verification: May 7, 2026. No deployment, paid account, domain purcha
 - [ ] Confirm `support.html` is publicly reachable.
 - [ ] Confirm `privacy.html` is publicly reachable.
 - [ ] Confirm `terms.html` is publicly reachable.
+- [ ] Run `npm run verify:public -- https://YOUR-PUBLIC-URL`.
 - [ ] Confirm security headers on the public host.
 - [ ] Confirm HTTPS.
 - [ ] Confirm service worker install and update behavior on the public host.
