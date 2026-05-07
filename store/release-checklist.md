@@ -16,6 +16,7 @@
 - [ ] Export and import a profile.
 - [ ] Confirm no console errors.
 - [ ] Confirm app icons load in the manifest.
+- [ ] Confirm manifest screenshots load in the manifest.
 - [ ] Confirm support, privacy, terms, publishing, and 404 pages render.
 
 ## Public Website
@@ -45,12 +46,17 @@
 
 ## App Stores
 
-- [ ] Decide iOS, Android, or both.
+- [ ] Read `store/app-store-submission.md`.
+- [ ] Read `store/privacy-data-safety-draft.md`.
+- [ ] Decide iOS, Android, web-only, or both stores.
 - [ ] Create developer account only when ready to pay.
+- [ ] Publish `privacy.html` and `support.html` at stable public URLs.
+- [ ] Add developer identity and support contact details.
 - [ ] Wrap the app in a native shell.
 - [ ] Generate the final platform icon set from `store/app-icon-1024.png`.
-- [ ] Generate store screenshots from `store/screenshots`.
-- [ ] Fill privacy and data safety forms.
-- [ ] Add support URL and support email.
-- [ ] Run device tests.
+- [ ] Capture store screenshots from the native build, not only the PWA preview.
+- [ ] Replace draft assets in `store/submission` with screenshots from the final native build.
+- [ ] Fill Apple privacy labels and Google Play Data safety forms.
+- [ ] Add App Review or Play review contact details.
+- [ ] Run real iPhone and Android device tests.
 - [ ] Submit for review.

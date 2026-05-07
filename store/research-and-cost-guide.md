@@ -64,7 +64,8 @@ You can publish this as a static website for free on several hosts, but costs ca
 | --- | ---: | --- |
 | Apple Developer Program | $99/year | Required to distribute on the App Store. Source: https://developer.apple.com/support/enrollment/ |
 | Google Play Console | $25 one-time | Required to publish Android apps on Google Play. Source: https://support.google.com/googleplay/android-developer/answer/6112435 |
-| Apple screenshots | $0 if self-made | App Store Connect accepts 1 to 10 screenshots in JPEG/JPG/PNG. Source: https://developer.apple.com/help/app-store-connect/manage-app-information/upload-app-previews-and-screenshots |
+| Apple screenshots | $0 if self-made | App Store Connect accepts 1 to 10 screenshots in JPEG/JPG/PNG at required device sizes. Source: https://developer.apple.com/help/app-store-connect/reference/screenshot-specifications/ |
+| Google Play screenshots and feature graphic | $0 if self-made | Google Play requires screenshots and a 1024 by 500 feature graphic for the store listing. Source: https://support.google.com/googleplay/android-developer/answer/9866151 |
 | Privacy policy hosting | $0 to paid | You can host `privacy.html` with the app. Legal review would cost money if you choose it. |
 | Native wrapper | $0 if you build it yourself | A PWA can be wrapped later for app stores, but native build tooling and signing are separate work. |
 | Legal review | Optional paid | Useful before public launch, not performed here. |
@@ -74,15 +75,20 @@ You can publish this as a static website for free on several hosts, but costs ca
 Already prepared locally:
 
 - PWA manifest.
+- Manifest screenshots.
 - Offline service worker.
 - App icon SVG.
+- PNG icons.
 - Privacy page.
 - Terms page.
+- Support page.
 - Local-only data model.
 - Export/import profile.
 - Real artifact upload for images and generated copy.
 - Screenshot folder for store assets.
 - Store listing draft.
+- App Store and Google Play submission prep.
+- Privacy label and Data safety draft.
 - Review rubric documentation.
 
 Still required before actual public submission:

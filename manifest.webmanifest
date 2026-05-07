@@ -1,6 +1,7 @@
 {
   "name": "AgentMash",
   "short_name": "AgentMash",
+  "id": "./",
   "description": "A local-first review app for turning fast human judgement on AI-generated work into structured feedback.",
   "start_url": "./index.html",
   "scope": "./",
@@ -40,6 +41,22 @@
       "name": "Start judging",
       "url": "./index.html",
       "description": "Open the swipe deck"
+    }
+  ],
+  "screenshots": [
+    {
+      "src": "store/screenshots/mobile-review.png",
+      "sizes": "390x844",
+      "type": "image/png",
+      "form_factor": "narrow",
+      "label": "Human review swipe deck"
+    },
+    {
+      "src": "store/screenshots/desktop-review.png",
+      "sizes": "1440x1000",
+      "type": "image/png",
+      "form_factor": "wide",
+      "label": "AgentMash review workspace"
     }
   ]
 }

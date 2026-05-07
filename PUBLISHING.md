@@ -11,6 +11,7 @@ No deployment, paid account, domain purchase, app-store submission, or human out
 - Local preview runs with `npm run serve`.
 - Syntax check runs with `npm run check`.
 - Privacy, terms, support, app metadata, icons, and offline caching are present.
+- Manifest screenshots, store copy, app-store submission prep, privacy/data safety drafts, and draft submission images are present.
 - A manual GitHub Pages workflow is present, but it does not run on push.
 
 ## Free Web Publishing Paths
@@ -56,11 +57,14 @@ These can be free at small scale, but always confirm limits before enabling them
 
 ## App Store Checklist
 
+- Read `store/app-store-submission.md`.
+- Read `store/privacy-data-safety-draft.md`.
 - Choose iOS, Android, or both.
 - Create paid developer accounts only when ready.
+- Publish privacy and support pages first.
 - Wrap the PWA in a native shell.
 - Generate required platform icon sizes from `assets/icons/app-icon-1024.png`.
-- Capture screenshots on real device sizes.
+- Capture screenshots from the native build on accepted store device sizes.
 - Publish privacy policy at a public URL.
 - Complete Apple privacy labels and Google Play Data safety.
 - Submit only after a real support contact exists.

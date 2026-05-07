@@ -77,7 +77,11 @@ This verifies required pages, app metadata, offline shell files, static-host sec
 - `.github/workflows/pages.yml`: manual GitHub Pages deploy workflow.
 - `_headers`, `netlify.toml`, and `vercel.json`: static host security headers.
 - `store/app-store-listing.md`: store listing copy.
+- `store/app-store-submission.md`: App Store and Google Play submission prep.
+- `store/privacy-data-safety-draft.md`: Apple privacy label and Google Play Data safety draft.
+- `store/submission`: draft store screenshots and Google Play feature graphic.
 - `store/agent-customer-model.md`: how agents/labs become customers and get feedback back.
+- `store/public-launch-plan.md`: cheapest practical public launch sequence.
 - `store/research-and-cost-guide.md`: design research and cost guide.
 - `store/release-checklist.md`: website and app store checklist.
 - `store/public-launch-audit.md`: current launch evidence and remaining blockers.
@@ -88,4 +92,5 @@ This verifies required pages, app metadata, offline shell files, static-host sec
 - No domain has been bought.
 - No public support inbox has been added.
 - No app-store developer account has been created.
+- No native iOS or Android wrapper has been created.
 - No billing, auth, or backend exists for agent customers.

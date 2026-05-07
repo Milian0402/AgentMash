@@ -14,17 +14,28 @@ const requiredFiles = [
   "README.md",
   "PUBLISHING.md",
   "store/public-launch-audit.md",
+  "store/public-launch-plan.md",
   "store/release-checklist.md",
   "store/research-and-cost-guide.md",
   "store/agent-customer-model.md",
   "store/app-store-listing.md",
+  "store/app-store-submission.md",
+  "store/privacy-data-safety-draft.md",
+  "store/submission/README.md",
   "_headers",
   "netlify.toml",
   "vercel.json",
+  "store/app-icon-1024.png",
   "assets/app-icon.svg",
   "assets/icons/app-icon-192.png",
   "assets/icons/app-icon-512.png",
-  "assets/icons/app-icon-1024.png"
+  "assets/icons/app-icon-1024.png",
+  "store/screenshots/mobile-review.png",
+  "store/screenshots/desktop-review.png",
+  "store/submission/apple-iphone-6-9-human-review.png",
+  "store/submission/apple-iphone-6-5-human-review.png",
+  "store/submission/google-phone-human-review.png",
+  "store/submission/google-play-feature-graphic.png"
 ];
 
 const textFiles = requiredFiles.filter((file) => !file.endsWith(".png"));
@@ -46,6 +57,8 @@ const appShellFiles = [
   "./assets/icons/app-icon-192.png",
   "./assets/icons/app-icon-512.png",
   "./assets/icons/app-icon-1024.png",
+  "./store/screenshots/mobile-review.png",
+  "./store/screenshots/desktop-review.png",
   "./privacy.html",
   "./support.html",
   "./terms.html",
@@ -60,6 +73,12 @@ const securityHeaders = [
   "Cross-Origin-Opener-Policy",
   "Content-Security-Policy"
 ];
+const submissionPngSizes = {
+  "store/submission/apple-iphone-6-9-human-review.png": "1290x2796",
+  "store/submission/apple-iphone-6-5-human-review.png": "1242x2688",
+  "store/submission/google-phone-human-review.png": "1080x1920",
+  "store/submission/google-play-feature-graphic.png": "1024x500"
+};
 
 let failures = 0;
 
@@ -85,6 +104,14 @@ async function read(path) {
   return readFile(path, "utf8");
 }
 
+async function pngSize(path) {
+  const buffer = await readFile(path);
+  if (buffer.toString("ascii", 1, 4) !== "PNG") {
+    return "";
+  }
+  return `${buffer.readUInt32BE(16)}x${buffer.readUInt32BE(20)}`;
+}
+
 function hasAll(haystack, needles) {
   return needles.every((needle) => haystack.includes(needle));
 }
@@ -103,12 +130,23 @@ const headers = await read("_headers");
 const netlify = await read("netlify.toml");
 const readme = await read("README.md");
 const audit = await read("store/public-launch-audit.md");
+const listing = await read("store/app-store-listing.md");
 
 check(packageJson.name === "agentmash", "package name is agentmash");
 check(packageJson.repository?.url === "https://github.com/Milian0402/AgentMash.git", "package repo points to AgentMash");
 check(manifest.name === "AgentMash" && manifest.short_name === "AgentMash", "manifest uses AgentMash");
+check(manifest.id === "./", "manifest has a stable app id");
 check(manifest.display === "standalone" && manifest.orientation === "portrait", "manifest is app-like");
 check(manifest.icons.every((icon) => requiredFiles.includes(icon.src)), "manifest icons are tracked");
+check(Array.isArray(manifest.screenshots) && manifest.screenshots.length >= 2, "manifest includes screenshots");
+check(manifest.screenshots.every((shot) => requiredFiles.includes(shot.src)), "manifest screenshots are tracked");
+check(
+  hasAll(
+    JSON.stringify(manifest.screenshots),
+    ["390x844", "1440x1000", "form_factor", "Human review swipe deck", "AgentMash review workspace"]
+  ),
+  "manifest screenshot metadata is complete"
+);
 check(index.includes("<title>AgentMash</title>") && index.includes("<h1>AgentMash</h1>"), "index brands AgentMash");
 check(hasAll(index, ["support.html", "privacy.html", "terms.html", "publishing.html"]), "footer links key pages");
 check(app.includes("humanAddButton") && app.includes("openAddArtifactPanel"), "human add-artifact entry exists");
@@ -122,6 +160,14 @@ check(headers.includes("connect-src 'self'") && headers.includes("form-action 's
 check(headers.includes("payment=()"), "permissions policy blocks payment permission");
 check(readme.includes("store/public-launch-audit.md"), "README links public launch audit");
 check(audit.includes("Remaining Public Launch Blockers"), "launch audit lists remaining blockers");
+check(readme.includes("store/app-store-submission.md"), "README links app store submission prep");
+check(readme.includes("store/privacy-data-safety-draft.md"), "README links privacy and data safety draft");
+check(listing.includes("Human taste for AI work"), "store subtitle fits App Store limit");
+check(!listing.includes("Human taste signals for AI work"), "old over-limit store subtitle is absent");
+
+for (const [file, size] of Object.entries(submissionPngSizes)) {
+  check((await pngSize(file)) === size, `${file} is ${size}`);
+}
 
 const combinedText = (await Promise.all(textFiles.map(read))).join("\n");
 check(!/[^\x00-\x7F]/.test(combinedText), "text files are ASCII");

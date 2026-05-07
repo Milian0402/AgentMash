@@ -14,6 +14,9 @@ Make AgentMash good enough to launch publicly as a serious app.
 - Add Artifact is reachable from the human dashboard and returns to the swipe deck after submit.
 - Starter artifacts are credible launch examples instead of placeholder-only cards.
 - Privacy, terms, support, publishing, 404, manifest, icons, service worker, and static host config are present.
+- PWA manifest includes mobile and desktop screenshots.
+- Store listing, App Store submission prep, and privacy/data safety drafts are present.
+- Draft store submission image assets are present in `store/submission`.
 - App data stays local unless the user imports, exports, copies, or downloads it.
 
 ## Verification Evidence
@@ -26,6 +29,8 @@ Make AgentMash good enough to launch publicly as a serious app.
 - Browser console showed zero errors during human review and add-artifact testing.
 - No third-party analytics, payments, telemetry, sockets, or API calls were found. The only network fetch is the service worker same-origin cache path.
 - Store screenshots were refreshed in `store/screenshots/`.
+- Manifest screenshots point to tracked screenshot assets.
+- Draft submission assets are sized for Apple iPhone 6.9, Apple iPhone 6.5, Google phone, and Google Play feature graphic planning.
 - GitHub repo is private at `https://github.com/Milian0402/AgentMash`.
 
 ## Remaining Public Launch Blockers
@@ -37,8 +42,18 @@ Make AgentMash good enough to launch publicly as a serious app.
 - Run the manual deployment workflow or connect a static host.
 - Verify HTTPS, headers, service worker update behavior, privacy page, terms page, and support page on the public host.
 
+## Remaining App Store Blockers
+
+- Apple Developer Program or Google Play Console account.
+- User-owned seller/developer identity.
+- Public support URL with real contact information.
+- Public privacy URL with developer identity and inquiry route.
+- Native iOS or Android wrapper and signed build.
+- Store-size screenshots from the native build.
+- Apple privacy labels or Google Play Data safety submission.
+- Store review contact details.
+
 ## Not In Scope Yet
 
-- App Store or Google Play submission.
 - Paid plans, billing, auth, server storage, lab customer accounts, webhooks, or polling endpoints.
 - Legal review.

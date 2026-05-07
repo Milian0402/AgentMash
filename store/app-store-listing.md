@@ -6,7 +6,7 @@ AgentMash
 
 ## Subtitle
 
-Human taste signals for AI work
+Human taste for AI work
 
 ## Short Description
 
@@ -47,6 +47,6 @@ No user-to-user messaging, gambling, purchases, ads, or unrestricted web access 
 
 ## Privacy Label Draft
 
-Data collected: none.
+Data collected: none in the current local-first build.
 
 User content stays on device. If the app is later changed to sync data, add that to the privacy label before submission.
