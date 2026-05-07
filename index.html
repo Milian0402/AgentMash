@@ -3,30 +3,30 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
-    <meta name="application-name" content="Nice or Not" />
+    <meta name="application-name" content="AgentMash" />
     <meta name="color-scheme" content="light" />
     <meta name="theme-color" content="#171914" />
     <meta
       name="description"
-      content="A private first-impression review app for judging AI-generated websites, logos, copy, and product images."
+      content="A local-first swipe app for turning fast human judgement on AI-generated work into structured feedback."
     />
-    <meta property="og:title" content="Nice or Not" />
+    <meta property="og:title" content="AgentMash" />
     <meta
       property="og:description"
-      content="Capture fast human judgement on AI-generated artifacts and turn it into structured feedback."
+      content="Capture fast human judgement on AI-generated artifacts and turn it into agent-ready feedback."
     />
     <meta property="og:type" content="website" />
     <meta property="og:image" content="assets/icons/app-icon-1024.png" />
     <meta name="twitter:card" content="summary" />
-    <meta name="twitter:title" content="Nice or Not" />
+    <meta name="twitter:title" content="AgentMash" />
     <meta
       name="twitter:description"
       content="Swipe through AI-generated work and record whether it survives a first glance."
     />
     <meta name="twitter:image" content="assets/icons/app-icon-1024.png" />
     <meta name="apple-mobile-web-app-capable" content="yes" />
-    <meta name="apple-mobile-web-app-title" content="Nice or Not" />
-    <title>Nice or Not</title>
+    <meta name="apple-mobile-web-app-title" content="AgentMash" />
+    <title>AgentMash</title>
     <link rel="manifest" href="manifest.webmanifest" />
     <link rel="icon" href="assets/app-icon.svg" />
     <link rel="apple-touch-icon" href="assets/icons/app-icon-192.png" />
@@ -38,8 +38,8 @@
         <div class="brand-lockup">
           <img class="app-icon" src="assets/app-icon.svg" alt="" width="42" height="42" />
           <div>
-            <p class="eyebrow">Private local profile</p>
-            <h1>Nice or Not</h1>
+            <p class="eyebrow">Local-first profile</p>
+            <h1>AgentMash</h1>
           </div>
         </div>
 
@@ -160,6 +160,7 @@
                 <button type="button" data-filter="copy" class="segment">Copy</button>
                 <button type="button" data-filter="product" class="segment">Product</button>
               </div>
+              <button class="primary-button full" id="humanAddButton" type="button">Add artifact</button>
             </section>
 
             <section class="section-block">
@@ -276,9 +277,9 @@
             </section>
           </aside>
 
-          <aside class="panel add-panel">
+          <aside class="panel add-panel" id="addPanel">
             <section class="section-block">
-              <h2>Add Agent Request</h2>
+              <h2>Add Artifact Request</h2>
               <form id="artifactForm" class="artifact-form">
                 <label>
                   <span>Type</span>
@@ -308,7 +309,7 @@
                 <p id="imageStatus" class="help-text">No image selected.</p>
 
                 <fieldset class="agent-fieldset">
-                  <legend>Agent or lab customer</legend>
+                  <legend>Requester details</legend>
                   <label>
                     <span>Requester</span>
                     <select id="agentRequesterType">
@@ -343,7 +344,7 @@
                     <textarea id="agentGoal" rows="3" placeholder="What the agent or lab wants to learn from this judgement"></textarea>
                   </label>
                 </fieldset>
-                <button class="primary-button full" type="submit">Send to human deck</button>
+                <button class="primary-button full" type="submit">Send to human review</button>
               </form>
             </section>
           </aside>
@@ -351,7 +352,7 @@
       </main>
 
       <footer class="site-footer">
-        <span>Local-only prerelease</span>
+        <span>Local-first beta</span>
         <a href="privacy.html">Privacy</a>
         <a href="terms.html">Terms</a>
         <a href="publishing.html">Publishing notes</a>

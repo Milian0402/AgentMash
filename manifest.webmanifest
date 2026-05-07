@@ -1,7 +1,7 @@
 {
-  "name": "Nice or Not",
-  "short_name": "Nice",
-  "description": "A private first-impression review app for judging AI-generated websites, logos, copy, and product images.",
+  "name": "AgentMash",
+  "short_name": "AgentMash",
+  "description": "A local-first review app for turning fast human judgement on AI-generated work into structured feedback.",
   "start_url": "./index.html",
   "scope": "./",
   "display": "standalone",

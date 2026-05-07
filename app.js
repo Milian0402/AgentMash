@@ -1,7 +1,8 @@
-const APP_VERSION = 4;
-const STORAGE_KEY = "nice-or-not.private-profile.v4";
+const APP_VERSION = 5;
+const STORAGE_KEY = "agentmash.private-profile.v5";
 const OLD_STORAGE_KEY = "nice-or-not.private-profile.v1";
 const PREVIOUS_STORAGE_KEYS = [
+  "nice-or-not.private-profile.v4",
   "nice-or-not.private-profile.v3",
   "nice-or-not.private-profile.v2",
   OLD_STORAGE_KEY
@@ -81,68 +82,68 @@ const sampleItems = [
   {
     id: "site-landing-001",
     type: "website",
-    title: "AI operations landing page",
-    prompt: "Generated website concept for a workflow tool. Judge if it feels useful, premium, and clear.",
-    body: "Autopilot for the messy middle of operations.",
+    title: "OpsPilot landing page",
+    prompt: "Website screenshot candidate for an AI operations tool. Judge whether the promise feels useful, premium, and clear.",
+    body: "Resolve messy approvals before work stalls.",
     question: "Is this website nice?",
     agent: {
       requesterType: "agent",
-      requesterName: "landing-page-agent",
-      runId: "demo-site-001",
+      requesterName: "site-agent",
+      runId: "launch-site-001",
       goal: "Learn whether a generated landing page earns human trust quickly.",
       returnMode: "json",
-      returnTarget: "local-demo/site-feedback"
+      returnTarget: "local-demo/ops-site-feedback"
     },
     createdAt: "2026-05-07T00:00:00.000Z"
   },
   {
     id: "logo-bakery-001",
     type: "logo",
-    title: "Bakery logo mark",
-    prompt: "Generated brand mark for a small bakery that wants to feel modern without losing warmth.",
-    body: "A folded loaf shape mixed with a chat bubble.",
+    title: "Northstar Pantry mark",
+    prompt: "Generated brand mark for a pantry delivery service that needs to feel useful, warm, and recognizable in a tiny app icon.",
+    body: "A folded route marker with a shelf silhouette.",
     question: "Does this logo make sense?",
     agent: {
       requesterType: "lab",
       requesterName: "brand-eval-lab",
-      runId: "demo-logo-001",
+      runId: "launch-logo-001",
       goal: "Test whether logo candidates make semantic and visual sense.",
       returnMode: "json",
-      returnTarget: "local-demo/logo-feedback"
+      returnTarget: "local-demo/pantry-logo-feedback"
     },
     createdAt: "2026-05-07T00:00:00.000Z"
   },
   {
     id: "copy-launch-001",
     type: "copy",
-    title: "Launch post copy",
-    prompt: "Generated social copy for an AI notes app. Check if it sounds believable or too synthetic.",
-    body: "Your notes already know the answer. Ask once, find the thread, and turn scattered thoughts into the next draft.",
+    title: "Notes app launch post",
+    prompt: "Generated launch copy for an AI notes app. Check whether it sounds believable, specific, and worth another glance.",
+    body: "Stop reopening five tabs to remember what you meant. Drop the note, ask the thread, and get back the draft you were circling.",
     question: "Is this copy nice?",
     agent: {
       requesterType: "agent",
       requesterName: "copy-agent",
-      runId: "demo-copy-001",
+      runId: "launch-copy-001",
       goal: "Compare generated copy against human specificity and believability.",
       returnMode: "json",
-      returnTarget: "local-demo/copy-feedback"
+      returnTarget: "local-demo/notes-copy-feedback"
     },
     createdAt: "2026-05-07T00:00:00.000Z"
   },
   {
     id: "product-render-001",
     type: "product",
-    title: "Kitchen organizer render",
-    prompt: "Generated product image for a storage tray. Decide if the object looks coherent enough to sell.",
-    body: "Modular counter tray with dividers, soft plastic, and a removable lid.",
+    title: "Counter tray render",
+    prompt: "Generated product image for a modular kitchen tray. Decide whether the object looks plausible and desirable enough to test.",
+    body: "Matte counter tray with removable dividers, rounded corners, and a translucent lid.",
     question: "Does this product image make sense?",
     agent: {
       requesterType: "lab",
       requesterName: "product-image-lab",
-      runId: "demo-product-001",
+      runId: "launch-product-001",
       goal: "Catch visual trust breaks before product image candidates are reused.",
       returnMode: "json",
-      returnTarget: "local-demo/product-feedback"
+      returnTarget: "local-demo/tray-render-feedback"
     },
     createdAt: "2026-05-07T00:00:00.000Z"
   }
@@ -180,6 +181,7 @@ const elements = {
   agentDashboard: document.querySelector("#agentDashboard"),
   reviewerName: document.querySelector("#reviewerName"),
   filterTabs: document.querySelector("#filterTabs"),
+  humanAddButton: document.querySelector("#humanAddButton"),
   queueCount: document.querySelector("#queueCount"),
   artifactForm: document.querySelector("#artifactForm"),
   artifactType: document.querySelector("#artifactType"),
@@ -262,13 +264,19 @@ function loadState() {
 }
 
 function normalizeState(candidate) {
-  const items = Array.isArray(candidate.items) && candidate.items.length
+  const candidateItems = Array.isArray(candidate.items) && candidate.items.length
     ? candidate.items.map(normalizeItem)
     : sampleItems;
+  const useLaunchSamples = shouldReplaceLegacySamples(candidate, candidateItems);
+  const items = useLaunchSamples ? sampleItems : candidateItems;
   const itemIds = new Set(items.map((item) => item.id));
-  const reviews = Array.isArray(candidate.reviews)
-    ? candidate.reviews.filter((review) => itemIds.has(review.itemId)).map(normalizeReview)
-    : [];
+  const reviews = useLaunchSamples
+    ? []
+    : (
+        Array.isArray(candidate.reviews)
+          ? candidate.reviews.filter((review) => itemIds.has(review.itemId)).map(normalizeReview)
+          : []
+      );
   const filter = ["all", ...artifactTypes].includes(candidate.filter) ? candidate.filter : "all";
   const currentItemId = itemIds.has(candidate.currentItemId) ? candidate.currentItemId : items[0].id;
 
@@ -285,6 +293,14 @@ function normalizeState(candidate) {
     lastPacketItemId: cleanText(candidate.lastPacketItemId),
     installedAt: cleanText(candidate.installedAt) || new Date().toISOString()
   };
+}
+
+function shouldReplaceLegacySamples(candidate, items) {
+  const legacySampleIds = ["site-landing-001", "logo-bakery-001", "copy-launch-001", "product-render-001"];
+  const hasOnlyLegacySamples = items.length === legacySampleIds.length
+    && legacySampleIds.every((id) => items.some((item) => item.id === id && !item.imageData));
+  const hasReviews = Array.isArray(candidate.reviews) && candidate.reviews.length > 0;
+  return Number(candidate.version) < APP_VERSION && hasOnlyLegacySamples && !hasReviews;
 }
 
 function normalizeItem(item) {
@@ -810,8 +826,19 @@ function renderPreview(item) {
     return `
       <div class="preview-logo" aria-label="Generated logo preview">
         <div class="logo-board">
-          <div class="logo-mark"></div>
-          <span>${escapeHtml(shortTitle(item.title, 22))}</span>
+          <div class="logo-lockup">
+            <div class="logo-mark"></div>
+            <div class="logo-lines">
+              <i></i>
+              <i></i>
+            </div>
+          </div>
+          <span>${escapeHtml(shortTitle(item.title, 24))}</span>
+          <div class="logo-samples">
+            <i></i>
+            <i></i>
+            <i></i>
+          </div>
         </div>
       </div>
     `;
@@ -834,7 +861,12 @@ function renderPreview(item) {
       <div class="preview-product" aria-label="Generated product image preview">
         <div class="product-scene">
           <div class="product-shadow"></div>
-          <div class="product-object"></div>
+          <div class="product-object">
+            <i class="product-lid"></i>
+            <i class="product-divider one"></i>
+            <i class="product-divider two"></i>
+            <i class="product-handle"></i>
+          </div>
           <span>${escapeHtml(shortTitle(item.body || item.title, 36))}</span>
         </div>
       </div>
@@ -851,7 +883,9 @@ function renderPreview(item) {
       </div>
       <div class="site-mock">
         <div class="site-copy-block">
+          <span class="site-nav">Live runs / approvals / handoff</span>
           <strong>${escapeHtml(item.body || item.title)}</strong>
+          <p>${escapeHtml(shortTitle(item.prompt || "Generated landing page candidate", 92))}</p>
           <div class="site-line"></div>
           <div class="site-line short"></div>
           <div class="site-line muted"></div>
@@ -861,6 +895,10 @@ function renderPreview(item) {
           </div>
         </div>
         <div class="site-visual">
+          <div class="site-metric">
+            <b>82</b>
+            <span>ready</span>
+          </div>
           <span class="site-tile big"></span>
           <span class="site-tile"></span>
           <span class="site-tile"></span>
@@ -985,6 +1023,7 @@ function addArtifact(event) {
   state.items = [item, ...state.items];
   state.filter = type;
   state.currentItemId = item.id;
+  state.dashboard = "human";
   pendingImageData = "";
   elements.artifactForm.reset();
   elements.imageStatus.textContent = "No image selected.";
@@ -992,6 +1031,15 @@ function addArtifact(event) {
   elements.agentReturnMode.value = "json";
   saveState();
   render();
+}
+
+function openAddArtifactPanel() {
+  state.dashboard = "agent";
+  saveState();
+  render();
+  window.setTimeout(() => {
+    elements.artifactTitle.focus();
+  }, 0);
 }
 
 function handleImageSelection() {
@@ -1020,7 +1068,7 @@ function handleImageSelection() {
 function exportProfile() {
   const payload = {
     exportedAt: new Date().toISOString(),
-    app: "Nice or Not",
+    app: "AgentMash",
     version: APP_VERSION,
     profile: state
   };
@@ -1029,7 +1077,7 @@ function exportProfile() {
   const url = URL.createObjectURL(blob);
   const link = document.createElement("a");
   link.href = url;
-  link.download = `nice-or-not-profile-${new Date().toISOString().slice(0, 10)}.json`;
+  link.download = `agentmash-profile-${new Date().toISOString().slice(0, 10)}.json`;
   document.body.append(link);
   link.click();
   link.remove();
@@ -1066,7 +1114,7 @@ function downloadPacket() {
   const url = URL.createObjectURL(blob);
   const link = document.createElement("a");
   link.href = url;
-  link.download = `${packet.request.runId}-nice-or-not-feedback.json`;
+  link.download = `${packet.request.runId}-agentmash-feedback.json`;
   document.body.append(link);
   link.click();
   link.remove();
@@ -1097,7 +1145,7 @@ function downloadDataset() {
   const url = URL.createObjectURL(blob);
   const link = document.createElement("a");
   link.href = url;
-  link.download = `nice-or-not-eval-rows-${new Date().toISOString().slice(0, 10)}.jsonl`;
+  link.download = `agentmash-eval-rows-${new Date().toISOString().slice(0, 10)}.jsonl`;
   document.body.append(link);
   link.click();
   link.remove();
@@ -1115,7 +1163,7 @@ function importProfile(file) {
       saveState();
       render();
     } catch {
-      window.alert("That file does not look like a Nice or Not profile.");
+      window.alert("That file does not look like an AgentMash profile.");
     }
   });
   reader.readAsText(file);
@@ -1133,13 +1181,13 @@ function resetDemo() {
 function buildPendingPacket(item) {
   if (!item) {
     return {
-      schema: "nice-or-not.feedback.v1",
+      schema: "agentmash.feedback.v1",
       status: "empty",
       message: "No active agent request."
     };
   }
   return {
-    schema: "nice-or-not.feedback.v1",
+    schema: "agentmash.feedback.v1",
     status: "pending",
     request: requestEnvelope(item),
     expectedReturn: returnEnvelope(item.agent),
@@ -1159,7 +1207,7 @@ function buildFeedbackPacket(item, review) {
   const humanSignal = humanSignalFor(item, review);
   const agentUse = agentUseFor(item, review);
   return {
-    schema: "nice-or-not.feedback.v1",
+    schema: "agentmash.feedback.v1",
     status: "ready",
     packetId: `feedback-${review.id}`,
     generatedAt: new Date().toISOString(),
@@ -1196,7 +1244,7 @@ function buildFeedbackPacket(item, review) {
 
 function buildEvalRow(item, review) {
   return {
-    schema: "nice-or-not.eval-row.v1",
+    schema: "agentmash.eval-row.v1",
     rowId: `eval-${review.id}`,
     createdAt: review.createdAt,
     artifact: {
@@ -1594,6 +1642,7 @@ elements.filterTabs.addEventListener("click", (event) => {
   render();
 });
 
+elements.humanAddButton.addEventListener("click", openAddArtifactPanel);
 elements.artifactType.addEventListener("change", () => {
   renderRubric(elements.artifactType.value);
 });

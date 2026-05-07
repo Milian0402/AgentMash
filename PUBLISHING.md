@@ -1,6 +1,6 @@
 # Publishing Runbook
 
-Nice or Not is currently a private static PWA in `Milian0402/is-it-nice`.
+AgentMash is currently a private static PWA in `Milian0402/AgentMash` and is being prepared as a public beta candidate.
 
 No deployment, paid account, domain purchase, app-store submission, or human outreach has been performed.
 

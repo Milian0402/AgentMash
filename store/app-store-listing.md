@@ -2,11 +2,11 @@
 
 ## Name
 
-Nice or Not
+AgentMash
 
 ## Subtitle
 
-Swipe judgement for AI work
+Human taste signals for AI work
 
 ## Short Description
 
@@ -14,9 +14,9 @@ Judge AI-generated websites, logos, copy, and product images with fast human int
 
 ## Full Description
 
-Nice or Not is a private review deck for deciding whether AI-generated work is actually good enough to keep.
+AgentMash is a local-first review deck for deciding whether AI-generated work is actually good enough to keep.
 
-Swipe right when an output feels nice. Swipe left when it does not. Add a gut score, coherence score, craft score, usefulness score, tags, and notes. The app turns those human calls into a simple profile you can export and compare.
+Swipe right when an output feels nice. Swipe left when it does not. Add a gut score, coherence score, craft score, usefulness score, tags, and notes. The app turns those human calls into structured feedback packets and JSONL eval rows.
 
 Built for:
 

@@ -1,6 +1,6 @@
-# Nice or Not Judgement Standard
+# AgentMash Judgement Standard
 
-Nice or Not treats fast human laziness as the product advantage. People usually know within a second or two whether a logo, website, sentence, or product image feels right. The first swipe is the signal. The rubric only annotates that first impression so agents can learn from it.
+AgentMash treats fast human laziness as the product advantage. People usually know within a second or two whether a logo, website, sentence, or product image feels right. The first swipe is the signal. The rubric only annotates that first impression so agents can learn from it.
 
 ## Score
 

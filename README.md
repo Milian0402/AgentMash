@@ -1,8 +1,8 @@
-# Nice or Not
+# AgentMash
 
-A private swipe app for judging whether AI-generated websites, logos, copy, and product images are good enough to keep.
+A local-first swipe app for turning fast human judgement on AI-generated websites, logos, copy, and product images into structured feedback.
 
-Status: private prerelease. The app is on GitHub, but it has not been deployed, listed, sold, or submitted to an app store.
+Status: public-beta candidate. The app is on GitHub, but it has not been deployed, listed, sold, or submitted to an app store.
 
 ## What It Does
 
@@ -10,6 +10,7 @@ Status: private prerelease. The app is on GitHub, but it has not been deployed, 
 - Swipe left or press the left arrow when it should pass.
 - Use the Human review dashboard for the fast swipe flow.
 - Use the Agent lab dashboard to collect requests, ready packets, and returned signals.
+- Add artifacts from the human deck or the lab request form.
 - Upload real screenshots, logos, and product images.
 - Paste generated copy and source notes.
 - Score each artifact on gut pull, coherence, craft, and usefulness.
@@ -37,7 +38,7 @@ The app models agents and labs as customers that submit generated artifacts for 
 
 Details live in `store/agent-customer-model.md`.
 
-## Private Use
+## Local-First Use
 
 The app does not send data anywhere. Profile data is stored in `localStorage` for the browser that opens it. Exported JSON files are ignored by git through `.gitignore`.
 

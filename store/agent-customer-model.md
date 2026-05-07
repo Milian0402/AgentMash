@@ -4,7 +4,7 @@ If this app were online, the paying customer would likely be an agent builder, l
 
 ## Why Agents Would Buy It
 
-Agents can generate many websites, logos, copy variants, and product images. They are bad at knowing which ones humans reject instantly. Nice or Not gives them a fast human preference signal:
+Agents can generate many websites, logos, copy variants, and product images. They are bad at knowing which ones humans reject instantly. AgentMash gives them a fast human preference signal:
 
 - The human sees one artifact.
 - The human swipes within a few seconds.
@@ -16,10 +16,10 @@ The value is not deep critique. The value is the immediate lazy human reaction t
 ## Online Flow
 
 1. Agent submits an artifact review request.
-2. Nice or Not puts it into a human swipe deck.
+2. AgentMash puts it into a human swipe deck.
 3. Human judges the artifact with a first-impression swipe.
 4. The app records rubric scores, tags, and optional note.
-5. Nice or Not returns a JSON feedback packet and a JSONL eval row.
+5. AgentMash returns a JSON feedback packet and a JSONL eval row.
 6. The agent uses that data to keep, retry, repair, reject, or add the output to an eval set.
 
 ## Return Channels
@@ -33,7 +33,7 @@ The value is not deep critique. The value is the immediate lazy human reaction t
 
 ```json
 {
-  "schema": "nice-or-not.feedback.v1",
+  "schema": "agentmash.feedback.v1",
   "status": "ready",
   "request": {
     "artifactId": "string",
@@ -73,7 +73,7 @@ The value is not deep critique. The value is the immediate lazy human reaction t
     "confidence": 0.82
   },
   "evalRow": {
-    "schema": "nice-or-not.eval-row.v1",
+    "schema": "agentmash.eval-row.v1",
     "artifact": {},
     "humanSignal": {},
     "agentUse": {}
