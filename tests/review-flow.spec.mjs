@@ -401,6 +401,30 @@ test("Endless mode auto-loops one local variant at a time", async ({ page }) => 
   expect(packet.request.variant).toBe("tagline");
 });
 
+test("Install prompt is visible from the human review screen", async ({ page }) => {
+  await resetApp(page);
+
+  await expect(page.getByRole("button", { name: "Human review" })).toBeVisible();
+  await expect(page.locator("#installButton")).toBeHidden();
+  await page.evaluate(() => {
+    const event = new Event("beforeinstallprompt", { cancelable: true });
+    event.prompt = () => {
+      window.__agentmashInstallPrompted = true;
+      return Promise.resolve();
+    };
+    event.userChoice = Promise.resolve({ outcome: "accepted", platform: "web" });
+    window.dispatchEvent(event);
+  });
+  await expect(page.locator("#installButton")).toBeVisible();
+  await expect(page.locator("#importButton")).toBeHidden();
+  await expect(page.locator("#exportButton")).toBeHidden();
+  await expect(page.locator("#resetButton")).toBeHidden();
+
+  await page.getByRole("button", { name: "Install" }).click();
+  await expect.poll(() => page.evaluate(() => window.__agentmashInstallPrompted)).toBe(true);
+  await expect(page.locator("#installButton")).toBeHidden();
+});
+
 test("Uploaded images are stored in IndexedDB instead of localStorage", async ({ page }) => {
   await resetApp(page);
 

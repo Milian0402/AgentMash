@@ -622,8 +622,16 @@ elements.installButton.addEventListener("click", async () => {
   if (!deferredInstallPrompt) {
     return;
   }
-  deferredInstallPrompt.prompt();
-  await deferredInstallPrompt.userChoice;
+  try {
+    await deferredInstallPrompt.prompt();
+    await deferredInstallPrompt.userChoice;
+  } finally {
+    deferredInstallPrompt = null;
+    elements.installButton.hidden = true;
+  }
+});
+
+window.addEventListener("appinstalled", () => {
   deferredInstallPrompt = null;
   elements.installButton.hidden = true;
 });

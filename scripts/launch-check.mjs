@@ -220,6 +220,7 @@ check(
   "remix sessions create type-specific glance variants"
 );
 check(index.includes("endlessToggle") && appSurface.includes("ensureEndlessItem") && appSurface.includes("loopSourceItemId"), "endless mode auto-loops one local card at a time");
+check(app.includes("beforeinstallprompt") && app.includes("appinstalled") && styles.includes(":has(#installButton:not([hidden]))"), "PWA install prompt is visible from human review");
 check(index.includes("reviewModeTabs") && index.includes("pairwiseStage") && app.includes("choosePairwise"), "human review includes local pairwise mode");
 check(appSurface.includes("agentmash.pairwise-row.v1") && appSurface.includes("pairwiseComparisons"), "pairwise comparisons export as structured rows");
 check(app.includes("humanAddButton") && app.includes("openAddArtifactPanel"), "human add-artifact entry exists");
@@ -279,6 +280,10 @@ check(
 check(
   hasAll(testSpec, ["Service worker keeps the app shell available offline", "context.setOffline(true)", "navigator.serviceWorker.ready"]),
   "Playwright covers offline PWA app shell"
+);
+check(
+  hasAll(testSpec, ["Install prompt is visible from the human review screen", "__agentmashInstallPrompted", "#installButton"]),
+  "Playwright covers human-screen install prompt"
 );
 check(pagesWorkflow.includes("npm run build"), "GitHub Pages workflow uses public build script");
 check(!pagesWorkflow.includes(" store"), "GitHub Pages workflow does not copy internal store docs directly");

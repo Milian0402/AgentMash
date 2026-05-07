@@ -238,6 +238,17 @@ body[data-dashboard="human"] .topbar-actions {
   display: none;
 }
 
+body[data-dashboard="human"] .topbar-actions:has(#installButton:not([hidden])) {
+  display: flex;
+  flex: 0 0 auto;
+  width: auto;
+}
+
+body[data-dashboard="human"] .topbar-actions:has(#installButton:not([hidden])) .icon-button:not(#installButton),
+body[data-dashboard="human"] .topbar-actions:has(#installButton:not([hidden])) input {
+  display: none;
+}
+
 body[data-dashboard="human"] .dashboard-switch {
   grid-template-columns: repeat(2, minmax(88px, 1fr));
   min-width: 196px;
