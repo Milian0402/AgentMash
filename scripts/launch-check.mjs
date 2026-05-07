@@ -163,9 +163,11 @@ check(
 check(index.includes("<title>AgentMash</title>") && index.includes("<h1>AgentMash</h1>"), "index brands AgentMash");
 check(index.includes(`v${packageJson.version}`) && support.includes(`AgentMash v${packageJson.version}`), "public pages expose package version");
 check(index.includes('rel="apple-touch-icon"') && index.includes("assets/icons/apple-touch-icon.png"), "index links Apple touch icon");
+check(index.includes("Reset profile") && !index.includes("Reset demo"), "reset action uses profile wording");
 check(hasAll(index, ["support.html", "privacy.html", "terms.html", "publishing.html"]), "footer links key pages");
 check(app.includes("humanAddButton") && app.includes("openAddArtifactPanel"), "human add-artifact entry exists");
 check(app.includes('state.dashboard = "human";'), "added artifacts return to human deck");
+check(app.includes("window.confirm") && app.includes("Reset this local AgentMash profile"), "reset requires confirmation");
 check(serviceWorker.includes('const CACHE_NAME = "agentmash-v'), "service worker cache is AgentMash scoped");
 check(hasAll(serviceWorker, appShellFiles), "service worker app shell includes launch pages and icons");
 check(hasAll(headers, securityHeaders), "_headers defines security headers");

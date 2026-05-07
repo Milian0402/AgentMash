@@ -1169,7 +1169,14 @@ function importProfile(file) {
   reader.readAsText(file);
 }
 
-function resetDemo() {
+function resetProfile() {
+  const confirmed = window.confirm(
+    "Reset this local AgentMash profile? This clears reviews, uploads, notes, and added artifacts in this browser."
+  );
+  if (!confirmed) {
+    return;
+  }
+
   state = cloneDefaultState();
   pendingImageData = "";
   elements.reviewNote.value = "";
@@ -1664,7 +1671,7 @@ elements.importFile.addEventListener("change", () => {
   elements.importFile.value = "";
 });
 elements.exportButton.addEventListener("click", exportProfile);
-elements.resetButton.addEventListener("click", resetDemo);
+elements.resetButton.addEventListener("click", resetProfile);
 elements.swipeCard.addEventListener("pointerdown", onPointerDown);
 elements.swipeCard.addEventListener("pointermove", onPointerMove);
 elements.swipeCard.addEventListener("pointerup", onPointerUp);
