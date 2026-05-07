@@ -34,6 +34,7 @@ Make AgentMash good enough to launch publicly as a serious app, while staying in
 - Internal publishing notes stay out of the packaged public site so users do not see pre-launch status language.
 - Public build output excludes internal launch docs, submission drafts, scripts, and repo metadata.
 - Static host configs keep the service worker and manifest update-friendly with no-cache rules.
+- A local public-readiness command is available before the user connects hosting.
 - Live-host verification tooling is ready for the user-owned public URL once deployment exists.
 - Mobile install polish includes a dedicated Apple touch icon.
 - Mobile install polish includes local iOS startup images for common large iPhone launch surfaces.
@@ -123,6 +124,7 @@ Make AgentMash good enough to launch publicly as a serious app, while staying in
 | Verify offline PWA behavior. | Playwright waits for the service worker, switches the browser context offline, reloads, and verifies the AgentMash app shell and swipe card still render. | Met locally |
 | Avoid publishing internal launch docs and submission drafts. | `npm run build` writes `_site/` with only public app files. GitHub Pages, Netlify, and Vercel configs publish `_site/`. `npm run check` verifies `store/`, `scripts/`, `.github`, docs, package metadata, and host config files are not packaged. | Met locally |
 | Keep PWA updates from sticking behind stale host cache. | `_headers`, `netlify.toml`, and `vercel.json` set `Cache-Control: no-cache` for `sw.js` and `manifest.webmanifest`; `scripts/launch-check.mjs` verifies those rules. | Met locally |
+| Make the pre-hosting step one command. | `npm run ready:public` runs the full local check and rebuilds `_site/` without deploying or contacting any service; `scripts/launch-check.mjs` verifies the command exists. | Met locally |
 | Prepare for the first live host/domain check. | `scripts/verify-public-url.mjs` and `npm run verify:public -- https://YOUR-PUBLIC-URL` can verify the deployed app shell, legal/support pages, manifest, service worker, Apple touch icon, cache headers, and that internal files are not public. `npm run check` syntax-checks the verifier without contacting any host. | Met locally |
 | Keep internal launch status out of the public app. | `publishing.html` remains in the repo for local guidance but is no longer linked from `index.html`, copied into `_site/`, or cached by `sw.js`. `npm run check` verifies it is excluded from the public build. | Met locally |
 | Make the PWA feel install-ready on iOS. | `assets/icons/apple-touch-icon.png` is 180 by 180, startup images in `assets/startup` are 1290 by 2796 and 1242 by 2688, `index.html` links them through Apple PWA metadata, `sw.js` caches them, and `npm run check` verifies the files and links. | Met locally |
@@ -164,6 +166,7 @@ Make AgentMash good enough to launch publicly as a serious app, while staying in
 ## Verification Commands
 
 - `npm run check`
+- `npm run ready:public`
 - `npm run build`
 - `npm run serve:build`
 - `git status --short --branch`

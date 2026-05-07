@@ -15,6 +15,7 @@
     "build": "node scripts/build-site.mjs",
     "check": "node --check app.js && node --check state.js && node --check packet.js && node --check render.js && node --check gestures.js && node --check sw.js && node --check scripts/build-site.mjs && node --check scripts/launch-check.mjs && node --check scripts/verify-public-url.mjs && npm run check:launch && npm run test:e2e",
     "check:launch": "node scripts/launch-check.mjs",
+    "ready:public": "npm run check && npm run build",
     "verify:public": "node scripts/verify-public-url.mjs",
     "test:e2e": "playwright test"
   },

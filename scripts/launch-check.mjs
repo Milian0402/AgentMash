@@ -349,6 +349,7 @@ check(
 check(hasAll(styles, ["safe-area-inset-top", "safe-area-inset-bottom", "--safe-bottom"]), "layout accounts for iOS safe areas");
 check(packageJson.scripts?.build === "node scripts/build-site.mjs", "package has local public build script");
 check(packageJson.scripts?.["serve:build"] === "python3 -m http.server 5178 --directory _site", "package has build preview script");
+check(packageJson.scripts?.["ready:public"] === "npm run check && npm run build", "package has public readiness script");
 check(packageJson.scripts?.["verify:public"] === "node scripts/verify-public-url.mjs", "package has public URL verifier script");
 check(packageJson.scripts?.check.includes("npm run test:e2e"), "package check runs Playwright e2e tests");
 check(packageJson.scripts?.check.includes("node --check scripts/verify-public-url.mjs"), "package check syntax-checks public URL verifier");

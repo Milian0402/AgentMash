@@ -40,7 +40,7 @@ These can be free at small scale, but always confirm limits before enabling them
 
 ## Public Website Checklist
 
-- Run `npm run build`.
+- Run `npm run ready:public`.
 - Confirm `_site/` contains public app files only.
 - Confirm the chosen host publishes `_site/`, not the repo root.
 - Pick a final public URL.
@@ -64,6 +64,16 @@ npm run verify:public -- https://YOUR-PUBLIC-URL
 The verifier checks the public app shell, support/privacy/terms/404 pages, manifest, service worker, Apple touch icon, update-friendly cache headers for `sw.js` and `manifest.webmanifest`, and that internal files such as `store/completion-audit.md`, `package.json`, and `PUBLISHING.md` are not public.
 
 Warnings mean the site can load but the host should be reviewed, usually because security headers or no-cache headers are missing. Failures should be fixed before announcing the link.
+
+## Local Public-Ready Command
+
+Before connecting or updating a host, run:
+
+```sh
+npm run ready:public
+```
+
+This runs the full local quality gate and rebuilds `_site/`. It does not deploy, publish, contact anyone, create an account, or spend money.
 
 ## Agent Customer Checklist
 

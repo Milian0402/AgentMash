@@ -30,6 +30,7 @@ Make AgentMash good enough to launch publicly as a serious app.
 - PWA manifest declares `en-US` language and left-to-right text direction for install surfaces.
 - PWA icon PNGs are verified at 192 by 192, 512 by 512, and 1024 by 1024, with the Apple touch icon verified at 180 by 180.
 - Public build script packages `_site/` without internal launch docs, submission drafts, scripts, or repo metadata.
+- `npm run ready:public` runs the full local quality gate and rebuilds `_site/` before the user connects hosting.
 - `npm run verify:public -- https://YOUR-PUBLIC-URL` is ready for the first live host/domain check after user-owned deployment.
 - Internal publishing notes are not linked from the app footer, packaged into `_site/`, or cached by the service worker.
 - GitHub Pages, Netlify, and Vercel configs publish `_site/` instead of repo root.
@@ -93,6 +94,7 @@ Make AgentMash good enough to launch publicly as a serious app.
 ## Verification Evidence
 
 - `npm run check` passes.
+- `npm run ready:public` passes and rebuilds `_site/` after the full local quality gate.
 - `npm run check:launch` passes.
 - `npm run check` syntax-checks `app.js`, `state.js`, `packet.js`, `render.js`, and `gestures.js`.
 - Playwright runs the module app through `npm run serve` at `http://127.0.0.1:5177/`, not a blocked `file://` module load.
@@ -104,6 +106,7 @@ Make AgentMash good enough to launch publicly as a serious app.
 - `npm run check` verifies public PWA screenshot PNG dimensions match the manifest-declared 390 by 844 and 1440 by 1000 sizes.
 - `npm run check` verifies `_headers`, Netlify, and Vercel keep the service worker and manifest update-friendly with `Cache-Control: no-cache`.
 - `npm run check` syntax-checks the live public URL verifier without contacting any host.
+- `npm run check` verifies the local public-readiness script exists.
 - `schemas/feedback.v2.json` parses as JSON and is checked for the `agentmash.feedback.v2` contract.
 - The runtime packet schema and app code are checked to keep return modes local-only: `json` and `dataset`.
 - `store/native-wrapper-handoff.md` records the later native shell path, bundle IDs, `_site` web directory, and no-analytics native rules.

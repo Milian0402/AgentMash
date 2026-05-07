@@ -8,7 +8,7 @@ Last local verification: May 7, 2026. No deployment, paid account, domain purcha
 - [x] Run `npm run check:launch`.
 - [x] Syntax-check `app.js`, `state.js`, `packet.js`, `render.js`, `gestures.js`, `sw.js`, and launch scripts.
 - [x] Run Playwright e2e coverage through local HTTP with `npm run serve`.
-- [x] Run `npm run build`.
+- [x] Run `npm run ready:public`.
 - [x] Confirm `_site/` includes public app files and native modules.
 - [x] Confirm `_site/` excludes internal `store/`, `scripts/`, tests, repo metadata, package files, and host config files.
 - [x] Confirm GitHub Pages, Netlify, and Vercel configs use `_site/` as the publish or output directory.
