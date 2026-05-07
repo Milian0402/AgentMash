@@ -129,6 +129,7 @@ const app = await read("app.js");
 const serviceWorker = await read("sw.js");
 const headers = await read("_headers");
 const netlify = await read("netlify.toml");
+const pagesWorkflow = await read(".github/workflows/pages.yml");
 const readme = await read("README.md");
 const completionAudit = await read("store/completion-audit.md");
 const audit = await read("store/public-launch-audit.md");
@@ -160,6 +161,7 @@ check(hasAll(netlify, securityHeaders), "netlify config defines security headers
 check(hasAll(JSON.stringify(vercel), securityHeaders), "vercel config defines security headers");
 check(headers.includes("connect-src 'self'") && headers.includes("form-action 'self'"), "CSP blocks outside connections and forms");
 check(headers.includes("payment=()"), "permissions policy blocks payment permission");
+check(hasAll(pagesWorkflow, htmlPages), "GitHub Pages workflow publishes all HTML pages");
 check(readme.includes("store/public-launch-audit.md"), "README links public launch audit");
 check(readme.includes("store/completion-audit.md"), "README links completion audit");
 check(completionAudit.includes("Prompt-To-Artifact Checklist"), "completion audit has prompt-to-artifact checklist");

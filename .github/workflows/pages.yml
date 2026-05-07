@@ -33,6 +33,7 @@ jobs:
             manifest.webmanifest \
             sw.js \
             privacy.html \
+            support.html \
             terms.html \
             publishing.html \
             404.html \
