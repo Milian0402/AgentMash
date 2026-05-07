@@ -252,6 +252,13 @@ test("Rapid decisions are locked and mobile filter labels stay readable", async 
   });
   expect(clippedFilters).toEqual([]);
 
+  const headerHasClearance = await page.evaluate(() => {
+    const brand = document.querySelector(".brand-lockup").getBoundingClientRect();
+    const switcher = document.querySelector("#dashboardSwitch").getBoundingClientRect();
+    return brand.right <= switcher.left || brand.bottom <= switcher.top || switcher.bottom <= brand.top;
+  });
+  expect(headerHasClearance).toBe(true);
+
   const lockState = await page.locator("#acceptButton").evaluate((button) => {
     const click = new MouseEvent("click", { bubbles: true, cancelable: true });
     button.dispatchEvent(click);
