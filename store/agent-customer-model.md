@@ -52,7 +52,7 @@ Webhook and polling channels are deferred until there is authentication, server 
     "goal": "string"
   },
   "humanJudgement": {
-    "verdict": "nice | pass",
+    "verdict": "accepted | rejected",
     "firstImpression": "accepted_on_first_glance | rejected_on_first_glance",
     "preferenceLabel": "chosen | rejected",
     "signalStrength": 0.82,
@@ -90,11 +90,13 @@ Webhook and polling channels are deferred until there is authentication, server 
   "return": {
     "mode": "json | dataset",
     "target": "string",
-    "format": "application/json",
+    "format": "application/json | application/x-ndjson",
     "deliveryStatus": "local_ready"
   }
 }
 ```
+
+Migration note: v2 exports normalize the human UI labels Nice/Nope into `accepted` / `rejected` so downstream datasets do not confuse `pass` with approval. The local review state still stores the UI verdicts because they drive copy, styling, and undo behavior inside the app.
 
 ## Pairwise Row Contract
 

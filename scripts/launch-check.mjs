@@ -234,6 +234,13 @@ check(app.includes("await writeImageData(imageKey, pendingImageData)") && app.in
 check(index.includes("storageHealthStatus") && renderModule.includes("estimateImageStoreBytes") && renderModule.includes("localStorageProfileBytes"), "human dashboard shows storage health");
 check(appSurface.includes("Local storage full") && appSurface.includes("setStorageStatus"), "localStorage quota failure surfaces in the UI");
 check(appSurface.includes("signalStrengthFormula") && appSurface.includes("agentmash.feedback.v2"), "feedback packets use schema v2 with signal strength formula");
+check(
+  packetModule.includes("exportVerdictFor")
+    && packetModule.includes("accepted")
+    && packetModule.includes("rejected")
+    && JSON.stringify(feedbackSchema).includes("application/x-ndjson"),
+  "export packets use unambiguous verdicts and dataset return format"
+);
 check(!/webhook|polling/i.test([appSurface, JSON.stringify(feedbackSchema)].join("\n")), "runtime packet contract is local-export only");
 check(
   feedbackSchema.title === "AgentMash Feedback Packet v2"
@@ -269,6 +276,7 @@ check(
   hasAll(testSpec, ["Profile export and import roundtrip restores uploaded images", "readFile", "#importFile", "storedImageForKey"]),
   "Playwright covers image export import roundtrip"
 );
+check(hasAll(testSpec, ["application/x-ndjson", "rejected", "accepted"]), "Playwright covers normalized export packet contract");
 check(
   hasAll(testSpec, ["Changing a pending upload stores only the submitted image", "imageStoreKeys", "first.png", "second.png"]),
   "Playwright covers pending upload submit-only storage"
@@ -344,6 +352,8 @@ for (const page of htmlPages) {
   const content = await read(page);
   check(content.includes('<meta name="viewport"'), `${page} has viewport metadata`);
   check(content.includes('href="styles.css"'), `${page} loads shared styles`);
+  check(content.includes('rel="icon"') && content.includes("assets/app-icon.svg"), `${page} links favicon`);
+  check(content.includes('rel="apple-touch-icon"') && content.includes("assets/icons/apple-touch-icon.png"), `${page} links Apple touch icon`);
 }
 
 if (failures) {

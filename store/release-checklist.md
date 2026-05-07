@@ -26,6 +26,7 @@ Last local verification: May 7, 2026. No deployment, paid account, domain purcha
 - [x] Stress-test 500 local artifacts, 250 existing reviews, and 100 more swipes.
 - [x] Swipe Nice and Nope.
 - [x] Undo a decision.
+- [x] Confirm Undo preserves the active deck filter.
 - [x] Open and close Details.
 - [x] Open Refine and verify it closes after a decision.
 - [x] Confirm Refine opens as a bottom sheet above the decision controls.
@@ -39,12 +40,15 @@ Last local verification: May 7, 2026. No deployment, paid account, domain purcha
 - [x] Enable Endless mode and verify one loop card is created at a time.
 - [x] Record a Pairwise comparison without creating a swipe review.
 - [x] Export ready JSON and JSONL data.
+- [x] Confirm exported packet verdicts use `accepted` and `rejected`.
+- [x] Confirm dataset-mode return envelopes use `application/x-ndjson`.
 - [x] Confirm `schemas/feedback.v2.json` documents the v2 feedback packet contract.
 - [x] Confirm native wrapper handoff exists without installing native dependencies.
 - [x] Confirm empty Export workspace metrics show zero items, zero rows, and no stale average signal.
 - [x] Confirm no console errors in local smoke testing.
 - [x] Confirm app icons load in the manifest.
 - [x] Confirm manifest screenshots load from public assets.
+- [x] Confirm all public HTML pages link the app favicon and Apple touch icon.
 - [x] Confirm the install prompt is visible from the Human review screen without exposing other profile actions.
 - [x] Confirm support, privacy, terms, publishing, and 404 pages render locally.
 - [x] Confirm no analytics, payment, contact, telemetry, socket, third-party API, or outbound fetch hooks exist in the public app surface.

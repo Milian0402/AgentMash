@@ -2,6 +2,7 @@ import {
   ALLOWED_IMAGE_TYPES,
   APP_VERSION,
   MAX_IMAGE_BYTES,
+  artifactTypes,
   calculateScore,
   clearImageStore,
   cloneDefaultState,
@@ -91,6 +92,7 @@ function decide(verdict) {
     id: createId(),
     itemId: item.id,
     reviewer: state.reviewer,
+    filter: state.filter,
     verdict,
     scores,
     score,
@@ -157,8 +159,10 @@ function undoLastReview() {
     return;
   }
   const item = state.items.find((candidate) => candidate.id === review.itemId);
-  if (item) {
-    state.filter = item.type;
+  if (["all", ...artifactTypes].includes(review.filter)) {
+    state.filter = review.filter;
+  } else if (item && state.filter !== "all" && state.filter !== item.type) {
+    state.filter = "all";
   }
   state.currentItemId = review.itemId;
   state.lastPacketItemId = state.reviews.at(-1)?.itemId || null;

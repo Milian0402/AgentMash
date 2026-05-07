@@ -189,6 +189,7 @@ test("Nice, Undo, and Nope produce a v2 feedback packet", async ({ page }) => {
   await expect(page.locator("#detailSheet")).toContainText("OpsPilot landing page");
   await page.getByRole("button", { name: "Close" }).click();
   await expect(page.locator("#detailSheet")).toBeHidden();
+  await expect(page.locator("#stageProgress")).toHaveText("1 / 4");
   await expect(page.locator("#signalPanel")).toBeHidden();
   await page.getByRole("button", { name: "Refine" }).click();
   await expect(page.locator("#signalPanel")).toBeVisible();
@@ -200,7 +201,11 @@ test("Nice, Undo, and Nope produce a v2 feedback packet", async ({ page }) => {
 
   await page.getByRole("button", { name: "Undo" }).click();
   await expect.poll(() => reviewCount(page)).toBe(0);
+  await expect(page.locator("#stageProgress")).toHaveText("1 / 4");
   await expect(page.locator("#streakCounter")).toHaveText("0 in a row, 0 today, 0-day streak");
+  let profile = await page.evaluate((key) => JSON.parse(localStorage.getItem(key)), storageKey);
+  expect(profile.filter).toBe("all");
+  expect(profile.currentItemId).toBe("site-landing-001");
 
   await page.getByRole("button", { name: /Nope/ }).click();
   await expect.poll(() => reviewCount(page)).toBe(1);
@@ -215,10 +220,11 @@ test("Nice, Undo, and Nope produce a v2 feedback packet", async ({ page }) => {
   expect(packet.schema).toBe("agentmash.feedback.v2");
   expect(packet.status).toBe("ready");
   expect(packet.signalStrengthFormula.name).toBe("score_extremity_plus_annotation");
-  expect(packet.humanJudgement.verdict).toBe("pass");
+  expect(packet.humanJudgement.verdict).toBe("rejected");
   expect(packet.humanJudgement).toHaveProperty("signalStrength");
   expect(packet.humanJudgement).not.toHaveProperty("confidence");
   expect(packet.humanSignal).toHaveProperty("signalStrength");
+  expect(packet.humanSignal.verdict).toBe("rejected");
   expect(packet.agentUse).toHaveProperty("signalStrength");
   expect(packet.evalRow.schema).toBe("agentmash.eval-row.v2");
   expect(packet.evalRow.humanSignal).toHaveProperty("signalStrength");
@@ -357,7 +363,8 @@ test("Pairwise mode stores comparison rows without creating swipe reviews", asyn
   const packet = await page.locator("#packetPreview").evaluate((node) => JSON.parse(node.textContent));
   expect(packet.schema).toBe("agentmash.feedback.v2");
   expect(packet.evalRow.schema).toBe("agentmash.eval-row.v2");
-  expect(packet.humanJudgement.verdict).toBe("nice");
+  expect(packet.humanJudgement.verdict).toBe("accepted");
+  expect(packet.humanSignal.verdict).toBe("accepted");
   expect(packet.pairwiseComparisons).toHaveLength(1);
   expect(packet.humanSignal.pairwisePreference).toHaveLength(1);
 });
@@ -447,6 +454,7 @@ test("Changing a pending upload stores only the submitted image", async ({ page 
 
   await page.getByRole("button", { name: "Add artifact" }).click();
   await page.locator("#artifactTitle").fill("Replacement upload smoke");
+  await page.locator("#agentReturnMode").selectOption("dataset");
   await page.setInputFiles("#artifactImage", {
     name: "first.png",
     mimeType: "image/png",
@@ -470,9 +478,16 @@ test("Changing a pending upload stores only the submitted image", async ({ page 
 
   expect(storedProfile.items[0]).toMatchObject({
     title: "Replacement upload smoke",
+    agent: expect.objectContaining({
+      returnMode: "dataset"
+    }),
     imageKey: storedKey,
     imageData: ""
   });
+
+  await page.getByRole("button", { name: "Export workspace" }).click();
+  const packet = await page.locator("#packetPreview").evaluate((node) => JSON.parse(node.textContent));
+  expect(packet.expectedReturn.format).toBe("application/x-ndjson");
 });
 
 test("Profile export and import roundtrip restores uploaded images", async ({ page }) => {

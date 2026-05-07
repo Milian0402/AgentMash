@@ -303,6 +303,7 @@ export function normalizeReview(review) {
     id: cleanText(review.id) || createId(),
     itemId: cleanText(review.itemId),
     reviewer: cleanText(review.reviewer) || defaultState.reviewer,
+    filter: ["all", ...artifactTypes].includes(review.filter) ? review.filter : "",
     verdict,
     scores,
     score,

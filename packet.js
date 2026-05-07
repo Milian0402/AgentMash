@@ -124,7 +124,7 @@ export function buildFeedbackPacket(item, review) {
     humanSignal,
     humanJudgement: {
       reviewer: review.reviewer,
-      verdict: review.verdict,
+      verdict: exportVerdictFor(review),
       firstImpression: humanSignal.firstImpression,
       preferenceLabel: humanSignal.preferenceLabel,
       signalStrength: humanSignal.signalStrength,
@@ -178,7 +178,7 @@ export function humanSignalFor(item, review) {
   const pairwisePreference = pairwiseComparisonsFor(item);
   return {
     reviewer: review.reviewer,
-    verdict: review.verdict,
+    verdict: exportVerdictFor(review),
     preferenceLabel: preferenceLabelFor(review),
     firstImpression: review.verdict === "nice" ? "accepted_on_first_glance" : "rejected_on_first_glance",
     score: review.score,
@@ -191,6 +191,10 @@ export function humanSignalFor(item, review) {
     rationale: review.note || defaultRationaleFor(item, review),
     judgedAt: review.createdAt
   };
+}
+
+export function exportVerdictFor(review) {
+  return review.verdict === "nice" ? "accepted" : "rejected";
 }
 
 export function pairwiseComparisonsFor(item) {
@@ -252,8 +256,12 @@ export function returnEnvelope(agent) {
   return {
     mode: agent.returnMode,
     target: agent.returnTarget || "local export",
-    format: "application/json"
+    format: returnFormatFor(agent.returnMode)
   };
+}
+
+export function returnFormatFor(mode) {
+  return mode === "dataset" ? "application/x-ndjson" : "application/json";
 }
 
 export function returnBehaviorFor(mode) {

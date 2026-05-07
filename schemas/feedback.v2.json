@@ -79,7 +79,7 @@
           "type": "string"
         },
         "verdict": {
-          "enum": ["nice", "pass"]
+          "enum": ["accepted", "rejected"]
         },
         "firstImpression": {
           "type": "string"
@@ -264,7 +264,7 @@
           "type": "string"
         },
         "verdict": {
-          "enum": ["nice", "pass"]
+          "enum": ["accepted", "rejected"]
         },
         "preferenceLabel": {
           "enum": ["chosen", "rejected"]
@@ -348,7 +348,7 @@
           "type": "string"
         },
         "format": {
-          "const": "application/json"
+          "enum": ["application/json", "application/x-ndjson"]
         },
         "deliveryStatus": {
           "type": "string"
