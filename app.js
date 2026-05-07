@@ -169,6 +169,8 @@ const defaultState = {
   filter: "all",
   dashboard: "human",
   reviewMode: "swipe",
+  endlessMode: false,
+  loopCursor: 0,
   pairwise: {
     leftItemId: null,
     rightItemId: null
@@ -199,6 +201,7 @@ const elements = {
   agentDashboard: document.querySelector("#agentDashboard"),
   reviewerName: document.querySelector("#reviewerName"),
   reviewModeTabs: document.querySelector("#reviewModeTabs"),
+  endlessToggle: document.querySelector("#endlessToggle"),
   filterTabs: document.querySelector("#filterTabs"),
   humanAddButton: document.querySelector("#humanAddButton"),
   queueCount: document.querySelector("#queueCount"),
@@ -337,6 +340,8 @@ function normalizeState(candidate) {
     filter,
     dashboard: ["human", "agent"].includes(candidate.dashboard) ? candidate.dashboard : "human",
     reviewMode: normalizeReviewMode(candidate.reviewMode),
+    endlessMode: Boolean(candidate.endlessMode),
+    loopCursor: Number.isFinite(Number(candidate.loopCursor)) ? Math.max(0, Math.floor(Number(candidate.loopCursor))) : 0,
     pairwise: normalizePairwise(candidate.pairwise, itemIds),
     items,
     reviews,
@@ -369,6 +374,7 @@ function normalizeItem(item) {
     question: cleanText(item.question) || defaultQuestion(type),
     agent: normalizeAgent(item.agent),
     variant: normalizeVariant(item.variant),
+    loopSourceItemId: cleanText(item.loopSourceItemId),
     imageKey: cleanText(item.imageKey) || (imageData ? createShortId("image") : ""),
     imageData,
     createdAt: cleanText(item.createdAt) || new Date().toISOString()
@@ -643,6 +649,42 @@ function setCurrentToNext() {
   state.currentItemId = pending.length ? pending[0].id : null;
 }
 
+function loopSourceItems() {
+  const sources = filteredItems().filter((item) => !item.loopSourceItemId);
+  return sources.length ? sources : filteredItems();
+}
+
+function ensureEndlessItem() {
+  if (!state.endlessMode || pendingItems().length) {
+    return null;
+  }
+
+  const sources = loopSourceItems();
+  if (!sources.length) {
+    return null;
+  }
+
+  const source = sources[state.loopCursor % sources.length];
+  const createdAt = new Date().toISOString();
+  const item = {
+    ...source,
+    id: createId(),
+    variant: variantForRemix(source),
+    loopSourceItemId: source.loopSourceItemId || source.id,
+    agent: {
+      ...source.agent,
+      runId: createShortId("loop"),
+      submittedAt: createdAt
+    },
+    createdAt
+  };
+
+  state.items = [item, ...state.items];
+  state.currentItemId = item.id;
+  state.loopCursor = (state.loopCursor + 1) % sources.length;
+  return item;
+}
+
 function getPairwiseItems() {
   const items = filteredItems();
   if (items.length < 2) {
@@ -676,9 +718,16 @@ function setNextPairwise(currentPair = null) {
 
 function render() {
   const isPairwise = state.reviewMode === "pairwise";
-  const activeItem = getActiveItem();
-  const pending = pendingItems();
+  let activeItem = getActiveItem();
+  let pending = pendingItems();
   const filtered = filteredItems();
+  if (!isPairwise && !activeItem) {
+    const endlessItem = ensureEndlessItem();
+    if (endlessItem) {
+      activeItem = endlessItem;
+      pending = pendingItems();
+    }
+  }
   const pairwisePair = getPairwiseItems();
   const activeType = isPairwise
     ? pairwisePair?.left.type || (state.filter === "all" ? "website" : state.filter)
@@ -698,6 +747,7 @@ function render() {
 
   renderTabs();
   renderReviewModeTabs();
+  renderEndlessToggle();
   renderRubric(activeType);
   renderScoreControls();
   renderTags();
@@ -783,6 +833,14 @@ function renderReviewModeTabs() {
     button.classList.toggle("active", active);
     button.setAttribute("aria-pressed", active ? "true" : "false");
   });
+}
+
+function renderEndlessToggle() {
+  const enabled = Boolean(state.endlessMode);
+  elements.endlessToggle.textContent = enabled ? "Endless on" : "Endless off";
+  elements.endlessToggle.classList.toggle("active", enabled);
+  elements.endlessToggle.setAttribute("aria-pressed", enabled ? "true" : "false");
+  elements.endlessToggle.disabled = state.reviewMode === "pairwise";
 }
 
 function renderPairwise(pair) {
@@ -2339,6 +2397,16 @@ elements.reviewModeTabs.addEventListener("click", (event) => {
   }
   isRefineOpen = false;
   isDetailSheetOpen = false;
+  saveState();
+  render();
+});
+
+elements.endlessToggle.addEventListener("click", () => {
+  state.endlessMode = !state.endlessMode;
+  if (state.endlessMode) {
+    state.reviewMode = "swipe";
+    ensureEndlessItem();
+  }
   saveState();
   render();
 });

@@ -38,8 +38,9 @@ Make AgentMash good enough to launch publicly as a serious app, while staying in
 - The Details sheet closes after each decision so the next artifact returns to the clean card state.
 - Deck completion shows a Keepers summary instead of dead air.
 - Deck completion can start a local Remix session with thumbnail or first-line glance variants without overwriting existing export rows.
+- Endless mode auto-loops one local glance-variant card at a time when enabled.
 - Pairwise mode captures relative preference signals without creating normal swipe reviews.
-- `npm run check` includes Playwright e2e coverage for review flow, packet shape, Keepers completion state, Remix repeat sessions with variant metadata, Pairwise comparison export, empty Export workspace state, and image persistence.
+- `npm run check` includes Playwright e2e coverage for review flow, packet shape, Keepers completion state, Remix repeat sessions with variant metadata, Endless auto-looping, Pairwise comparison export, empty Export workspace state, and image persistence.
 - App Store and Google Play prep is documented without creating paid accounts.
 - Verification covers static files, metadata, security posture, forbidden hooks, launch docs, store assets, and the core runtime flow.
 - Remaining requirements that need user accounts, money, contact details, deployment, or legal decisions are named and not pretended done.
@@ -58,6 +59,7 @@ Make AgentMash good enough to launch publicly as a serious app, while staying in
 | Make card details tap-to-reveal. | `index.html` hides `detailSheet` behind `Details`; `app.js` closes it after decisions; Playwright verifies hidden, open with artifact title, close, and hidden again. | Met locally |
 | Replace deck-complete dead air with Keepers. | `index.html` renders a Keepers completion state, `app.js` lists recent Nice artifacts from the completed view, and Playwright verifies the surviving artifact appears after the deck empties. | Met locally |
 | Keep the review loop going after completion. | `index.html` adds `Remix deck`, `app.js` clones the filtered local deck into new item IDs with thumbnail or first-line variants, and Playwright verifies old reviews remain, item IDs stay unique, variant metadata exports, and JSONL rows grow only after the next swipe. | Met locally |
+| Make the swipe loop automatic when requested. | `index.html` adds `Endless`, `app.js` creates one loop card at a time with `loopSourceItemId`, and Playwright verifies the app avoids the empty state while growing local storage only one card per completed swipe. | Met locally |
 | Add pairwise preference capture. | `index.html` adds Pairwise mode, `app.js` stores `pairwiseComparisons` separately from swipe reviews, exports `agentmash.pairwise-row.v1`, and Playwright verifies pairwise choices do not create normal reviews while packet/export rows still work. | Met locally |
 | Rename product and repo to AgentMash. | `package.json`, `manifest.webmanifest`, visible HTML, docs, and GitHub remote point to `Milian0402/AgentMash`. | Met locally |
 | Put repo in the code folder. | Local repo path is `/Users/maximiliannordler/code/AgentMash`. | Met locally |
@@ -74,7 +76,7 @@ Make AgentMash good enough to launch publicly as a serious app, while staying in
 | Remove misleading inbound-agent scope. | The second dashboard is now framed as `Export workspace` / `Local export workspace`; `npm run check` rejects `Agent lab`, `Request Queue`, `Waiting on humans`, `Returned Signals`, `Retry queue`, and `No agent requests` in the public app. | Met locally |
 | Rename misleading confidence output. | Feedback packets use `agentmash.feedback.v2`, `signalStrength`, and top-level `signalStrengthFormula`; eval rows use `agentmash.eval-row.v2`; `store/agent-customer-model.md` documents the migration. | Met locally |
 | Confirm reviewer name persistence visibly. | `index.html`, `styles.css`, and `app.js` show a saved/not-saved status after reviewer name edits. | Met locally |
-| Add Playwright regression coverage. | `tests/review-flow.spec.mjs` is wired through `npm run check` and covers Nice, Undo, Nope, v2 packet shape, Keepers completion state, Remix repeat sessions with variant metadata, Pairwise comparison export, empty Export workspace state, and IndexedDB image persistence. | Met locally |
+| Add Playwright regression coverage. | `tests/review-flow.spec.mjs` is wired through `npm run check` and covers Nice, Undo, Nope, v2 packet shape, Keepers completion state, Remix repeat sessions with variant metadata, Endless auto-looping, Pairwise comparison export, empty Export workspace state, and IndexedDB image persistence. | Met locally |
 | Make it closer to App Store or Google Play readiness without paid setup. | `store/app-store-listing.md`, `store/app-store-submission.md`, `store/privacy-data-safety-draft.md`, and `store/submission` draft assets. | Met locally |
 | Verify core behavior, not just files. | Real browser smoke test on `http://127.0.0.1:5177` passed: title, human dashboard, note save, Nice, Undo, Nope, Export workspace, ready packet, JSONL preview, packet JSON, and download buttons. Console errors: 0. | Met locally |
 | Keep the repo private. | `gh repo view Milian0402/AgentMash` showed `visibility: PRIVATE`. | Met locally |
@@ -105,7 +107,6 @@ These are still not done because they require user-owned accounts, money, public
 - Store screenshots captured from the native wrapper.
 - App Review or Play review contact details.
 - Legal/privacy review for paid or hosted use.
-- Fully automatic deck looping remains product polish work not yet implemented.
 
 ## Conclusion
 

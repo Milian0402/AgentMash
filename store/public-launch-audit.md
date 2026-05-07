@@ -33,6 +33,7 @@ Make AgentMash good enough to launch publicly as a serious app.
 - Details sheet is hidden by default and closes after a decision, keeping the next artifact card clean.
 - Deck completion shows a Keepers summary instead of dead air, listing recent artifacts that survived the review flow.
 - Deck completion can start a local Remix session that creates thumbnail or first-line glance variants without overwriting existing export rows.
+- Endless mode can auto-loop one local glance-variant card at a time when the swipe deck empties, avoiding bulk storage growth.
 - Human review includes Pairwise mode for choosing the stronger of two artifacts without creating normal swipe reviews.
 - Export workspace includes `agentmash.pairwise-row.v1` JSONL rows and optional pairwise context in ready feedback packets.
 - Export workspace zero-item and zero-review states are covered by Playwright and show zero ready exports, zero unjudged items, no average signal, empty packet status, and zero dataset rows.
@@ -45,7 +46,7 @@ Make AgentMash good enough to launch publicly as a serious app.
 
 - `npm run check` passes.
 - `npm run check:launch` passes.
-- `npm run check` now includes Playwright e2e coverage for Nice, Undo, Nope, v2 packet shape, Keepers completion state, Remix repeat sessions with variant metadata, Pairwise comparison export, empty Export workspace state, and IndexedDB image storage.
+- `npm run check` now includes Playwright e2e coverage for Nice, Undo, Nope, v2 packet shape, Keepers completion state, Remix repeat sessions with variant metadata, Endless auto-looping, Pairwise comparison export, empty Export workspace state, and IndexedDB image storage.
 - `manifest.webmanifest`, `package.json`, and `vercel.json` parse as JSON.
 - Mobile browser check at 390 by 844 showed no horizontal overflow.
 - Desktop browser check at 1440 by 1000 showed no horizontal overflow.
@@ -72,6 +73,7 @@ Make AgentMash good enough to launch publicly as a serious app.
 - Playwright e2e test passed: Details opens the hidden artifact detail sheet and closes it again.
 - Playwright e2e test passed: completing the deck after a Nice judgement renders a Keepers summary with the surviving artifact.
 - Playwright e2e test passed: Remix deck doubles local items from 4 to 8, creates thumbnail and first-line variants, keeps the original 4 reviews, adds a fifth review on the next swipe, preserves unique reviewed item IDs, exports variant metadata, and shows 5 JSONL rows.
+- Playwright e2e test passed: Endless mode creates one local loop card after deck completion, records it as a normal v2 review on swipe, then creates only one next loop card.
 - Playwright e2e test passed: Pairwise mode records a comparison without creating a swipe review, exports `agentmash.pairwise-row.v1`, then keeps normal v2 packets and rows working after returning to Swipe mode.
 - Playwright e2e test passed: zero items and zero reviews rendered empty Export workspace counts and an empty packet without stale metrics.
 - `npm run serve:build` served `_site/`; `/` and `assets/icons/apple-touch-icon.png` returned 200, while `store/completion-audit.md` returned 404.
@@ -122,4 +124,3 @@ Passed checks:
 - Paid plans, billing, auth, server storage, lab customer accounts, webhooks, or polling endpoints.
 - Legal review.
 - No backend, inbound agent submission, polling, webhook, or customer pipeline exists; the current second dashboard is a local export workspace.
-- Fully automatic deck looping remains product polish work not yet implemented.

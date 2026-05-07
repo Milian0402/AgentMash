@@ -177,6 +177,7 @@ check(index.includes("detailsButton") && index.includes('id="detailSheet" hidden
 check(index.includes("keeperList") && index.includes("Keepers"), "deck completion has keepers summary");
 check(index.includes("emptyRemixButton") && app.includes("remixCurrentDeck"), "deck completion can start a local remix session");
 check(app.includes("variantForRemix") && app.includes("first-line") && styles.includes("is-thumbnail"), "remix sessions create glance variants");
+check(index.includes("endlessToggle") && app.includes("ensureEndlessItem") && app.includes("loopSourceItemId"), "endless mode auto-loops one local card at a time");
 check(index.includes("reviewModeTabs") && index.includes("pairwiseStage") && app.includes("choosePairwise"), "human review includes local pairwise mode");
 check(app.includes("agentmash.pairwise-row.v1") && app.includes("pairwiseComparisons"), "pairwise comparisons export as structured rows");
 check(app.includes("humanAddButton") && app.includes("openAddArtifactPanel"), "human add-artifact entry exists");

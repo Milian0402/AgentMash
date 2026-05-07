@@ -20,6 +20,13 @@ async function reviewCount(page) {
   }, storageKey);
 }
 
+async function itemCount(page) {
+  return page.evaluate((key) => {
+    const profile = JSON.parse(localStorage.getItem(key));
+    return profile.items.length;
+  }, storageKey);
+}
+
 test("Nice, Undo, and Nope produce a v2 feedback packet", async ({ page }) => {
   await resetApp(page);
 
@@ -197,6 +204,45 @@ test("Pairwise mode stores comparison rows without creating swipe reviews", asyn
   expect(packet.humanJudgement.verdict).toBe("nice");
   expect(packet.pairwiseComparisons).toHaveLength(1);
   expect(packet.humanSignal.pairwisePreference).toHaveLength(1);
+});
+
+test("Endless mode auto-loops one local variant at a time", async ({ page }) => {
+  await resetApp(page);
+
+  await page.getByRole("button", { name: "Endless off" }).click();
+  await expect(page.getByRole("button", { name: "Endless on" })).toBeVisible();
+
+  for (const count of [1, 2, 3, 4]) {
+    await page.getByRole("button", { name: /Nice/ }).click();
+    await expect.poll(() => reviewCount(page)).toBe(count);
+  }
+
+  await expect(page.locator("#swipeCard")).toBeVisible();
+  await expect(page.locator("#emptyState")).toBeHidden();
+
+  await expect.poll(() => itemCount(page)).toBe(5);
+  let profile = await page.evaluate((key) => JSON.parse(localStorage.getItem(key)), storageKey);
+  expect(profile.items).toHaveLength(5);
+  expect(profile.items[0]).toMatchObject({
+    loopSourceItemId: "site-landing-001",
+    variant: "thumbnail"
+  });
+  expect(profile.items[0].agent.runId).toMatch(/^loop-/);
+
+  await page.getByRole("button", { name: /Nice/ }).click();
+  await expect.poll(() => reviewCount(page)).toBe(5);
+
+  await expect.poll(() => itemCount(page)).toBe(6);
+  profile = await page.evaluate((key) => JSON.parse(localStorage.getItem(key)), storageKey);
+  expect(profile.items).toHaveLength(6);
+  expect(profile.items[0].loopSourceItemId).toBe("logo-bakery-001");
+
+  await page.getByRole("button", { name: "Export workspace" }).click();
+  await expect(page.locator("#datasetStatus")).toHaveText("5 rows");
+
+  const packet = await page.locator("#packetPreview").evaluate((node) => JSON.parse(node.textContent));
+  expect(packet.request.runId).toMatch(/^loop-/);
+  expect(packet.request.variant).toBe("thumbnail");
 });
 
 test("Uploaded images are stored in IndexedDB instead of localStorage", async ({ page }) => {
