@@ -15,6 +15,7 @@ Make AgentMash good enough to launch publicly as a serious app.
 - Default Human review flow keeps scoring, tags, and notes behind a `Refine` tap so the first-pass loop stays card-first.
 - `Refine` opens as a bottom sheet above the decision controls so users do not scroll below the swipe buttons to adjust scores.
 - Human review shows a compact momentum counter for current run count, today's reviews, and day streak, with subtle 10/25/50 milestone animation.
+- Human review shows profile insights summarizing rejection rates, nice rates, and review volume from local data.
 - Decisions use supported vibration patterns and a quiet local WebAudio tick for tactile feedback.
 - Title, prompt, requester line, and artifact detail are hidden behind a `Details` sheet by default so the card stays focused on one visual object.
 - Export workspace collects ready packets, JSON downloads, and JSONL eval rows from local review data.
@@ -85,6 +86,7 @@ Make AgentMash good enough to launch publicly as a serious app.
 - Playwright e2e test passed: profile export bundled uploaded image data, reset cleared the profile, import restored the artifact, `localStorage` kept only the `imageKey`, and IndexedDB contained the restored data URL.
 - Playwright e2e test passed: Nice, Undo, and Nope produced a ready `agentmash.feedback.v2` packet with `signalStrength`, no `confidence` field, and `agentmash.eval-row.v2`.
 - Playwright e2e test passed: the always-visible momentum counter updated through Nice, Undo, and Nope.
+- Playwright e2e test passed: profile insights generated a type-rate insight after a review.
 - Playwright e2e test passed: the storage health indicator rendered local profile usage and IndexedDB image status.
 - Playwright e2e test passed: Refine opens the hidden scoring/note panel and the panel closes again after a decision.
 - Playwright e2e test passed: Details opens the hidden artifact detail sheet and closes it again.

@@ -28,6 +28,7 @@ Last local verification: May 7, 2026. No deployment, paid account, domain purcha
 - [x] Open Refine and verify it closes after a decision.
 - [x] Confirm Refine opens as a bottom sheet above the decision controls.
 - [x] Confirm the momentum counter updates after Nice, Undo, and Nope.
+- [x] Confirm profile insights update after a review.
 - [x] Confirm decisions use supported haptic patterns and a quiet local WebAudio tick.
 - [x] Confirm light and dark color schemes follow OS preference.
 - [x] Confirm the mobile layout uses iOS safe-area inset spacing.

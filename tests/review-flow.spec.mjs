@@ -158,6 +158,7 @@ test("Nice, Undo, and Nope produce a v2 feedback packet", async ({ page }) => {
   await page.getByRole("button", { name: /Nope/ }).click();
   await expect.poll(() => reviewCount(page)).toBe(1);
   await expect(page.locator("#streakCounter")).toHaveText("1 in a row, 1 today, 1-day streak");
+  await expect(page.locator("#profileInsights")).toContainText("Website: 0% nice rate across 1.");
 
   await page.getByRole("button", { name: "Export workspace" }).click();
   await expect(page.locator("#packetStatus")).toHaveText("Ready");

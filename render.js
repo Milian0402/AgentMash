@@ -105,6 +105,7 @@ export const elements = {
   avgScore: document.querySelector("#avgScore"),
   keeperCount: document.querySelector("#keeperCount"),
   passCount: document.querySelector("#passCount"),
+  profileInsights: document.querySelector("#profileInsights"),
   reviewedCount: document.querySelector("#reviewedCount"),
   storageHealthStatus: document.querySelector("#storageHealthStatus"),
   localStorageUsage: document.querySelector("#localStorageUsage"),
@@ -491,6 +492,7 @@ export function renderMetrics() {
   elements.avgScore.textContent = `${Math.round(avgScore)}`;
   elements.keeperCount.textContent = `${keeperCount}`;
   elements.passCount.textContent = `${passCount}`;
+  renderProfileInsights();
 }
 
 export function renderStorageHealth() {
@@ -529,6 +531,78 @@ function formatBytes(bytes) {
     return `${Math.round(bytes / 1024)} KB`;
   }
   return `${(bytes / (1024 * 1024)).toFixed(bytes < 10 * 1024 * 1024 ? 1 : 0)} MB`;
+}
+
+export function renderProfileInsights() {
+  elements.profileInsights.replaceChildren();
+  const insights = profileInsights();
+
+  insights.forEach((text) => {
+    const row = document.createElement("p");
+    row.textContent = text;
+    elements.profileInsights.append(row);
+  });
+}
+
+function profileInsights() {
+  if (!state.reviews.length) {
+    return ["No patterns yet."];
+  }
+
+  const insights = [];
+  const tagRows = tagInsightRows();
+  const typeRows = typeInsightRows();
+  if (tagRows[0]) {
+    insights.push(tagRows[0]);
+  }
+  if (typeRows[0]) {
+    insights.push(typeRows[0]);
+  }
+
+  const reviewedToday = state.reviews.filter((review) => localDayKey(new Date(review.createdAt)) === localDayKey(new Date())).length;
+  insights.push(`${reviewedToday} reviewed today, ${state.reviews.length} total.`);
+  return insights.slice(0, 3);
+}
+
+function tagInsightRows() {
+  const counts = new Map();
+  state.reviews.forEach((review) => {
+    review.tags.forEach((tag) => {
+      const current = counts.get(tag) || { total: 0, rejected: 0 };
+      current.total += 1;
+      current.rejected += review.verdict === "pass" ? 1 : 0;
+      counts.set(tag, current);
+    });
+  });
+
+  return [...counts.entries()]
+    .filter(([, stats]) => stats.total > 0)
+    .sort(([, a], [, b]) => b.total - a.total || b.rejected - a.rejected)
+    .map(([tag, stats]) => `${sentenceCase(tag)}: ${Math.round(stats.rejected / stats.total * 100)}% rejected across ${stats.total}.`);
+}
+
+function typeInsightRows() {
+  const counts = new Map();
+  state.reviews.forEach((review) => {
+    const item = state.items.find((candidate) => candidate.id === review.itemId);
+    if (!item) {
+      return;
+    }
+    const current = counts.get(item.type) || { total: 0, nice: 0 };
+    current.total += 1;
+    current.nice += review.verdict === "nice" ? 1 : 0;
+    counts.set(item.type, current);
+  });
+
+  return [...counts.entries()]
+    .filter(([, stats]) => stats.total > 0)
+    .sort(([, a], [, b]) => b.total - a.total || b.nice - a.nice)
+    .map(([type, stats]) => `${typeLabel(type)}: ${Math.round(stats.nice / stats.total * 100)}% nice rate across ${stats.total}.`);
+}
+
+function sentenceCase(value) {
+  const text = String(value).replaceAll("-", " ");
+  return text ? `${text[0].toUpperCase()}${text.slice(1)}` : "";
 }
 
 export function renderCompletionSummary(filtered) {

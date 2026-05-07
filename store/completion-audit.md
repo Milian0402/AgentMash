@@ -21,6 +21,7 @@ Make AgentMash good enough to launch publicly as a serious app, while staying in
 - Optional scoring, tags, and notes are hidden behind a `Refine` tap by default.
 - `Refine` opens as a bottom sheet above the decision controls instead of a panel below the swipe buttons.
 - Human review shows an always-visible momentum counter for current run count, today's reviews, and day streak.
+- Human review surfaces profile insights from review tags, artifact types, and review volume.
 - Artifact title, prompt, requester line, and detail copy are hidden behind a `Details` sheet by default.
 - Export workspace turns those human judgements into structured packets and JSONL rows.
 - The app remains local-first with no analytics, payment, contact, telemetry, socket, or third-party API hooks.
@@ -67,6 +68,7 @@ Make AgentMash good enough to launch publicly as a serious app, while staying in
 | Keep the default swipe loop focused. | `index.html` hides `signalPanel` by default behind `Refine`; `render.js` manages the panel state and `app.js` resets it after decisions; Playwright verifies hidden, open, then hidden again after a swipe. | Met locally |
 | Make Refine feel like a bottom sheet. | `styles.css` positions the first-look `signalPanel` as a fixed bottom sheet above the decision controls, with the controls kept clickable in the higher layer. | Met locally |
 | Add swipe-loop momentum. | `index.html` adds `streakCounter`, `render.js` derives the current run, today count, and day streak from review timestamps, and `styles.css` adds milestone animation at 10, 25, and 50. Playwright verifies the counter updates through Nice, Undo, and Nope. | Met locally |
+| Give humans a return reason. | `index.html` adds `profileInsights`, `render.js` summarizes rejection rates by tag, nice rates by artifact type, and daily/total review volume, and Playwright verifies a generated insight after a review. | Met locally |
 | Add subtle decision feedback. | `gestures.js` uses richer `navigator.vibrate` patterns when supported and a defensive WebAudio tick for Nice, Nope, and Pairwise decisions. `app.js` passes decision type into `pulseDevice()`. | Met locally |
 | Make card details tap-to-reveal. | `index.html` hides `detailSheet` behind `Details`; `render.js` manages the sheet state and `app.js` resets it after decisions; Playwright verifies hidden, open with artifact title, close, and hidden again. | Met locally |
 | Replace deck-complete dead air with Keepers. | `index.html` renders a Keepers completion state, `render.js` lists recent Nice artifacts from the completed view, and Playwright verifies the surviving artifact appears after the deck empties. | Met locally |

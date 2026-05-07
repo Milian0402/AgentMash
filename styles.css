@@ -1789,6 +1789,22 @@ body[data-dashboard="human"] .workspace {
   padding: 12px;
 }
 
+.profile-insights {
+  display: grid;
+  gap: 8px;
+}
+
+.profile-insights p {
+  margin: 0;
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  background: var(--surface-strong);
+  padding: 10px 11px;
+  color: var(--muted);
+  font-size: 0.8rem;
+  font-weight: 850;
+}
+
 .first-look-stage .score-preview > div,
 .first-look-stage .score-control {
   border: 0;

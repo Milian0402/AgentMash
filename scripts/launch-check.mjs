@@ -206,6 +206,7 @@ check(index.includes("refineButton") && index.includes('id="signalPanel" hidden'
 check(hasAll(styles, [".first-look-stage .signal-panel", "position: fixed", "bottom-sheet-rise"]), "Refine panel opens as a bottom sheet");
 check(index.includes("detailsButton") && index.includes('id="detailSheet" hidden'), "card details are hidden behind a details sheet by default");
 check(index.includes('id="streakCounter"') && renderModule.includes("renderMomentum") && styles.includes("streak-pop"), "human review includes visible momentum counter");
+check(index.includes("profileInsights") && renderModule.includes("renderProfileInsights") && renderModule.includes("tagInsightRows"), "human review includes profile insights");
 check(index.includes("keeperList") && index.includes("Keepers"), "deck completion has keepers summary");
 check(index.includes("emptyRemixButton") && app.includes("remixCurrentDeck"), "deck completion can start a local remix session");
 check(
