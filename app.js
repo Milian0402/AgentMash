@@ -223,6 +223,10 @@ const elements = {
   detailCloseButton: document.querySelector("#detailCloseButton"),
   detailSheet: document.querySelector("#detailSheet"),
   emptyState: document.querySelector("#emptyState"),
+  emptyTitle: document.querySelector("#emptyTitle"),
+  emptyCopy: document.querySelector("#emptyCopy"),
+  keeperList: document.querySelector("#keeperList"),
+  emptyAddButton: document.querySelector("#emptyAddButton"),
   rejectButton: document.querySelector("#rejectButton"),
   acceptButton: document.querySelector("#acceptButton"),
   undoButton: document.querySelector("#undoButton"),
@@ -590,6 +594,7 @@ function render() {
 
   if (!activeItem) {
     isDetailSheetOpen = false;
+    renderCompletionSummary(filtered);
     saveState();
     renderFeedbackPacket(packetItemForRender(null));
     return;
@@ -720,6 +725,40 @@ function renderMetrics() {
   elements.avgScore.textContent = `${Math.round(avgScore)}`;
   elements.keeperCount.textContent = `${keeperCount}`;
   elements.passCount.textContent = `${passCount}`;
+}
+
+function renderCompletionSummary(filtered) {
+  const itemIds = new Set(filtered.map((item) => item.id));
+  const reviewsInView = state.reviews.filter((review) => itemIds.has(review.itemId));
+  const keepers = [...reviewsInView]
+    .filter((review) => review.verdict === "nice")
+    .reverse()
+    .slice(0, 6);
+
+  elements.emptyTitle.textContent = keepers.length ? "Keepers" : "Deck complete";
+  elements.emptyCopy.textContent = keepers.length
+    ? `${keepers.length} keeper${keepers.length === 1 ? "" : "s"} from ${reviewsInView.length} decisions in this view.`
+    : "No keepers in this view yet. Add another artifact or switch filters.";
+  elements.keeperList.replaceChildren();
+
+  keepers.forEach((review) => {
+    const item = state.items.find((candidate) => candidate.id === review.itemId);
+    if (!item) {
+      return;
+    }
+
+    const row = document.createElement("article");
+    row.className = "keeper-item";
+
+    const title = document.createElement("strong");
+    title.textContent = item.title;
+
+    const detail = document.createElement("span");
+    detail.textContent = `${typeLabel(item.type)} / ${review.grade} / ${review.score}`;
+
+    row.append(title, detail);
+    elements.keeperList.append(row);
+  });
 }
 
 function renderHistory() {
@@ -1939,6 +1978,7 @@ elements.filterTabs.addEventListener("click", (event) => {
 });
 
 elements.humanAddButton.addEventListener("click", openAddArtifactPanel);
+elements.emptyAddButton.addEventListener("click", openAddArtifactPanel);
 elements.artifactType.addEventListener("change", () => {
   renderRubric(elements.artifactType.value);
 });

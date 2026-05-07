@@ -101,6 +101,22 @@ test("Export workspace empty state reads correctly with zero items and reviews",
   });
 });
 
+test("Deck completion shows keepers instead of dead air", async ({ page }) => {
+  await resetApp(page);
+
+  await page.getByRole("button", { name: /Nice/ }).click();
+  await expect.poll(() => reviewCount(page)).toBe(1);
+
+  for (const count of [2, 3, 4]) {
+    await page.getByRole("button", { name: /Nope/ }).click();
+    await expect.poll(() => reviewCount(page)).toBe(count);
+  }
+
+  await expect(page.locator("#emptyState")).toBeVisible();
+  await expect(page.locator("#emptyTitle")).toHaveText("Keepers");
+  await expect(page.locator("#keeperList")).toContainText("OpsPilot landing page");
+});
+
 test("Uploaded images are stored in IndexedDB instead of localStorage", async ({ page }) => {
   await resetApp(page);
 

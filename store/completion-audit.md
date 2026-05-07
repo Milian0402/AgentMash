@@ -36,7 +36,8 @@ Make AgentMash good enough to launch publicly as a serious app, while staying in
 - Reviewer name edits visibly confirm save status.
 - The Refine panel closes after each decision so the next artifact returns to the fast card-first loop.
 - The Details sheet closes after each decision so the next artifact returns to the clean card state.
-- `npm run check` includes Playwright e2e coverage for review flow, packet shape, empty Export workspace state, and image persistence.
+- Deck completion shows a Keepers summary instead of dead air.
+- `npm run check` includes Playwright e2e coverage for review flow, packet shape, Keepers completion state, empty Export workspace state, and image persistence.
 - App Store and Google Play prep is documented without creating paid accounts.
 - Verification covers static files, metadata, security posture, forbidden hooks, launch docs, store assets, and the core runtime flow.
 - Remaining requirements that need user accounts, money, contact details, deployment, or legal decisions are named and not pretended done.
@@ -53,6 +54,7 @@ Make AgentMash good enough to launch publicly as a serious app, while staying in
 | Human review should feel like a modern swipe-card app without relationship-context wording. | `index.html`, `styles.css`, and refreshed screenshots in `store/screenshots`. `npm run check` rejects relationship-app wording. | Met locally |
 | Keep the default swipe loop focused. | `index.html` hides `signalPanel` by default behind `Refine`; `app.js` closes it after decisions; Playwright verifies hidden, open, then hidden again after a swipe. | Met locally |
 | Make card details tap-to-reveal. | `index.html` hides `detailSheet` behind `Details`; `app.js` closes it after decisions; Playwright verifies hidden, open with artifact title, close, and hidden again. | Met locally |
+| Replace deck-complete dead air with Keepers. | `index.html` renders a Keepers completion state, `app.js` lists recent Nice artifacts from the completed view, and Playwright verifies the surviving artifact appears after the deck empties. | Met locally |
 | Rename product and repo to AgentMash. | `package.json`, `manifest.webmanifest`, visible HTML, docs, and GitHub remote point to `Milian0402/AgentMash`. | Met locally |
 | Put repo in the code folder. | Local repo path is `/Users/maximiliannordler/code/AgentMash`. | Met locally |
 | Make it ready for public web launch where possible. | Privacy, terms, support, publishing, 404, manifest, service worker, icons, screenshots, preview workflow, and security header configs exist. | Met locally |
@@ -68,7 +70,7 @@ Make AgentMash good enough to launch publicly as a serious app, while staying in
 | Remove misleading inbound-agent scope. | The second dashboard is now framed as `Export workspace` / `Local export workspace`; `npm run check` rejects `Agent lab`, `Request Queue`, `Waiting on humans`, `Returned Signals`, `Retry queue`, and `No agent requests` in the public app. | Met locally |
 | Rename misleading confidence output. | Feedback packets use `agentmash.feedback.v2`, `signalStrength`, and top-level `signalStrengthFormula`; eval rows use `agentmash.eval-row.v2`; `store/agent-customer-model.md` documents the migration. | Met locally |
 | Confirm reviewer name persistence visibly. | `index.html`, `styles.css`, and `app.js` show a saved/not-saved status after reviewer name edits. | Met locally |
-| Add Playwright regression coverage. | `tests/review-flow.spec.mjs` is wired through `npm run check` and covers Nice, Undo, Nope, v2 packet shape, empty Export workspace state, and IndexedDB image persistence. | Met locally |
+| Add Playwright regression coverage. | `tests/review-flow.spec.mjs` is wired through `npm run check` and covers Nice, Undo, Nope, v2 packet shape, Keepers completion state, empty Export workspace state, and IndexedDB image persistence. | Met locally |
 | Make it closer to App Store or Google Play readiness without paid setup. | `store/app-store-listing.md`, `store/app-store-submission.md`, `store/privacy-data-safety-draft.md`, and `store/submission` draft assets. | Met locally |
 | Verify core behavior, not just files. | Real browser smoke test on `http://127.0.0.1:5177` passed: title, human dashboard, note save, Nice, Undo, Nope, Export workspace, ready packet, JSONL preview, packet JSON, and download buttons. Console errors: 0. | Met locally |
 | Keep the repo private. | `gh repo view Milian0402/AgentMash` showed `visibility: PRIVATE`. | Met locally |
@@ -99,7 +101,7 @@ These are still not done because they require user-owned accounts, money, public
 - Store screenshots captured from the native wrapper.
 - App Review or Play review contact details.
 - Legal/privacy review for paid or hosted use.
-- End-of-session Keepers screen, endless/remix sessions, and pairwise mode remain product polish work not yet implemented.
+- Endless/remix sessions and pairwise mode remain product polish work not yet implemented.
 
 ## Conclusion
 
