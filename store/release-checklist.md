@@ -46,6 +46,7 @@ Last local verification: May 7, 2026. No deployment, paid account, domain purcha
 - [x] Export ready JSON and JSONL data.
 - [x] Confirm exported packet verdicts use `accepted` and `rejected`.
 - [x] Confirm dataset-mode return envelopes use `application/x-ndjson`.
+- [x] Confirm Export workspace shows local packet and JSONL contract status.
 - [x] Confirm `schemas/feedback.v2.json` documents the v2 feedback packet contract.
 - [x] Confirm native wrapper handoff exists without installing native dependencies.
 - [x] Confirm empty Export workspace metrics show zero items, zero rows, and no stale average signal.

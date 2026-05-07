@@ -98,6 +98,8 @@ Webhook and polling channels are deferred until there is authentication, server 
 
 Migration note: v2 exports normalize the human UI labels Nice/Nope into `accepted` / `rejected` so downstream datasets do not confuse `pass` with approval. The local review state still stores the UI verdicts because they drive copy, styling, and undo behavior inside the app.
 
+The Export workspace validates the active feedback packet and JSONL export rows locally before copy/download. It does not call an outside schema service or send review data anywhere.
+
 ## Pairwise Row Contract
 
 ```json

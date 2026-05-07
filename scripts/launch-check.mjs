@@ -235,6 +235,13 @@ check(index.includes("storageHealthStatus") && renderModule.includes("estimateIm
 check(appSurface.includes("Local storage full") && appSurface.includes("setStorageStatus"), "localStorage quota failure surfaces in the UI");
 check(appSurface.includes("signalStrengthFormula") && appSurface.includes("agentmash.feedback.v2"), "feedback packets use schema v2 with signal strength formula");
 check(
+  packetModule.includes("validateFeedbackPacket")
+    && packetModule.includes("validateExportRows")
+    && index.includes("packetContractStatus")
+    && index.includes("datasetContractStatus"),
+  "Export workspace validates packet and JSONL contract locally"
+);
+check(
   packetModule.includes("exportVerdictFor")
     && packetModule.includes("accepted")
     && packetModule.includes("rejected")
@@ -281,6 +288,7 @@ check(
 check(hasAll(testSpec, ["application/x-ndjson", "rejected", "accepted"]), "Playwright covers normalized export packet contract");
 check(hasAll(testSpec, ["Rapid decisions are locked", "decisionTransition", "clippedFilters"]), "Playwright covers transition lock and mobile filter readability");
 check(hasAll(testSpec, ["advancedScoresButton", "scoreControls", "Scores"]), "Playwright covers compact Refine score toggle");
+check(hasAll(testSpec, ["packetContractStatus", "datasetContractStatus", "Rows valid"]), "Playwright covers export contract status");
 check(
   hasAll(testSpec, ["Changing a pending upload stores only the submitted image", "imageStoreKeys", "first.png", "second.png"]),
   "Playwright covers pending upload submit-only storage"

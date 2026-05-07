@@ -272,6 +272,142 @@ export function returnBehaviorFor(mode) {
   return behavior[mode] || behavior.json;
 }
 
+export function validateFeedbackPacket(packet) {
+  const errors = [];
+  if (!packet || typeof packet !== "object") {
+    return { valid: false, errors: ["packet must be an object"] };
+  }
+
+  requireValue(errors, packet.schema === "agentmash.feedback.v2", "schema must be agentmash.feedback.v2");
+  requireValue(errors, ["ready", "pending", "empty"].includes(packet.status), "status must be ready, pending, or empty");
+  requireObject(errors, packet.signalStrengthFormula, "signalStrengthFormula");
+
+  if (packet.status === "ready") {
+    requireString(errors, packet.packetId, "packetId");
+    requireString(errors, packet.generatedAt, "generatedAt");
+    validateRequest(packet.request, errors, "request");
+    validateHumanSignal(packet.humanSignal, errors, "humanSignal");
+    validateHumanJudgement(packet.humanJudgement, errors, "humanJudgement");
+    requireObject(errors, packet.interpretation, "interpretation");
+    validateAgentUse(packet.agentUse, errors, "agentUse");
+    validateEvalRow(packet.evalRow, errors, "evalRow");
+    validateReturnEnvelope(packet.return, errors, "return");
+  } else if (packet.status === "pending") {
+    validateRequest(packet.request, errors, "request");
+    validateReturnEnvelope(packet.expectedReturn, errors, "expectedReturn");
+    requireObject(errors, packet.pendingHumanSignal, "pendingHumanSignal");
+  } else if (packet.status === "empty") {
+    requireString(errors, packet.message, "message");
+  }
+
+  return { valid: errors.length === 0, errors };
+}
+
+export function validateExportRows(rows) {
+  const errors = [];
+  if (!Array.isArray(rows)) {
+    return { valid: false, errors: ["rows must be an array"] };
+  }
+
+  rows.forEach((row, index) => {
+    const rowErrors = validateExportRow(row).errors;
+    rowErrors.forEach((error) => errors.push(`row ${index + 1}: ${error}`));
+  });
+  return { valid: errors.length === 0, errors };
+}
+
+export function validateExportRow(row) {
+  const errors = [];
+  if (!row || typeof row !== "object") {
+    return { valid: false, errors: ["row must be an object"] };
+  }
+
+  if (row.schema === "agentmash.eval-row.v2") {
+    validateEvalRow(row, errors, "row");
+  } else if (row.schema === "agentmash.pairwise-row.v1") {
+    requireString(errors, row.rowId, "row.rowId");
+    requireString(errors, row.createdAt, "row.createdAt");
+    requireString(errors, row.reviewer, "row.reviewer");
+    requireObject(errors, row.comparison, "row.comparison");
+    requireObject(errors, row.humanSignal, "row.humanSignal");
+    validateAgentUse(row.agentUse, errors, "row.agentUse");
+  } else {
+    errors.push("schema must be agentmash.eval-row.v2 or agentmash.pairwise-row.v1");
+  }
+
+  return { valid: errors.length === 0, errors };
+}
+
+function validateEvalRow(row, errors, path) {
+  requireValue(errors, row?.schema === "agentmash.eval-row.v2", `${path}.schema must be agentmash.eval-row.v2`);
+  requireString(errors, row?.rowId, `${path}.rowId`);
+  requireString(errors, row?.createdAt, `${path}.createdAt`);
+  requireObject(errors, row?.artifact, `${path}.artifact`);
+  validateHumanSignal(row?.humanSignal, errors, `${path}.humanSignal`);
+  validateAgentUse(row?.agentUse, errors, `${path}.agentUse`);
+}
+
+function validateRequest(request, errors, path) {
+  requireString(errors, request?.artifactId, `${path}.artifactId`);
+  requireValue(errors, ["original", "thumbnail", "first-line", "tagline", "mark-only", "cutout"].includes(request?.variant), `${path}.variant`);
+  requireValue(errors, ["website", "logo", "copy", "product"].includes(request?.type), `${path}.type`);
+  requireString(errors, request?.title, `${path}.title`);
+  requireString(errors, request?.runId, `${path}.runId`);
+  requireValue(errors, ["agent", "lab", "team"].includes(request?.requesterType), `${path}.requesterType`);
+  requireString(errors, request?.requesterName, `${path}.requesterName`);
+}
+
+function validateHumanSignal(signal, errors, path) {
+  requireString(errors, signal?.reviewer, `${path}.reviewer`);
+  requireValue(errors, ["accepted", "rejected"].includes(signal?.verdict), `${path}.verdict`);
+  requireValue(errors, ["chosen", "rejected"].includes(signal?.preferenceLabel), `${path}.preferenceLabel`);
+  requireNumber(errors, signal?.score, `${path}.score`);
+  requireNumber(errors, signal?.signalStrength, `${path}.signalStrength`);
+  requireObject(errors, signal?.scoreVector, `${path}.scoreVector`);
+  requireString(errors, signal?.judgedAt, `${path}.judgedAt`);
+}
+
+function validateHumanJudgement(judgement, errors, path) {
+  requireString(errors, judgement?.reviewer, `${path}.reviewer`);
+  requireValue(errors, ["accepted", "rejected"].includes(judgement?.verdict), `${path}.verdict`);
+  requireValue(errors, ["chosen", "rejected"].includes(judgement?.preferenceLabel), `${path}.preferenceLabel`);
+  requireNumber(errors, judgement?.signalStrength, `${path}.signalStrength`);
+  requireNumber(errors, judgement?.score, `${path}.score`);
+  requireObject(errors, judgement?.scores, `${path}.scores`);
+  requireString(errors, judgement?.judgedAt, `${path}.judgedAt`);
+}
+
+function validateAgentUse(agentUse, errors, path) {
+  requireValue(errors, Array.isArray(agentUse?.trainingUse), `${path}.trainingUse`);
+  requireValue(errors, ["chosen", "rejected", "left_preferred", "right_preferred"].includes(agentUse?.preferenceLabel), `${path}.preferenceLabel`);
+  requireString(errors, agentUse?.recommendedAction, `${path}.recommendedAction`);
+  requireNumber(errors, agentUse?.signalStrength, `${path}.signalStrength`);
+}
+
+function validateReturnEnvelope(envelope, errors, path) {
+  requireValue(errors, ["json", "dataset"].includes(envelope?.mode), `${path}.mode`);
+  requireString(errors, envelope?.target, `${path}.target`);
+  requireValue(errors, ["application/json", "application/x-ndjson"].includes(envelope?.format), `${path}.format`);
+}
+
+function requireObject(errors, value, path) {
+  requireValue(errors, Boolean(value) && typeof value === "object" && !Array.isArray(value), `${path} must be an object`);
+}
+
+function requireString(errors, value, path) {
+  requireValue(errors, typeof value === "string" && value.length > 0, `${path} must be a string`);
+}
+
+function requireNumber(errors, value, path) {
+  requireValue(errors, Number.isFinite(value), `${path} must be a number`);
+}
+
+function requireValue(errors, condition, message) {
+  if (!condition) {
+    errors.push(message);
+  }
+}
+
 export function failureModesFor(review) {
   const lowScores = Object.entries(review.scores)
     .filter(([, value]) => value <= 5)

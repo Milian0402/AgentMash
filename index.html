@@ -299,7 +299,10 @@
             <div class="section-block dataset-block">
               <div class="section-title-row">
                 <h2>Eval Dataset</h2>
-                <span id="datasetStatus" class="count-pill">0 rows</span>
+                <div class="status-row">
+                  <span id="datasetStatus" class="count-pill">0 rows</span>
+                  <span id="datasetContractStatus" class="count-pill">No rows</span>
+                </div>
               </div>
               <pre id="datasetPreview" class="dataset-preview" aria-label="Lab-ready eval dataset preview"></pre>
               <div class="packet-actions">
@@ -313,7 +316,10 @@
             <section class="section-block packet-block">
               <div class="section-title-row">
                 <h2>Feedback Packet</h2>
-                <span id="packetStatus" class="count-pill">Pending</span>
+                <div class="status-row">
+                  <span id="packetStatus" class="count-pill">Pending</span>
+                  <span id="packetContractStatus" class="count-pill">Schema pending</span>
+                </div>
               </div>
               <pre id="packetPreview" class="packet-preview" aria-label="Structured feedback packet"></pre>
               <div class="packet-actions">

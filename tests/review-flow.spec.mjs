@@ -221,6 +221,8 @@ test("Nice, Undo, and Nope produce a v2 feedback packet", async ({ page }) => {
 
   await page.getByRole("button", { name: "Export workspace" }).click();
   await expect(page.locator("#packetStatus")).toHaveText("Ready");
+  await expect(page.locator("#packetContractStatus")).toHaveText("v2 valid");
+  await expect(page.locator("#datasetContractStatus")).toHaveText("Rows valid");
 
   const packet = await page.locator("#packetPreview").evaluate((node) => JSON.parse(node.textContent));
 
@@ -299,7 +301,9 @@ test("Export workspace empty state reads correctly with zero items and reviews",
   await expect(page.locator("#agentAvgConfidence")).toHaveText("None");
   await expect(page.locator("#agentRequestList")).toContainText("No exportable artifacts yet.");
   await expect(page.locator("#datasetStatus")).toHaveText("0 rows");
+  await expect(page.locator("#datasetContractStatus")).toHaveText("No rows");
   await expect(page.locator("#packetStatus")).toHaveText("Empty");
+  await expect(page.locator("#packetContractStatus")).toHaveText("v2 valid");
 
   const packet = await page.locator("#packetPreview").evaluate((node) => JSON.parse(node.textContent));
   expect(packet).toMatchObject({
@@ -613,5 +617,7 @@ test("Stress profile handles 500 items, 250 reviews, and 100 more swipes", async
 
   await page.getByRole("button", { name: "Export workspace" }).click();
   await expect(page.locator("#datasetStatus")).toHaveText("350 rows");
+  await expect(page.locator("#datasetContractStatus")).toHaveText("Rows valid");
   await expect(page.locator("#packetStatus")).toHaveText("Ready");
+  await expect(page.locator("#packetContractStatus")).toHaveText("v2 valid");
 });

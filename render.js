@@ -29,7 +29,9 @@ import {
   recommendedActionFor,
   repairInstructionFor,
   signalCoverage,
-  signalStrengthFor
+  signalStrengthFor,
+  validateExportRows,
+  validateFeedbackPacket
 } from "./packet.js";
 
 export const elements = {
@@ -117,6 +119,7 @@ export const elements = {
   agentAvgConfidence: document.querySelector("#agentAvgConfidence"),
   agentRequestList: document.querySelector("#agentRequestList"),
   datasetStatus: document.querySelector("#datasetStatus"),
+  datasetContractStatus: document.querySelector("#datasetContractStatus"),
   datasetPreview: document.querySelector("#datasetPreview"),
   copyDatasetButton: document.querySelector("#copyDatasetButton"),
   downloadDatasetButton: document.querySelector("#downloadDatasetButton"),
@@ -124,6 +127,7 @@ export const elements = {
   agentSignalList: document.querySelector("#agentSignalList"),
   historyList: document.querySelector("#historyList"),
   packetStatus: document.querySelector("#packetStatus"),
+  packetContractStatus: document.querySelector("#packetContractStatus"),
   packetPreview: document.querySelector("#packetPreview"),
   copyPacketButton: document.querySelector("#copyPacketButton"),
   downloadPacketButton: document.querySelector("#downloadPacketButton"),
@@ -805,6 +809,13 @@ export function renderDatasetPreview(evalRows) {
   elements.datasetStatus.textContent = `${evalRows.length} rows`;
   elements.copyDatasetButton.disabled = evalRows.length === 0;
   elements.downloadDatasetButton.disabled = evalRows.length === 0;
+  const contract = validateExportRows(evalRows);
+  renderContractStatus(
+    elements.datasetContractStatus,
+    !evalRows.length ? "No rows" : contract.valid ? "Rows valid" : "Rows issue",
+    evalRows.length > 0 && contract.valid,
+    contract.errors
+  );
 
   if (!evalRows.length) {
     elements.datasetPreview.textContent = "No export rows yet. Swipe at least one artifact to create JSONL eval data.";
@@ -886,9 +897,23 @@ export function renderFeedbackPacket(activeItem) {
   elements.packetStatus.textContent = packet.status === "ready"
     ? "Ready"
     : packet.status === "empty" ? "Empty" : "Pending";
+  const contract = validateFeedbackPacket(packet);
+  renderContractStatus(
+    elements.packetContractStatus,
+    contract.valid ? `${packet.schema.replace("agentmash.feedback.", "")} valid` : "Schema issue",
+    contract.valid,
+    contract.errors
+  );
   elements.packetPreview.textContent = JSON.stringify(packet, null, 2);
   elements.copyPacketButton.disabled = packet.status !== "ready";
   elements.downloadPacketButton.disabled = packet.status !== "ready";
+}
+
+function renderContractStatus(element, label, valid, errors = []) {
+  element.textContent = label;
+  element.classList.toggle("ready-pill", valid);
+  element.classList.toggle("warning", !valid && errors.length > 0);
+  element.title = errors.length ? errors.slice(0, 3).join("; ") : "";
 }
 
 export function packetItemForRender(activeItem) {
