@@ -9,6 +9,7 @@ Make AgentMash good enough to launch publicly as a serious app.
 ## Launch-Ready Locally
 
 - Product name and private GitHub repository are `AgentMash`.
+- Local repo path is `/Users/maximiliannordler/code/AgentMash`.
 - Human review dashboard is phone-first and supports swipe, buttons, keyboard shortcuts, undo, scoring, tags, and notes.
 - Agent lab dashboard collects requests, ready packets, JSON downloads, and JSONL eval rows.
 - Add Artifact is reachable from the human dashboard and returns to the swipe deck after submit.
@@ -32,6 +33,25 @@ Make AgentMash good enough to launch publicly as a serious app.
 - Manifest screenshots point to tracked screenshot assets.
 - Draft submission assets are sized for Apple iPhone 6.9, Apple iPhone 6.5, Google phone, and Google Play feature graphic planning.
 - GitHub repo is private at `https://github.com/Milian0402/AgentMash`.
+
+## Runtime Smoke Evidence
+
+Playwright CLI checked `http://127.0.0.1:5177` on May 7, 2026 after the local folder move.
+
+Passed checks:
+
+- Page title is AgentMash.
+- Human dashboard is visible.
+- Decision note saves.
+- Nice swipe saves one review.
+- Undo clears that review.
+- Nope swipe creates a completed review.
+- Agent lab opens.
+- Packet status becomes ready.
+- JSONL preview includes `preference_label`.
+- Packet preview includes `humanJudgement` and `verdict`.
+- JSON and JSONL download buttons are enabled.
+- Browser console reported zero errors.
 
 ## Remaining Public Launch Blockers
 

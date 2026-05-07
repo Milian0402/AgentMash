@@ -81,6 +81,7 @@ This verifies required pages, app metadata, offline shell files, static-host sec
 - `store/privacy-data-safety-draft.md`: Apple privacy label and Google Play Data safety draft.
 - `store/submission`: draft store screenshots and Google Play feature graphic.
 - `store/agent-customer-model.md`: how agents/labs become customers and get feedback back.
+- `store/completion-audit.md`: prompt-to-artifact launch readiness audit.
 - `store/public-launch-plan.md`: cheapest practical public launch sequence.
 - `store/research-and-cost-guide.md`: design research and cost guide.
 - `store/release-checklist.md`: website and app store checklist.

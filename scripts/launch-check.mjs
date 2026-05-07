@@ -13,6 +13,7 @@ const requiredFiles = [
   "404.html",
   "README.md",
   "PUBLISHING.md",
+  "store/completion-audit.md",
   "store/public-launch-audit.md",
   "store/public-launch-plan.md",
   "store/release-checklist.md",
@@ -129,6 +130,7 @@ const serviceWorker = await read("sw.js");
 const headers = await read("_headers");
 const netlify = await read("netlify.toml");
 const readme = await read("README.md");
+const completionAudit = await read("store/completion-audit.md");
 const audit = await read("store/public-launch-audit.md");
 const listing = await read("store/app-store-listing.md");
 
@@ -159,7 +161,11 @@ check(hasAll(JSON.stringify(vercel), securityHeaders), "vercel config defines se
 check(headers.includes("connect-src 'self'") && headers.includes("form-action 'self'"), "CSP blocks outside connections and forms");
 check(headers.includes("payment=()"), "permissions policy blocks payment permission");
 check(readme.includes("store/public-launch-audit.md"), "README links public launch audit");
+check(readme.includes("store/completion-audit.md"), "README links completion audit");
+check(completionAudit.includes("Prompt-To-Artifact Checklist"), "completion audit has prompt-to-artifact checklist");
+check(completionAudit.includes("Not Achieved Yet"), "completion audit keeps external blockers explicit");
 check(audit.includes("Remaining Public Launch Blockers"), "launch audit lists remaining blockers");
+check(audit.includes("Runtime Smoke Evidence"), "launch audit includes runtime smoke evidence");
 check(readme.includes("store/app-store-submission.md"), "README links app store submission prep");
 check(readme.includes("store/privacy-data-safety-draft.md"), "README links privacy and data safety draft");
 check(listing.includes("Human taste for AI work"), "store subtitle fits App Store limit");
@@ -170,10 +176,13 @@ for (const [file, size] of Object.entries(submissionPngSizes)) {
 }
 
 const combinedText = (await Promise.all(textFiles.map(read))).join("\n");
+const launchSurfaceText = (
+  await Promise.all(textFiles.filter((file) => file !== "scripts/launch-check.mjs").map(read))
+).join("\n");
 check(!/[^\x00-\x7F]/.test(combinedText), "text files are ASCII");
 check(!/Nice or Not|is-it-nice/.test(combinedText), "old product/repo names are absent");
-check(!/\b(dating|tinder|hinge|mate|mates)\b/i.test(combinedText), "no dating-app wording");
-check(!/mailto:|tel:|XMLHttpRequest|sendBeacon|WebSocket|stripe|paypal|posthog|sentry/i.test(combinedText), "no contact, payment, analytics, or socket hooks");
+check(!/\b(dating|tinder|hinge|mate|mates)\b/i.test(launchSurfaceText), "no relationship-app wording");
+check(!/mailto:|tel:|XMLHttpRequest|sendBeacon|WebSocket|stripe|paypal|posthog|sentry/i.test(launchSurfaceText), "no contact, payment, analytics, or socket hooks");
 
 for (const file of textFiles.filter((file) => file !== "sw.js")) {
   const content = await read(file);
