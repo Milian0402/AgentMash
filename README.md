@@ -82,6 +82,14 @@ npm run check:launch
 
 This verifies required pages, app metadata, offline shell files, static-host security headers, local-only network constraints, and AgentMash naming.
 
+After you choose a final public URL and support route, configure local launch metadata before building:
+
+```sh
+npm run configure:public -- --url https://YOUR-PUBLIC-URL --support YOUR-SUPPORT-ROUTE
+```
+
+This only edits local files. It does not deploy, contact anyone, create accounts, or spend money.
+
 ## Publish Prep
 
 - `manifest.webmanifest`: PWA metadata.

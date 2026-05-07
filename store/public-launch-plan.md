@@ -51,7 +51,7 @@ This keeps the app launchable without paying for a domain, app-store accounts, h
 - Public `_site/` build that excludes internal launch docs and submission drafts.
 - Store listing copy and privacy/data safety drafts.
 - Draft store submission screenshots and feature graphic in `store/submission`.
-- Launch verifier through `npm run check`.
+- Launch verifier through `npm run check` and final metadata dry-run through `npm run check:configure-public`.
 
 ## Minimum Public Website Launch
 
@@ -60,10 +60,10 @@ These are the only steps left for a serious public web launch:
 1. Pick the public URL.
 2. Pick a static host.
 3. Decide whether a custom domain is worth paying for now.
-4. Add a real public support contact to `support.html`.
-5. Update Open Graph metadata after the final public URL exists.
+4. Run `npm run configure:public -- --url https://YOUR-PUBLIC-URL --support YOUR-SUPPORT-ROUTE`.
+5. Run `npm run ready:public` before deployment.
 6. Deploy the static files.
-7. Run `npm run check` before deployment.
+7. Run `npm run verify:public -- https://YOUR-PUBLIC-URL`.
 8. Recheck HTTPS, security headers, support, privacy, terms, manifest, and service worker on the public URL.
 
 ## Minimum App Store Launch

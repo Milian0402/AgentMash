@@ -45,8 +45,13 @@ These can be free at small scale, but always confirm limits before enabling them
 - Confirm the chosen host publishes `_site/`, not the repo root.
 - Pick a final public URL.
 - Decide whether to buy a domain.
-- Add a real support contact to `support.html` and link it from `privacy.html`.
-- Update Open Graph URLs after the final domain exists.
+- Add a real support contact and final preview URLs locally:
+
+```sh
+npm run configure:public -- --url https://YOUR-PUBLIC-URL --support YOUR-SUPPORT-ROUTE
+```
+
+- Run `npm run ready:public` again after configuring the final URL/support route.
 - Enable HTTPS on the host.
 - Confirm `support.html`, `privacy.html`, `terms.html`, and `manifest.webmanifest` are reachable.
 - Run `npm run verify:public -- https://YOUR-PUBLIC-URL` after the host is live.
@@ -74,6 +79,16 @@ npm run ready:public
 ```
 
 This runs the full local quality gate and rebuilds `_site/`. It does not deploy, publish, contact anyone, create an account, or spend money.
+
+## Final URL And Support Metadata
+
+After you choose the public URL and support route, run:
+
+```sh
+npm run configure:public -- --url https://YOUR-PUBLIC-URL --support YOUR-SUPPORT-ROUTE
+```
+
+This updates canonical, Open Graph, Twitter preview, support, and privacy-page metadata in local files only. It does not contact the support route, create accounts, publish, or spend money. Run `npm run ready:public` after it so `_site/` contains the final metadata.
 
 ## Agent Customer Checklist
 

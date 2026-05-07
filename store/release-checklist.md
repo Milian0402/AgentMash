@@ -6,6 +6,7 @@ Last local verification: May 7, 2026. No deployment, paid account, domain purcha
 
 - [x] Run `npm run check`.
 - [x] Run `npm run check:launch`.
+- [x] Run `npm run check:configure-public`.
 - [x] Syntax-check `app.js`, `state.js`, `packet.js`, `render.js`, `gestures.js`, `sw.js`, and launch scripts.
 - [x] Run Playwright e2e coverage through local HTTP with `npm run serve`.
 - [x] Run `npm run ready:public`.
@@ -71,9 +72,9 @@ Last local verification: May 7, 2026. No deployment, paid account, domain purcha
 - [ ] Pick hosting provider.
 - [ ] Decide whether to buy a domain or launch on a free host subdomain.
 - [ ] Decide whether to use GitHub Pages, Netlify, Vercel, Cloudflare Pages, or another static host.
-- [ ] Add a real support contact to `support.html`.
+- [ ] Run `npm run configure:public -- --url https://YOUR-PUBLIC-URL --support YOUR-SUPPORT-ROUTE`.
 - [ ] Add developer identity and inquiry route to `privacy.html` if required for the launch type.
-- [ ] Update Open Graph URLs after the final public URL exists.
+- [ ] Run `npm run ready:public` again after configuring the final public metadata.
 - [ ] Deploy static files.
 - [ ] Confirm `support.html` is publicly reachable.
 - [ ] Confirm `privacy.html` is publicly reachable.
