@@ -26,6 +26,7 @@ Make AgentMash good enough to launch publicly as a serious app.
 - Starter artifacts are credible launch examples instead of placeholder-only cards.
 - Privacy, terms, support, 404, manifest, icons, service worker, and static host config are present for the public build.
 - PWA manifest includes mobile and desktop screenshots.
+- PWA manifest, package metadata, and README one-line description use consistent structured feedback-packet wording.
 - Public build script packages `_site/` without internal launch docs, submission drafts, scripts, or repo metadata.
 - Internal publishing notes are not linked from the app footer, packaged into `_site/`, or cached by the service worker.
 - GitHub Pages, Netlify, and Vercel configs publish `_site/` instead of repo root.
@@ -93,6 +94,7 @@ Make AgentMash good enough to launch publicly as a serious app.
 - Playwright runs the module app through `npm run serve` at `http://127.0.0.1:5177/`, not a blocked `file://` module load.
 - `npm run check` now includes Playwright e2e coverage for Nice, Undo, Nope, rapid duplicate decision locking, mobile header clearance, mobile Refine sheet clearance, mobile Pairwise scroll, export contract badges, legacy import normalization, v2 packet shape, visual image payloads, normalized export verdicts, dataset return format, Keepers completion state, Remix repeat sessions with variant metadata, Endless auto-looping, Pairwise comparison export, human-screen install prompt, empty Export workspace state, IndexedDB image storage, pending upload submit-only storage, profile image export/import, offline app-shell loading, and a 500-item local stress path.
 - `manifest.webmanifest`, `package.json`, and `vercel.json` parse as JSON.
+- `npm run check` verifies manifest and package descriptions use structured feedback-packet wording.
 - `schemas/feedback.v2.json` parses as JSON and is checked for the `agentmash.feedback.v2` contract.
 - The runtime packet schema and app code are checked to keep return modes local-only: `json` and `dataset`.
 - `store/native-wrapper-handoff.md` records the later native shell path, bundle IDs, `_site` web directory, and no-analytics native rules.
@@ -105,7 +107,7 @@ Make AgentMash good enough to launch publicly as a serious app.
 - Public manifest screenshots point to `assets/screenshots`.
 - `npm run check` builds `_site/` and verifies internal files are not packaged.
 - `_site/` includes all public app modules and `sw.js` caches those module files.
-- `sw.js` cache name is `agentmash-v32` after public HTML metadata, CSP fallback, iOS startup image, and public support-copy changes, so the offline app shell refreshes when this build is published.
+- `sw.js` cache name is `agentmash-v33` after public HTML metadata, manifest copy, CSP fallback, iOS startup image, and public support-copy changes, so the offline app shell refreshes when this build is published.
 - Playwright e2e test passed: after service worker readiness, the app reloaded offline and rendered the AgentMash shell and swipe card.
 - Netlify and Vercel configs are checked for `npm run build` plus `_site/` output.
 - Apple touch icon is linked from `index.html`, cached by `sw.js`, and sized at 180 by 180.

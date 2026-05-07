@@ -29,6 +29,7 @@ Make AgentMash good enough to launch publicly as a serious app, while staying in
 - Artifact intake and packet return modes are local-only, so the public app does not imply webhooks, polling, or an inbound agent pipeline.
 - The app remains local-first with no analytics, payment, contact, telemetry, socket, or third-party API hooks.
 - Public launch pages, PWA metadata, icons, screenshots, offline cache, preview workflow, and static host security configs exist.
+- PWA manifest, package metadata, and README one-line description use the same structured feedback-packet positioning.
 - Internal publishing notes stay out of the packaged public site so users do not see pre-launch status language.
 - Public build output excludes internal launch docs, submission drafts, scripts, and repo metadata.
 - Mobile install polish includes a dedicated Apple touch icon.
@@ -112,6 +113,7 @@ Make AgentMash good enough to launch publicly as a serious app, while staying in
 | Rename product and repo to AgentMash. | `package.json`, `manifest.webmanifest`, visible HTML, docs, and GitHub remote point to `Milian0402/AgentMash`. | Met locally |
 | Put repo in the code folder. | Local repo path is `/Users/maximiliannordler/code/AgentMash`. | Met locally |
 | Make it ready for public web launch where possible. | Privacy, terms, support, 404, manifest, service worker, icons, screenshots, preview workflow, and security header configs exist. Publishing and cost guidance stays in internal repo docs. | Met locally |
+| Keep install and repo metadata aligned. | `manifest.webmanifest`, `package.json`, and `README.md` now describe AgentMash as turning fast judgement into structured feedback packets; `scripts/launch-check.mjs` verifies the manifest and package descriptions. | Met locally |
 | Verify offline PWA behavior. | Playwright waits for the service worker, switches the browser context offline, reloads, and verifies the AgentMash app shell and swipe card still render. | Met locally |
 | Avoid publishing internal launch docs and submission drafts. | `npm run build` writes `_site/` with only public app files. GitHub Pages, Netlify, and Vercel configs publish `_site/`. `npm run check` verifies `store/`, `scripts/`, `.github`, docs, package metadata, and host config files are not packaged. | Met locally |
 | Keep internal launch status out of the public app. | `publishing.html` remains in the repo for local guidance but is no longer linked from `index.html`, copied into `_site/`, or cached by `sw.js`. `npm run check` verifies it is excluded from the public build. | Met locally |

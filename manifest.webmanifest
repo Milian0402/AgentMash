@@ -2,7 +2,7 @@
   "name": "AgentMash",
   "short_name": "AgentMash",
   "id": "./",
-  "description": "A local-first review app for turning fast human judgement on AI-generated work into structured feedback.",
+  "description": "A local-first review deck for turning fast human judgement on AI-generated work into structured feedback packets.",
   "start_url": "./index.html",
   "scope": "./",
   "display": "standalone",

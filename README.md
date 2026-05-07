@@ -1,6 +1,6 @@
 # AgentMash
 
-A local-first swipe app for turning fast human judgement on AI-generated websites, logos, copy, and product images into structured feedback.
+A local-first swipe app for turning fast human judgement on AI-generated websites, logos, copy, and product images into structured feedback packets.
 
 Status: private launch-prep build. The app has not been deployed, listed, sold, or submitted to an app store.
 
