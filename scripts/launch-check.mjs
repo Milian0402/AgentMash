@@ -403,6 +403,7 @@ check(!/[^\x00-\x7F]/.test(combinedText), "text files are ASCII");
 check(!/Nice or Not|is-it-nice/.test(combinedText), "old product/repo names are absent");
 check(!/\b(dating|tinder|hinge|mate|mates)\b/i.test(launchSurfaceText), "no relationship-app wording");
 check(!/\b(webhook|polling)\b/i.test(publicHtmlText), "public pages avoid deferred backend channel wording");
+check(!/beta candidate|No public support inbox|still needs to be chosen/i.test(publicHtmlText), "public pages avoid prelaunch support placeholders");
 check(!publicBuildEntries.includes("publishing.html"), "public build excludes internal publishing notes");
 check(!/mailto:|tel:|XMLHttpRequest|sendBeacon|WebSocket|stripe|paypal|posthog|sentry/i.test(launchSurfaceText), "no contact, payment, analytics, or socket hooks");
 
