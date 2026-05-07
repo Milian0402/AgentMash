@@ -431,8 +431,10 @@ test("Deck completion shows keepers instead of dead air", async ({ page }) => {
   }
 
   await expect(page.locator("#emptyState")).toBeVisible();
-  await expect(page.locator("#emptyTitle")).toHaveText("Keepers");
+  await expect(page.locator("#emptyState")).toHaveClass(/has-keepers/);
+  await expect(page.locator("#emptyTitle")).toHaveText("1 survived");
   await expect(page.locator("#keeperList")).toContainText("OpsPilot landing page");
+  await expect(page.locator("#keeperList")).toContainText("Keeper");
   await expect(page.getByRole("button", { name: "Remix 4 cards" })).toBeVisible();
 });
 

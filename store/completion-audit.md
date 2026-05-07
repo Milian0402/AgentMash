@@ -65,7 +65,7 @@ Make AgentMash good enough to launch publicly as a serious app, while staying in
 - Mobile filter labels fit at 390 by 844 without truncating the `Product` tab.
 - Reduced-motion users get shortened transition timing for the swipe-card animation.
 - Decisions use supported local haptics plus a quiet WebAudio tick to give the swipe loop tactile feedback.
-- Deck completion shows a Keepers summary instead of dead air.
+- Deck completion shows a stronger survived-count and keeper-card summary instead of dead air.
 - Deck completion can start a local Remix session with type-specific tagline, mark-only, first-line, and cutout glance variants without overwriting existing export rows.
 - Endless mode auto-loops one local glance-variant card at a time when enabled.
 - Pairwise mode captures relative preference signals without creating normal swipe reviews.
@@ -94,7 +94,7 @@ Make AgentMash good enough to launch publicly as a serious app, while staying in
 | Keep mobile filters readable. | `styles.css` gives the filter tabs a mobile-specific 3-column layout with nowrap labels, and Playwright verifies no filter label overflows at 390 by 844. | Met locally |
 | Make card details tap-to-reveal. | `index.html` hides `detailSheet` behind `Details`; `render.js` manages the sheet state and `app.js` resets it after decisions; Playwright verifies hidden, open with artifact title, close, and hidden again. | Met locally |
 | Replace deck-complete dead air with Keepers. | `index.html` renders a Keepers completion state, `render.js` lists recent Nice artifacts from the completed view, and Playwright verifies the surviving artifact appears after the deck empties. | Met locally |
-| Keep the review loop going after completion. | `index.html` adds `Remix deck`, `app.js` remixes the filtered local deck, `state.js` supplies type-specific tagline, mark-only, first-line, and cutout variants, and Playwright verifies old reviews remain, item IDs stay unique, variant metadata exports, and JSONL rows grow only after the next swipe. | Met locally |
+| Keep the review loop going after completion. | `index.html` adds `Remix deck`, `app.js` remixes the filtered local deck, `state.js` supplies type-specific tagline, mark-only, first-line, and cutout variants, and Playwright verifies old reviews remain, item IDs stay unique, variant metadata exports, JSONL rows grow only after the next swipe, and deck completion shows a survived-count keeper summary. | Met locally |
 | Make the swipe loop automatic when requested. | `index.html` adds `Endless`, `state.js` creates one loop card at a time with `loopSourceItemId`, and Playwright verifies the app avoids the empty state while growing local storage only one card per completed swipe. | Met locally |
 | Add pairwise preference capture. | `index.html` adds Pairwise mode, `app.js` stores `pairwiseComparisons` separately from swipe reviews, `packet.js` exports `agentmash.pairwise-row.v1`, and Playwright verifies pairwise choices do not create normal reviews while packet/export rows still work. | Met locally |
 | Split app code into native ES modules. | `index.html` loads `<script type="module" src="app.js">`; `app.js` is now a thin action/wiring entry, with state/storage in `state.js`, packet/export logic in `packet.js`, rendering in `render.js`, and swipe/keyboard handling in `gestures.js`. `npm run check` syntax-checks all modules and Playwright serves them over local HTTP. | Met locally |

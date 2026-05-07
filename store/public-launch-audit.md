@@ -64,7 +64,7 @@ Make AgentMash good enough to launch publicly as a serious app.
 - Switching into Pairwise mode on mobile scrolls the review stage back into view.
 - Mobile Human review hides the footer and lower dashboard controls until the user opens `Deck`.
 - Reduced-motion preference shortens swipe-card transition timing.
-- Deck completion shows a Keepers summary instead of dead air, listing recent artifacts that survived the review flow.
+- Deck completion shows a survived-count keeper summary instead of dead air, listing recent artifacts that passed the review flow.
 - Deck completion can start a local Remix session that creates type-specific tagline, mark-only, first-line, and cutout glance variants without overwriting existing export rows.
 - Endless mode can auto-loop one local glance-variant card at a time when the swipe deck empties, avoiding bulk storage growth.
 - Human review includes Pairwise mode for choosing the stronger of two artifacts without creating normal swipe reviews.
@@ -129,7 +129,7 @@ Make AgentMash good enough to launch publicly as a serious app.
 - Playwright e2e test passed: Refine opens the hidden scoring/note panel, clears the mobile decision rail, and the panel closes again after a decision.
 - Playwright e2e test passed: Refine shows tags and the note immediately, keeps score controls hidden by default, then reveals them after `Scores`.
 - Playwright e2e test passed: Details opens the hidden artifact detail sheet and closes it again.
-- Playwright e2e test passed: completing the deck after a Nice judgement renders a Keepers summary with the surviving artifact.
+- Playwright e2e test passed: completing the deck after a Nice judgement renders a survived-count keeper summary with the surviving artifact.
 - Playwright e2e test passed: Remix deck doubles local items from 4 to 8, creates tagline, mark-only, first-line, and cutout variants, keeps the original 4 reviews, adds a fifth review on the next swipe, preserves unique reviewed item IDs, exports variant metadata, and shows 5 JSONL rows.
 - Playwright e2e test passed: Endless mode creates one local loop card after deck completion, records it as a normal v2 review on swipe, then creates only one next loop card.
 - Playwright e2e test passed: Pairwise mode records a comparison without creating a swipe review, exports `agentmash.pairwise-row.v1`, then keeps normal v2 packets and rows working after returning to Swipe mode.

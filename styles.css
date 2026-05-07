@@ -1740,6 +1740,11 @@ body[data-decision-transition="true"] .decision-button {
   margin: 0 0 8px;
 }
 
+.empty-state.has-keepers h3 {
+  font-size: clamp(2rem, 5vw, 3rem);
+  line-height: 0.95;
+}
+
 .empty-state p {
   margin: 0;
   color: var(--muted);
@@ -1752,12 +1757,19 @@ body[data-decision-transition="true"] .decision-button {
 
 .keeper-item {
   display: grid;
-  gap: 4px;
-  padding: 12px;
+  gap: 7px;
+  padding: 14px;
   border: 1px solid var(--line);
-  border-radius: var(--radius);
+  border-radius: 18px;
   background: var(--surface-strong);
   text-align: left;
+}
+
+.empty-state.has-keepers .keeper-item:first-child {
+  background:
+    linear-gradient(135deg, rgba(223, 242, 233, 0.86), rgba(255, 255, 255, 0.92));
+  border-color: rgba(40, 122, 85, 0.34);
+  box-shadow: 0 16px 38px rgba(23, 25, 20, 0.1);
 }
 
 .keeper-item strong,
@@ -1769,6 +1781,18 @@ body[data-decision-transition="true"] .decision-button {
   color: var(--muted);
   font-size: 0.8rem;
   font-weight: 850;
+}
+
+.keeper-badge {
+  width: fit-content;
+  min-height: 26px;
+  display: inline-flex;
+  align-items: center;
+  border-radius: 999px;
+  padding: 0 9px;
+  background: var(--green);
+  color: #ffffff !important;
+  font-size: 0.72rem !important;
 }
 
 .empty-actions {

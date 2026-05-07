@@ -635,9 +635,12 @@ export function renderCompletionSummary(filtered) {
     .reverse()
     .slice(0, 6);
 
-  elements.emptyTitle.textContent = keepers.length ? "Keepers" : "Deck complete";
+  elements.emptyState.classList.toggle("has-keepers", keepers.length > 0);
+  elements.emptyTitle.textContent = keepers.length
+    ? `${keepers.length} survived`
+    : "Deck complete";
   elements.emptyCopy.textContent = keepers.length
-    ? `${keepers.length} keeper${keepers.length === 1 ? "" : "s"} from ${reviewsInView.length} decisions in this view.`
+    ? `${reviewsInView.length} decisions in this view. Keep the strongest first-glance signals moving.`
     : "No keepers in this view yet. Add another artifact or switch filters.";
   elements.emptyRemixButton.hidden = filtered.length === 0;
   elements.emptyRemixButton.textContent = filtered.length > 1 ? `Remix ${filtered.length} cards` : "Remix deck";
@@ -652,13 +655,17 @@ export function renderCompletionSummary(filtered) {
     const row = document.createElement("article");
     row.className = "keeper-item";
 
+    const badge = document.createElement("span");
+    badge.className = "keeper-badge";
+    badge.textContent = "Keeper";
+
     const title = document.createElement("strong");
     title.textContent = item.title;
 
     const detail = document.createElement("span");
-    detail.textContent = `${typeLabel(item.type)} / ${review.grade} / ${review.score}`;
+    detail.textContent = `${typeLabel(item.type)} / ${review.score} score`;
 
-    row.append(title, detail);
+    row.append(badge, title, detail);
     elements.keeperList.append(row);
   });
 }
