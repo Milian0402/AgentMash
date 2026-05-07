@@ -1,46 +1,57 @@
 # Release Checklist
 
-## Local Product
+Last local verification: May 7, 2026. No deployment, paid account, domain purchase, app-store submission, or human outreach has been performed.
 
-- [ ] Run `npm run check`.
-- [ ] Run `npm run check:launch`.
-- [ ] Run `npm run build`.
-- [ ] Run `npm run serve:build`.
-- [ ] Confirm `_site/` excludes internal `store/`, `scripts/`, and repo metadata.
-- [ ] Confirm the chosen host uses `_site/` as the publish/output directory.
-- [ ] Run the app locally with `npm run serve`.
-- [ ] Test desktop at 1440 by 1000.
-- [ ] Test mobile at 390 by 844.
-- [ ] Add one website screenshot.
-- [ ] Add one logo image.
-- [ ] Add one copy sample.
-- [ ] Add one product image.
-- [ ] Confirm SVG upload is rejected.
-- [ ] Confirm oversized image upload is rejected.
-- [ ] Swipe Nice and Pass.
-- [ ] Undo a decision.
-- [ ] Export and import a profile.
-- [ ] Confirm no console errors.
-- [ ] Confirm app icons load in the manifest.
-- [ ] Confirm manifest screenshots load in the manifest.
-- [ ] Confirm support, privacy, terms, publishing, and 404 pages render.
+## Verified Locally
 
-## Public Website
+- [x] Run `npm run check`.
+- [x] Run `npm run check:launch`.
+- [x] Syntax-check `app.js`, `state.js`, `packet.js`, `render.js`, `gestures.js`, `sw.js`, and launch scripts.
+- [x] Run Playwright e2e coverage through local HTTP with `npm run serve`.
+- [x] Run `npm run build`.
+- [x] Confirm `_site/` includes public app files and native modules.
+- [x] Confirm `_site/` excludes internal `store/`, `scripts/`, tests, repo metadata, package files, and host config files.
+- [x] Confirm GitHub Pages, Netlify, and Vercel configs use `_site/` as the publish or output directory.
+- [x] Confirm the service worker caches the public app shell, icons, screenshots, pages, and native modules.
+- [x] Test desktop layout at 1440 by 1000.
+- [x] Test mobile layout at 390 by 844.
+- [x] Confirm starter artifacts cover website, logo, copy, and product image review types.
+- [x] Confirm SVG upload is rejected.
+- [x] Confirm oversized image upload is rejected.
+- [x] Confirm a small PNG upload stores bytes in IndexedDB, not `localStorage`.
+- [x] Swipe Nice and Nope.
+- [x] Undo a decision.
+- [x] Open and close Details.
+- [x] Open Refine and verify it closes after a decision.
+- [x] Complete a deck and show Keepers.
+- [x] Start a Remix session.
+- [x] Enable Endless mode and verify one loop card is created at a time.
+- [x] Record a Pairwise comparison without creating a swipe review.
+- [x] Export ready JSON and JSONL data.
+- [x] Confirm empty Export workspace metrics show zero items, zero rows, and no stale average signal.
+- [x] Confirm no console errors in local smoke testing.
+- [x] Confirm app icons load in the manifest.
+- [x] Confirm manifest screenshots load from public assets.
+- [x] Confirm support, privacy, terms, publishing, and 404 pages render locally.
+- [x] Confirm no analytics, payment, contact, telemetry, socket, third-party API, or outbound fetch hooks exist in the public app surface.
+
+## Needs User Action Before Public Website Launch
 
 - [ ] Pick hosting provider.
-- [ ] Decide whether to buy a domain.
-- [ ] Decide whether to use GitHub Pages, Netlify, Vercel, or Cloudflare Pages.
-- [ ] Add a real support contact.
-- [ ] Confirm `support.html` is publicly reachable.
-- [ ] Update Open Graph metadata with the final URL.
+- [ ] Decide whether to buy a domain or launch on a free host subdomain.
+- [ ] Decide whether to use GitHub Pages, Netlify, Vercel, Cloudflare Pages, or another static host.
+- [ ] Add a real support contact to `support.html`.
+- [ ] Add developer identity and inquiry route to `privacy.html` if required for the launch type.
+- [ ] Update Open Graph URLs after the final public URL exists.
 - [ ] Deploy static files.
+- [ ] Confirm `support.html` is publicly reachable.
 - [ ] Confirm `privacy.html` is publicly reachable.
 - [ ] Confirm `terms.html` is publicly reachable.
 - [ ] Confirm security headers on the public host.
 - [ ] Confirm HTTPS.
-- [ ] Confirm service worker loads.
+- [ ] Confirm service worker install and update behavior on the public host.
 
-## Agent Customer Service
+## Deferred Agent Customer Service
 
 - [ ] Decide who can submit artifacts: agents, labs, product teams, or internal users only.
 - [ ] Add authentication before accepting outside submissions.
@@ -50,7 +61,7 @@
 - [ ] Add usage limits before billing.
 - [ ] Add billing only after support and retention policies are clear.
 
-## App Stores
+## Needs User Action Before App Stores
 
 - [ ] Read `store/app-store-submission.md`.
 - [ ] Read `store/privacy-data-safety-draft.md`.
