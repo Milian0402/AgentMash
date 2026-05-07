@@ -56,6 +56,79 @@ async function addTinyImageArtifact(page, title) {
   await page.getByRole("button", { name: "Send to human review" }).click();
 }
 
+async function seedStressProfile(page) {
+  await page.goto(appUrl);
+  await page.evaluate((key) => {
+    const types = ["website", "logo", "copy", "product"];
+    const installedAt = "2026-05-07T00:00:00.000Z";
+    const items = Array.from({ length: 500 }, (_, index) => {
+      const type = types[index % types.length];
+      return {
+        id: `stress-item-${index}`,
+        type,
+        title: `Stress artifact ${index + 1}`,
+        prompt: `Stress prompt ${index + 1} for fast local review.`,
+        body: `Can this ${type} survive a first-glance review under load?`,
+        question: `Is this ${type} nice?`,
+        agent: {
+          requesterType: "agent",
+          requesterName: `stress-agent-${index % 8}`,
+          runId: `stress-run-${index}`,
+          goal: "Stress local review storage and render paths.",
+          returnMode: "json",
+          returnTarget: "local-stress",
+          submittedAt: installedAt
+        },
+        variant: "original",
+        loopSourceItemId: "",
+        imageKey: "",
+        imageData: "",
+        createdAt: installedAt
+      };
+    });
+    const reviews = items.slice(0, 250).map((item, index) => {
+      const verdict = index % 3 === 0 ? "nice" : "pass";
+      const score = verdict === "nice" ? 76 : 42;
+      return {
+        id: `stress-review-${index}`,
+        itemId: item.id,
+        reviewer: "Stress reviewer",
+        verdict,
+        scores: { gut: verdict === "nice" ? 8 : 3, sense: 6, craft: 6, useful: 6 },
+        score,
+        grade: verdict === "nice" ? "Promising" : "Reject",
+        recommendation: verdict === "nice" ? "Keep iterating from this direction." : "Reject this output and retry.",
+        tags: verdict === "nice" ? ["clear"] : ["generic"],
+        note: "",
+        createdAt: installedAt
+      };
+    });
+
+    localStorage.setItem(
+      key,
+      JSON.stringify({
+        version: 5,
+        reviewer: "Stress reviewer",
+        filter: "all",
+        dashboard: "human",
+        reviewMode: "swipe",
+        endlessMode: false,
+        loopCursor: 0,
+        pairwise: { leftItemId: null, rightItemId: null },
+        items,
+        reviews,
+        pairwiseComparisons: [],
+        currentItemId: items[250].id,
+        activeTags: [],
+        draftScores: { gut: 6, sense: 6, craft: 6, useful: 6 },
+        lastPacketItemId: reviews.at(-1).itemId,
+        installedAt
+      })
+    );
+  }, storageKey);
+  await page.reload();
+}
+
 test("Nice, Undo, and Nope produce a v2 feedback packet", async ({ page }) => {
   await resetApp(page);
 
@@ -330,4 +403,33 @@ test("Profile export and import roundtrip restores uploaded images", async ({ pa
 
   const restoredImage = await storedImageForKey(page, importedItem.imageKey);
   expect(restoredImage).toBe(exportedItem.imageData);
+});
+
+test("Stress profile handles 500 items, 250 reviews, and 100 more swipes", async ({ page }) => {
+  test.setTimeout(60_000);
+  await seedStressProfile(page);
+
+  await expect(page.locator("#stageProgress")).toHaveText("251 / 500");
+  await expect(page.locator("#reviewedCount")).toHaveText("250");
+  await expect(page.locator("#queueCount")).toHaveText("250");
+  await expect(page.locator("#storageStatus")).toBeHidden();
+
+  for (let index = 0; index < 100; index += 1) {
+    await page.keyboard.press(index % 2 === 0 ? "ArrowRight" : "ArrowLeft");
+  }
+
+  await expect.poll(() => reviewCount(page), { timeout: 10_000 }).toBe(350);
+  await expect(page.locator("#storageStatus")).toBeHidden();
+  await expect(page.locator("#reviewedCount")).toHaveText("350");
+  await expect(page.locator("#queueCount")).toHaveText("150");
+
+  const profile = await page.evaluate((key) => JSON.parse(localStorage.getItem(key)), storageKey);
+  expect(profile.items).toHaveLength(500);
+  expect(profile.reviews).toHaveLength(350);
+  expect(new Set(profile.reviews.map((review) => review.itemId)).size).toBe(350);
+  expect(profile.currentItemId).toBe("stress-item-350");
+
+  await page.getByRole("button", { name: "Export workspace" }).click();
+  await expect(page.locator("#datasetStatus")).toHaveText("350 rows");
+  await expect(page.locator("#packetStatus")).toHaveText("Ready");
 });

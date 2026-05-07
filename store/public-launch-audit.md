@@ -55,7 +55,7 @@ Make AgentMash good enough to launch publicly as a serious app.
 - `npm run check:launch` passes.
 - `npm run check` syntax-checks `app.js`, `state.js`, `packet.js`, `render.js`, and `gestures.js`.
 - Playwright runs the module app through `npm run serve` at `http://127.0.0.1:5177/`, not a blocked `file://` module load.
-- `npm run check` now includes Playwright e2e coverage for Nice, Undo, Nope, v2 packet shape, Keepers completion state, Remix repeat sessions with variant metadata, Endless auto-looping, Pairwise comparison export, empty Export workspace state, IndexedDB image storage, and profile image export/import.
+- `npm run check` now includes Playwright e2e coverage for Nice, Undo, Nope, v2 packet shape, Keepers completion state, Remix repeat sessions with variant metadata, Endless auto-looping, Pairwise comparison export, empty Export workspace state, IndexedDB image storage, profile image export/import, and a 500-item local stress path.
 - `manifest.webmanifest`, `package.json`, and `vercel.json` parse as JSON.
 - `schemas/feedback.v2.json` parses as JSON and is checked for the `agentmash.feedback.v2` contract.
 - Mobile browser check at 390 by 844 showed no horizontal overflow.
@@ -90,6 +90,7 @@ Make AgentMash good enough to launch publicly as a serious app.
 - Playwright e2e test passed: Endless mode creates one local loop card after deck completion, records it as a normal v2 review on swipe, then creates only one next loop card.
 - Playwright e2e test passed: Pairwise mode records a comparison without creating a swipe review, exports `agentmash.pairwise-row.v1`, then keeps normal v2 packets and rows working after returning to Swipe mode.
 - Playwright e2e test passed: zero items and zero reviews rendered empty Export workspace counts and an empty packet without stale metrics.
+- Playwright e2e test passed: a 500-item profile with 250 existing reviews accepted 100 more keyboard decisions, preserved 350 unique review rows, avoided storage warnings, and kept Export workspace usable.
 - `npm run serve:build` served `_site/`; `/` and `assets/icons/apple-touch-icon.png` returned 200, while `store/completion-audit.md` returned 404.
 - Draft submission assets are sized for Apple iPhone 6.9, Apple iPhone 6.5, Google phone, and Google Play feature graphic planning.
 - GitHub repo is private at `https://github.com/Milian0402/AgentMash`.

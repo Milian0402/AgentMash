@@ -258,6 +258,10 @@ check(
   hasAll(testSpec, ["Profile export and import roundtrip restores uploaded images", "readFile", "#importFile", "storedImageForKey"]),
   "Playwright covers image export import roundtrip"
 );
+check(
+  hasAll(testSpec, ["Stress profile handles 500 items, 250 reviews, and 100 more swipes", "Array.from({ length: 500 }", "toBe(350)"]),
+  "Playwright covers large local profile stress path"
+);
 check(pagesWorkflow.includes("npm run build"), "GitHub Pages workflow uses public build script");
 check(!pagesWorkflow.includes(" store"), "GitHub Pages workflow does not copy internal store docs directly");
 check(readme.includes("store/public-launch-audit.md"), "README links public launch audit");
