@@ -9,6 +9,7 @@ No deployment, paid account, domain purchase, app-store submission, or human out
 - Private GitHub repo exists.
 - `main` contains the static app.
 - Local preview runs with `npm run serve`.
+- The app uses native ES modules, so local preview should run over HTTP instead of `file://`.
 - Public package builds with `npm run build` into `_site/`.
 - Public package preview runs with `npm run serve:build`.
 - Syntax check runs with `npm run check`.

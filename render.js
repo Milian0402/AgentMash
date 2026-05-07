@@ -1,0 +1,848 @@
+import {
+  agentLine,
+  calculateScore,
+  ensureEndlessItem,
+  escapeHtml,
+  filteredItems,
+  getActiveItem,
+  getPairwiseItems,
+  gradeFor,
+  normalizeVariant,
+  pendingItems,
+  quickTags,
+  saveState,
+  scoreDimensions,
+  shortTitle,
+  state,
+  typeLabel,
+  typeRubrics
+} from "./state.js";
+import {
+  buildEvalRows,
+  buildFeedbackPacket,
+  buildPairwiseRows,
+  buildPendingPacket,
+  preferenceLabelFor,
+  recommendedActionFor,
+  repairInstructionFor,
+  signalCoverage,
+  signalStrengthFor
+} from "./packet.js";
+
+export const elements = {
+  dashboardSwitch: document.querySelector("#dashboardSwitch"),
+  humanDashboard: document.querySelector("#humanDashboard"),
+  agentDashboard: document.querySelector("#agentDashboard"),
+  reviewerName: document.querySelector("#reviewerName"),
+  reviewModeTabs: document.querySelector("#reviewModeTabs"),
+  endlessToggle: document.querySelector("#endlessToggle"),
+  filterTabs: document.querySelector("#filterTabs"),
+  humanAddButton: document.querySelector("#humanAddButton"),
+  queueCount: document.querySelector("#queueCount"),
+  artifactForm: document.querySelector("#artifactForm"),
+  artifactType: document.querySelector("#artifactType"),
+  artifactTitle: document.querySelector("#artifactTitle"),
+  artifactPrompt: document.querySelector("#artifactPrompt"),
+  artifactBody: document.querySelector("#artifactBody"),
+  artifactImage: document.querySelector("#artifactImage"),
+  imageStatus: document.querySelector("#imageStatus"),
+  agentRequesterType: document.querySelector("#agentRequesterType"),
+  agentRequesterName: document.querySelector("#agentRequesterName"),
+  agentRunId: document.querySelector("#agentRunId"),
+  agentReturnMode: document.querySelector("#agentReturnMode"),
+  agentReturnTarget: document.querySelector("#agentReturnTarget"),
+  agentGoal: document.querySelector("#agentGoal"),
+  stageEyebrow: document.querySelector("#stageEyebrow"),
+  stageTitle: document.querySelector("#stageTitle"),
+  stageProgress: document.querySelector("#stageProgress"),
+  keyboardLeftHint: document.querySelector("#keyboardLeftHint"),
+  keyboardRightHint: document.querySelector("#keyboardRightHint"),
+  swipeCard: document.querySelector("#swipeCard"),
+  swipeActions: document.querySelector(".swipe-actions"),
+  swipeBadge: document.querySelector("#swipeBadge"),
+  cardPreview: document.querySelector("#cardPreview"),
+  artifactTypeLabel: document.querySelector("#artifactTypeLabel"),
+  artifactIndexLabel: document.querySelector("#artifactIndexLabel"),
+  artifactTitleLabel: document.querySelector("#artifactTitleLabel"),
+  artifactPromptLabel: document.querySelector("#artifactPromptLabel"),
+  agentMetaLabel: document.querySelector("#agentMetaLabel"),
+  artifactQuestionLabel: document.querySelector("#artifactQuestionLabel"),
+  detailsButton: document.querySelector("#detailsButton"),
+  detailCloseButton: document.querySelector("#detailCloseButton"),
+  detailSheet: document.querySelector("#detailSheet"),
+  pairwiseStage: document.querySelector("#pairwiseStage"),
+  pairLeftPreview: document.querySelector("#pairLeftPreview"),
+  pairRightPreview: document.querySelector("#pairRightPreview"),
+  pairLeftTitle: document.querySelector("#pairLeftTitle"),
+  pairRightTitle: document.querySelector("#pairRightTitle"),
+  pickLeftButton: document.querySelector("#pickLeftButton"),
+  pickRightButton: document.querySelector("#pickRightButton"),
+  pairwiseStatus: document.querySelector("#pairwiseStatus"),
+  pairUndoButton: document.querySelector("#pairUndoButton"),
+  emptyState: document.querySelector("#emptyState"),
+  emptyTitle: document.querySelector("#emptyTitle"),
+  emptyCopy: document.querySelector("#emptyCopy"),
+  keeperList: document.querySelector("#keeperList"),
+  emptyRemixButton: document.querySelector("#emptyRemixButton"),
+  emptyAddButton: document.querySelector("#emptyAddButton"),
+  rejectButton: document.querySelector("#rejectButton"),
+  acceptButton: document.querySelector("#acceptButton"),
+  undoButton: document.querySelector("#undoButton"),
+  scoreControls: document.querySelector("#scoreControls"),
+  refineButton: document.querySelector("#refineButton"),
+  signalPanel: document.querySelector("#signalPanel"),
+  liveScore: document.querySelector("#liveScore"),
+  liveGrade: document.querySelector("#liveGrade"),
+  tagRow: document.querySelector("#tagRow"),
+  reviewNote: document.querySelector("#reviewNote"),
+  standardType: document.querySelector("#standardType"),
+  rubricList: document.querySelector("#rubricList"),
+  niceRate: document.querySelector("#niceRate"),
+  avgScore: document.querySelector("#avgScore"),
+  keeperCount: document.querySelector("#keeperCount"),
+  passCount: document.querySelector("#passCount"),
+  reviewedCount: document.querySelector("#reviewedCount"),
+  agentTotalRequests: document.querySelector("#agentTotalRequests"),
+  agentReadyPackets: document.querySelector("#agentReadyPackets"),
+  agentPendingRequests: document.querySelector("#agentPendingRequests"),
+  agentAvgConfidence: document.querySelector("#agentAvgConfidence"),
+  agentRequestList: document.querySelector("#agentRequestList"),
+  datasetStatus: document.querySelector("#datasetStatus"),
+  datasetPreview: document.querySelector("#datasetPreview"),
+  copyDatasetButton: document.querySelector("#copyDatasetButton"),
+  downloadDatasetButton: document.querySelector("#downloadDatasetButton"),
+  agentUseList: document.querySelector("#agentUseList"),
+  agentSignalList: document.querySelector("#agentSignalList"),
+  historyList: document.querySelector("#historyList"),
+  packetStatus: document.querySelector("#packetStatus"),
+  packetPreview: document.querySelector("#packetPreview"),
+  copyPacketButton: document.querySelector("#copyPacketButton"),
+  downloadPacketButton: document.querySelector("#downloadPacketButton"),
+  storageStatus: document.querySelector("#storageStatus"),
+  importButton: document.querySelector("#importButton"),
+  importFile: document.querySelector("#importFile"),
+  exportButton: document.querySelector("#exportButton"),
+  resetButton: document.querySelector("#resetButton"),
+  installButton: document.querySelector("#installButton"),
+  reviewerSaveStatus: document.querySelector("#reviewerSaveStatus")
+};
+
+let reviewerStatusTimer = null;
+let isRefineOpen = false;
+let isDetailSheetOpen = false;
+let renderActions = {
+  toggleTag: () => {}
+};
+
+export function configureRenderActions(actions) {
+  renderActions = { ...renderActions, ...actions };
+}
+
+export function setStorageStatus(message) {
+  elements.storageStatus.textContent = message;
+  elements.storageStatus.hidden = !message;
+}
+
+export function showReviewerSaveStatus(message, isError = false) {
+  window.clearTimeout(reviewerStatusTimer);
+  elements.reviewerSaveStatus.textContent = message;
+  elements.reviewerSaveStatus.classList.toggle("is-error", isError);
+  elements.reviewerSaveStatus.hidden = false;
+
+  reviewerStatusTimer = window.setTimeout(() => {
+    elements.reviewerSaveStatus.hidden = true;
+  }, isError ? 3200 : 1600);
+}
+
+export function resetReviewPanels() {
+  isRefineOpen = false;
+  isDetailSheetOpen = false;
+}
+
+export function toggleRefinePanel() {
+  isRefineOpen = !isRefineOpen;
+  renderRefinePanel();
+}
+
+export function openDetailSheet() {
+  isDetailSheetOpen = true;
+  renderDetailSheet();
+}
+
+export function closeDetailSheet() {
+  isDetailSheetOpen = false;
+  renderDetailSheet();
+}
+
+export function render() {
+  const isPairwise = state.reviewMode === "pairwise";
+  let activeItem = getActiveItem();
+  let pending = pendingItems();
+  const filtered = filteredItems();
+  if (!isPairwise && !activeItem) {
+    const endlessItem = ensureEndlessItem();
+    if (endlessItem) {
+      activeItem = endlessItem;
+      pending = pendingItems();
+    }
+  }
+  const pairwisePair = getPairwiseItems();
+  const activeType = isPairwise
+    ? pairwisePair?.left.type || (state.filter === "all" ? "website" : state.filter)
+    : activeItem ? activeItem.type : state.filter === "all" ? "website" : state.filter;
+
+  renderDashboardShell();
+  elements.reviewerName.value = state.reviewer;
+  elements.queueCount.textContent = `${isPairwise ? filtered.length : pending.length}`;
+  elements.stageEyebrow.textContent = isPairwise ? `${typeLabel(activeType)} comparison` : `${typeLabel(activeType)} judgement`;
+  elements.stageTitle.textContent = isPairwise
+    ? pairwisePair ? "Pick the stronger first glance" : "Add two artifacts to compare"
+    : activeItem ? "Trust your first reaction" : "Nothing left in this view";
+  elements.stageProgress.textContent = isPairwise
+    ? `${state.pairwiseComparisons.length} captured`
+    : activeItem ? "Ready" : "Done";
+  elements.standardType.textContent = typeLabel(activeType);
+
+  renderTabs();
+  renderReviewModeTabs();
+  renderEndlessToggle();
+  renderRubric(activeType);
+  renderScoreControls();
+  renderTags();
+  renderMetrics();
+  renderHistory();
+  renderAgentDashboard();
+  renderLiveScore();
+  if (isPairwise) {
+    resetReviewPanels();
+  }
+  renderRefinePanel();
+  renderDetailSheet();
+
+  if (isPairwise) {
+    renderPairwise(pairwisePair, filtered);
+    renderFeedbackPacket(packetItemForRender(null));
+    saveState();
+    return;
+  }
+
+  elements.pairwiseStage.hidden = true;
+  elements.swipeActions.hidden = false;
+  elements.refineButton.hidden = false;
+  elements.keyboardLeftHint.textContent = "Left: nope";
+  elements.keyboardRightHint.textContent = "Right: nice";
+
+  elements.emptyState.hidden = Boolean(activeItem);
+  elements.swipeCard.hidden = !activeItem;
+  elements.rejectButton.disabled = !activeItem;
+  elements.acceptButton.disabled = !activeItem;
+  elements.undoButton.disabled = state.reviews.length === 0;
+
+  if (!activeItem) {
+    isDetailSheetOpen = false;
+    renderCompletionSummary(filtered);
+    saveState();
+    renderFeedbackPacket(packetItemForRender(null));
+    return;
+  }
+
+  const filteredIndex = filtered.findIndex((item) => item.id === activeItem.id) + 1;
+  state.currentItemId = activeItem.id;
+  elements.stageProgress.textContent = `${filteredIndex} / ${filtered.length}`;
+  elements.cardPreview.innerHTML = renderPreview(activeItem);
+  elements.artifactTypeLabel.textContent = typeLabel(activeItem.type);
+  elements.artifactIndexLabel.textContent = `${filteredIndex} of ${filtered.length}`;
+  elements.artifactTitleLabel.textContent = activeItem.title;
+  elements.artifactPromptLabel.textContent = activeItem.prompt || "No source note yet.";
+  elements.agentMetaLabel.textContent = agentLine(activeItem.agent);
+  elements.artifactQuestionLabel.textContent = activeItem.question;
+  elements.swipeCard.style.transform = "";
+  elements.swipeCard.style.opacity = "1";
+  elements.swipeCard.style.removeProperty("--drag-progress");
+  elements.swipeBadge.textContent = "";
+  elements.swipeCard.classList.remove("swipe-nice", "swipe-pass", "is-dragging");
+  clearSwipeIntent();
+  renderFeedbackPacket(packetItemForRender(activeItem));
+  saveState();
+}
+
+export function renderDashboardShell() {
+  const isAgent = state.dashboard === "agent";
+  document.body.dataset.dashboard = state.dashboard;
+  elements.humanDashboard.hidden = isAgent;
+  elements.agentDashboard.hidden = !isAgent;
+  elements.dashboardSwitch.querySelectorAll("[data-dashboard]").forEach((button) => {
+    const active = button.dataset.dashboard === state.dashboard;
+    button.classList.toggle("active", active);
+    button.setAttribute("aria-pressed", active ? "true" : "false");
+  });
+}
+
+export function renderTabs() {
+  elements.filterTabs.querySelectorAll(".segment").forEach((button) => {
+    button.classList.toggle("active", button.dataset.filter === state.filter);
+  });
+}
+
+export function renderReviewModeTabs() {
+  elements.reviewModeTabs.querySelectorAll("[data-review-mode]").forEach((button) => {
+    const active = button.dataset.reviewMode === state.reviewMode;
+    button.classList.toggle("active", active);
+    button.setAttribute("aria-pressed", active ? "true" : "false");
+  });
+}
+
+export function renderEndlessToggle() {
+  const enabled = Boolean(state.endlessMode);
+  elements.endlessToggle.textContent = enabled ? "Endless on" : "Endless off";
+  elements.endlessToggle.classList.toggle("active", enabled);
+  elements.endlessToggle.setAttribute("aria-pressed", enabled ? "true" : "false");
+  elements.endlessToggle.disabled = state.reviewMode === "pairwise";
+}
+
+export function renderPairwise(pair) {
+  elements.swipeCard.hidden = true;
+  elements.swipeActions.hidden = true;
+  elements.refineButton.hidden = true;
+  elements.rejectButton.disabled = true;
+  elements.acceptButton.disabled = true;
+  elements.undoButton.disabled = true;
+  elements.keyboardLeftHint.textContent = "A: left";
+  elements.keyboardRightHint.textContent = "L: right";
+
+  if (!pair) {
+    elements.pairwiseStage.hidden = true;
+    elements.emptyState.hidden = false;
+    elements.emptyTitle.textContent = "Pairwise needs two cards";
+    elements.emptyCopy.textContent = "Add another artifact or switch filters to compare first impressions.";
+    elements.keeperList.replaceChildren();
+    elements.emptyRemixButton.hidden = true;
+    return;
+  }
+
+  state.pairwise = {
+    leftItemId: pair.left.id,
+    rightItemId: pair.right.id
+  };
+  elements.emptyState.hidden = true;
+  elements.pairwiseStage.hidden = false;
+  elements.pairLeftPreview.innerHTML = renderPreview(pair.left);
+  elements.pairRightPreview.innerHTML = renderPreview(pair.right);
+  elements.pairLeftTitle.textContent = pair.left.title;
+  elements.pairRightTitle.textContent = pair.right.title;
+  elements.pairwiseStatus.textContent = `${state.pairwiseComparisons.length} captured`;
+  elements.pairUndoButton.disabled = state.pairwiseComparisons.length === 0;
+}
+
+export function renderRubric(type) {
+  elements.rubricList.replaceChildren();
+  typeRubrics[type].forEach((criterion) => {
+    const item = document.createElement("li");
+    item.textContent = criterion;
+    elements.rubricList.append(item);
+  });
+}
+
+export function renderScoreControls() {
+  elements.scoreControls.replaceChildren();
+  scoreDimensions.forEach((dimension) => {
+    const wrapper = document.createElement("label");
+    wrapper.className = "score-control";
+
+    const title = document.createElement("span");
+    title.className = "score-title";
+    title.textContent = dimension.label;
+
+    const helper = document.createElement("span");
+    helper.className = "score-helper";
+    helper.textContent = `${dimension.low} / ${dimension.high}`;
+
+    const row = document.createElement("span");
+    row.className = "range-row";
+
+    const input = document.createElement("input");
+    input.type = "range";
+    input.min = "0";
+    input.max = "10";
+    input.value = `${state.draftScores[dimension.key]}`;
+    input.dataset.score = dimension.key;
+
+    const output = document.createElement("output");
+    output.textContent = `${state.draftScores[dimension.key]}`;
+
+    input.addEventListener("input", () => {
+      state.draftScores[dimension.key] = Number(input.value);
+      output.textContent = input.value;
+      renderLiveScore();
+      saveState();
+    });
+
+    row.append(input, output);
+    wrapper.append(title, helper, row);
+    elements.scoreControls.append(wrapper);
+  });
+}
+
+export function renderRefinePanel() {
+  elements.signalPanel.hidden = !isRefineOpen;
+  elements.refineButton.classList.toggle("active", isRefineOpen);
+  elements.refineButton.setAttribute("aria-expanded", isRefineOpen ? "true" : "false");
+}
+
+export function renderDetailSheet() {
+  elements.detailSheet.hidden = !isDetailSheetOpen;
+  elements.detailsButton.classList.toggle("active", isDetailSheetOpen);
+  elements.detailsButton.setAttribute("aria-expanded", isDetailSheetOpen ? "true" : "false");
+}
+
+export function renderTags() {
+  elements.tagRow.replaceChildren();
+  quickTags.forEach((tag) => {
+    const button = document.createElement("button");
+    button.type = "button";
+    button.className = "tag-chip";
+    button.textContent = tag;
+    button.classList.toggle("active", state.activeTags.includes(tag));
+    button.addEventListener("click", () => renderActions.toggleTag(tag));
+    elements.tagRow.append(button);
+  });
+}
+
+export function renderMetrics() {
+  const total = state.reviews.length;
+  const niceCount = state.reviews.filter((review) => review.verdict === "nice").length;
+  const passCount = total - niceCount;
+  const keeperCount = state.reviews.filter((review) => review.grade === "Keeper").length;
+  const avgScore = total ? state.reviews.reduce((sum, review) => sum + review.score, 0) / total : 0;
+  const niceRate = total ? Math.round((niceCount / total) * 100) : 0;
+
+  elements.reviewedCount.textContent = `${total}`;
+  elements.niceRate.textContent = `${niceRate}%`;
+  elements.avgScore.textContent = `${Math.round(avgScore)}`;
+  elements.keeperCount.textContent = `${keeperCount}`;
+  elements.passCount.textContent = `${passCount}`;
+}
+
+export function renderCompletionSummary(filtered) {
+  const itemIds = new Set(filtered.map((item) => item.id));
+  const reviewsInView = state.reviews.filter((review) => itemIds.has(review.itemId));
+  const keepers = [...reviewsInView]
+    .filter((review) => review.verdict === "nice")
+    .reverse()
+    .slice(0, 6);
+
+  elements.emptyTitle.textContent = keepers.length ? "Keepers" : "Deck complete";
+  elements.emptyCopy.textContent = keepers.length
+    ? `${keepers.length} keeper${keepers.length === 1 ? "" : "s"} from ${reviewsInView.length} decisions in this view.`
+    : "No keepers in this view yet. Add another artifact or switch filters.";
+  elements.emptyRemixButton.hidden = filtered.length === 0;
+  elements.emptyRemixButton.textContent = filtered.length > 1 ? `Remix ${filtered.length} cards` : "Remix deck";
+  elements.keeperList.replaceChildren();
+
+  keepers.forEach((review) => {
+    const item = state.items.find((candidate) => candidate.id === review.itemId);
+    if (!item) {
+      return;
+    }
+
+    const row = document.createElement("article");
+    row.className = "keeper-item";
+
+    const title = document.createElement("strong");
+    title.textContent = item.title;
+
+    const detail = document.createElement("span");
+    detail.textContent = `${typeLabel(item.type)} / ${review.grade} / ${review.score}`;
+
+    row.append(title, detail);
+    elements.keeperList.append(row);
+  });
+}
+
+export function renderHistory() {
+  elements.historyList.replaceChildren();
+  const recent = [...state.reviews].reverse().slice(0, 10);
+
+  if (!recent.length) {
+    const empty = document.createElement("p");
+    empty.className = "help-text";
+    empty.textContent = "No decisions yet.";
+    elements.historyList.append(empty);
+    return;
+  }
+
+  recent.forEach((review) => {
+    const item = state.items.find((candidate) => candidate.id === review.itemId);
+    if (!item) {
+      return;
+    }
+
+    const row = document.createElement("article");
+    row.className = "history-item";
+
+    const title = document.createElement("strong");
+    title.textContent = item.title;
+
+    const meta = document.createElement("div");
+    meta.className = "history-meta";
+
+    const verdict = document.createElement("span");
+    verdict.className = `history-verdict${review.verdict === "pass" ? " pass" : ""}`;
+    verdict.textContent = review.verdict === "nice" ? "Nice" : "Nope";
+
+    const score = document.createElement("span");
+    score.textContent = `${review.score} / ${review.grade}`;
+
+    const type = document.createElement("span");
+    type.textContent = typeLabel(item.type);
+
+    meta.append(verdict, score, type);
+
+    if (review.tags.length) {
+      const tags = document.createElement("span");
+      tags.textContent = review.tags.join(", ");
+      meta.append(tags);
+    }
+
+    const agent = document.createElement("span");
+    agent.textContent = `${item.agent.requesterName} / ${item.agent.runId}`;
+    meta.append(agent);
+
+    row.append(title, meta);
+    elements.historyList.append(row);
+  });
+}
+
+export function renderAgentDashboard() {
+  const reviewByItem = new Map(state.reviews.map((review) => [review.itemId, review]));
+  const readyCount = state.reviews.length;
+  const pendingCount = state.items.filter((item) => !reviewByItem.has(item.id)).length;
+  const evalRows = buildEvalRows();
+  const exportRows = [...evalRows, ...buildPairwiseRows()];
+  const avgSignalStrength = evalRows.length
+    ? Math.round(evalRows.reduce((sum, row) => sum + row.humanSignal.signalStrength, 0) / evalRows.length * 100)
+    : null;
+
+  elements.agentTotalRequests.textContent = `${state.items.length} artifacts`;
+  elements.agentReadyPackets.textContent = `${readyCount}`;
+  elements.agentPendingRequests.textContent = `${pendingCount}`;
+  elements.agentAvgConfidence.textContent = avgSignalStrength === null ? "None" : `${avgSignalStrength}%`;
+  renderDatasetPreview(exportRows);
+  renderAgentUsePanel(exportRows);
+
+  elements.agentRequestList.replaceChildren();
+  const requests = [...state.items].sort((a, b) => b.createdAt.localeCompare(a.createdAt));
+  if (!requests.length) {
+    const empty = document.createElement("p");
+    empty.className = "help-text";
+    empty.textContent = "No exportable artifacts yet.";
+    elements.agentRequestList.append(empty);
+  }
+
+  requests.forEach((item) => {
+    const review = reviewByItem.get(item.id);
+    const row = document.createElement("article");
+    row.className = `agent-request${review ? " ready" : ""}`;
+
+    const top = document.createElement("div");
+    top.className = "agent-request-top";
+
+    const title = document.createElement("div");
+    const name = document.createElement("strong");
+    name.textContent = item.title;
+    const meta = document.createElement("span");
+    meta.textContent = `${item.agent.requesterName} / ${item.agent.runId}`;
+    title.append(name, meta);
+
+    const status = document.createElement("span");
+    status.className = `count-pill${review ? " ready-pill" : ""}`;
+    status.textContent = review ? "Ready" : "Unjudged";
+    top.append(title, status);
+
+    const signal = document.createElement("p");
+    signal.textContent = review
+      ? `${review.verdict === "nice" ? "Nice" : "Nope"} at ${review.score}. ${repairInstructionFor(item, review)}`
+      : item.agent.goal || "Swipe this artifact to unlock export data.";
+
+    if (review) {
+      const chips = document.createElement("div");
+      chips.className = "signal-chip-row";
+      [
+        `label: ${preferenceLabelFor(review)}`,
+        `signal: ${Math.round(signalStrengthFor(review) * 100)}%`,
+        `use: ${recommendedActionFor(review)}`
+      ].forEach((value) => {
+        const chip = document.createElement("span");
+        chip.className = "signal-chip";
+        chip.textContent = value;
+        chips.append(chip);
+      });
+      row.append(top, signal, chips);
+    } else {
+      row.append(top, signal);
+    }
+
+    const footer = document.createElement("div");
+    footer.className = "agent-request-footer";
+    const returnTarget = document.createElement("span");
+    returnTarget.textContent = `${item.agent.returnMode} -> ${item.agent.returnTarget || "local export"}`;
+    const inspect = document.createElement("button");
+    inspect.type = "button";
+    inspect.className = "mini-button";
+    inspect.textContent = review ? "View packet" : "View item";
+    inspect.addEventListener("click", () => {
+      state.lastPacketItemId = item.id;
+      state.dashboard = "agent";
+      saveState();
+      render();
+    });
+    footer.append(returnTarget, inspect);
+
+    row.append(footer);
+    elements.agentRequestList.append(row);
+  });
+
+  renderAgentSignals(reviewByItem);
+}
+
+export function renderDatasetPreview(evalRows) {
+  elements.datasetStatus.textContent = `${evalRows.length} rows`;
+  elements.copyDatasetButton.disabled = evalRows.length === 0;
+  elements.downloadDatasetButton.disabled = evalRows.length === 0;
+
+  if (!evalRows.length) {
+    elements.datasetPreview.textContent = "No export rows yet. Swipe at least one artifact to create JSONL eval data.";
+    return;
+  }
+
+  elements.datasetPreview.textContent = evalRows
+    .slice(0, 3)
+    .map((row) => JSON.stringify(row))
+    .join("\n");
+}
+
+export function renderAgentUsePanel(evalRows) {
+  elements.agentUseList.replaceChildren();
+  const packet = activePacket();
+  const selectedUse = packet?.agentUse;
+  const rows = selectedUse
+    ? [
+        ["Preference label", selectedUse.preferenceLabel],
+        ["Signal strength", `${Math.round(selectedUse.signalStrength * 100)}%`],
+        ["Recommended action", selectedUse.recommendedAction],
+        ["Repair instruction", selectedUse.repairInstruction]
+      ]
+    : [
+        ["Eval rows", `${evalRows.length}`],
+        ["Training signals", evalRows.length ? signalCoverage(evalRows).join(", ") : "None yet"],
+        ["Next useful action", evalRows.length ? "Export JSONL or inspect ready packets." : "Swipe an artifact."]
+      ];
+
+  rows.forEach(([label, value]) => {
+    const item = document.createElement("div");
+    item.className = "agent-use-item";
+    const key = document.createElement("span");
+    key.textContent = label;
+    const text = document.createElement("strong");
+    text.textContent = value || "None";
+    item.append(key, text);
+    elements.agentUseList.append(item);
+  });
+}
+
+export function renderAgentSignals(reviewByItem) {
+  elements.agentSignalList.replaceChildren();
+  const recent = [...state.reviews].reverse().slice(0, 8);
+
+  if (!recent.length) {
+    const empty = document.createElement("p");
+    empty.className = "help-text";
+    empty.textContent = "No review signals yet.";
+    elements.agentSignalList.append(empty);
+    return;
+  }
+
+  recent.forEach((review) => {
+    const item = state.items.find((candidate) => candidate.id === review.itemId);
+    if (!item || !reviewByItem.has(item.id)) {
+      return;
+    }
+
+    const row = document.createElement("article");
+    row.className = "signal-item";
+
+    const verdict = document.createElement("strong");
+    verdict.textContent = `${review.verdict === "nice" ? "Nice" : "Nope"} / ${review.score}`;
+
+    const detail = document.createElement("p");
+    detail.textContent = `${item.agent.runId}: ${review.tags.length ? review.tags.join(", ") : review.grade}`;
+
+    row.append(verdict, detail);
+    elements.agentSignalList.append(row);
+  });
+}
+
+export function renderFeedbackPacket(activeItem) {
+  const packetItem = activeItem;
+  const review = packetItem ? state.reviews.find((candidate) => candidate.itemId === packetItem.id) : null;
+  const packet = packetItem && review ? buildFeedbackPacket(packetItem, review) : buildPendingPacket(packetItem);
+
+  elements.packetStatus.textContent = packet.status === "ready"
+    ? "Ready"
+    : packet.status === "empty" ? "Empty" : "Pending";
+  elements.packetPreview.textContent = JSON.stringify(packet, null, 2);
+  elements.copyPacketButton.disabled = packet.status !== "ready";
+  elements.downloadPacketButton.disabled = packet.status !== "ready";
+}
+
+export function packetItemForRender(activeItem) {
+  if (state.lastPacketItemId) {
+    const lastPacketItem = state.items.find((item) => item.id === state.lastPacketItemId);
+    if (lastPacketItem) {
+      return lastPacketItem;
+    }
+  }
+  if (activeItem) {
+    return activeItem;
+  }
+  const latestReview = state.reviews.at(-1);
+  return latestReview ? state.items.find((item) => item.id === latestReview.itemId) || null : null;
+}
+
+export function activePacket() {
+  const packetItem = packetItemForRender(getActiveItem());
+  const review = packetItem ? state.reviews.find((candidate) => candidate.itemId === packetItem.id) : null;
+  if (!packetItem || !review) {
+    return null;
+  }
+  return buildFeedbackPacket(packetItem, review);
+}
+
+export function renderPreview(item) {
+  const variant = normalizeVariant(item.variant);
+  const variantClass = previewVariantClass(item);
+  if (item.imageData) {
+    return `
+      <div class="preview-image${variantClass}" aria-label="${escapeHtml(typeLabel(item.type))} image preview">
+        <img src="${item.imageData}" alt="${escapeHtml(item.title)}" />
+      </div>
+    `;
+  }
+
+  if (item.imageKey) {
+    return `
+      <div class="preview-image${variantClass}" aria-label="${escapeHtml(typeLabel(item.type))} image preview">
+        <span class="help-text">Image loading from this browser.</span>
+      </div>
+    `;
+  }
+
+  if (item.type === "logo") {
+    return `
+      <div class="preview-logo${variantClass}" aria-label="Generated logo preview">
+        <div class="logo-board">
+          <div class="logo-lockup">
+            <div class="logo-mark"></div>
+            <div class="logo-lines">
+              <i></i>
+              <i></i>
+            </div>
+          </div>
+          <span>${escapeHtml(shortTitle(item.title, 24))}</span>
+          <div class="logo-samples">
+            <i></i>
+            <i></i>
+            <i></i>
+          </div>
+        </div>
+      </div>
+    `;
+  }
+
+  if (item.type === "copy") {
+    const copyText = variant === "first-line"
+      ? firstLine(item.body || item.prompt || "Paste copy to judge the voice, clarity, and action.")
+      : item.body || item.prompt || "Paste copy to judge the voice, clarity, and action.";
+    return `
+      <div class="preview-copy${variantClass}" aria-label="Generated copy preview">
+        <div class="copy-card">
+          <span class="copy-kicker">${variant === "first-line" ? "First line only" : "Generated copy"}</span>
+          <p class="copy-headline">${escapeHtml(shortTitle(item.title, 48))}</p>
+          <p class="copy-text">${escapeHtml(copyText)}</p>
+        </div>
+      </div>
+    `;
+  }
+
+  if (item.type === "product") {
+    return `
+      <div class="preview-product${variantClass}" aria-label="Generated product image preview">
+        <div class="product-scene">
+          <div class="product-shadow"></div>
+          <div class="product-object">
+            <i class="product-lid"></i>
+            <i class="product-divider one"></i>
+            <i class="product-divider two"></i>
+            <i class="product-handle"></i>
+          </div>
+          <span>${escapeHtml(shortTitle(item.body || item.title, 36))}</span>
+        </div>
+      </div>
+    `;
+  }
+
+  return `
+    <div class="preview-website${variantClass}" aria-label="Generated website preview">
+      <div class="browser-bar">
+        <span class="browser-dot"></span>
+        <span class="browser-dot"></span>
+        <span class="browser-dot"></span>
+        <span>${escapeHtml(shortTitle(item.title, 30))}</span>
+      </div>
+      <div class="site-mock">
+        <div class="site-copy-block">
+          <span class="site-nav">Live runs / approvals / handoff</span>
+          <strong>${escapeHtml(item.body || item.title)}</strong>
+          <p>${escapeHtml(shortTitle(item.prompt || "Generated landing page candidate", 92))}</p>
+          <div class="site-line"></div>
+          <div class="site-line short"></div>
+          <div class="site-line muted"></div>
+          <div class="site-cta-row">
+            <span class="site-cta"></span>
+            <span class="site-cta secondary"></span>
+          </div>
+        </div>
+        <div class="site-visual">
+          <div class="site-metric">
+            <b>82</b>
+            <span>ready</span>
+          </div>
+          <span class="site-tile big"></span>
+          <span class="site-tile"></span>
+          <span class="site-tile"></span>
+        </div>
+      </div>
+    </div>
+  `;
+}
+
+export function previewVariantClass(item) {
+  const variant = normalizeVariant(item.variant);
+  return variant === "original" ? "" : ` is-${variant}`;
+}
+
+export function firstLine(value) {
+  return String(value).split(/[.\n]/).map((part) => part.trim()).find(Boolean) || String(value);
+}
+
+export function renderLiveScore() {
+  const score = calculateScore(state.draftScores);
+  elements.liveScore.textContent = `${score}`;
+  elements.liveGrade.textContent = gradeFor(score, score >= 60 ? "nice" : "pass");
+}
+
+export function clearSwipeIntent() {
+  elements.acceptButton.classList.remove("is-hot");
+  elements.rejectButton.classList.remove("is-hot");
+  document.body.dataset.swipeIntent = "";
+}

@@ -1,9 +1,6 @@
 import { expect, test } from "@playwright/test";
-import { resolve } from "node:path";
-import { pathToFileURL } from "node:url";
-
 const storageKey = "agentmash.private-profile.v5";
-const appUrl = process.env.AGENTMASH_E2E_URL || pathToFileURL(resolve("index.html")).href;
+const appUrl = process.env.AGENTMASH_E2E_URL || "http://127.0.0.1:5177/";
 
 async function resetApp(page) {
   await page.goto(appUrl);

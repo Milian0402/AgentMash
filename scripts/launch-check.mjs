@@ -6,6 +6,10 @@ const requiredFiles = [
   "index.html",
   "styles.css",
   "app.js",
+  "state.js",
+  "packet.js",
+  "render.js",
+  "gestures.js",
   "sw.js",
   "manifest.webmanifest",
   "support.html",
@@ -62,6 +66,10 @@ const appShellFiles = [
   "./index.html",
   "./styles.css",
   "./app.js",
+  "./state.js",
+  "./packet.js",
+  "./render.js",
+  "./gestures.js",
   "./manifest.webmanifest",
   "./assets/app-icon.svg",
   "./assets/icons/app-icon-192.png",
@@ -138,17 +146,24 @@ const vercel = JSON.parse(await read("vercel.json"));
 const index = await read("index.html");
 const support = await read("support.html");
 const app = await read("app.js");
+const stateModule = await read("state.js");
+const packetModule = await read("packet.js");
+const renderModule = await read("render.js");
+const gesturesModule = await read("gestures.js");
+const appSurface = [app, stateModule, packetModule, renderModule, gesturesModule].join("\n");
 const styles = await read("styles.css");
 const serviceWorker = await read("sw.js");
 const headers = await read("_headers");
 const netlify = await read("netlify.toml");
 const pagesWorkflow = await read(".github/workflows/pages.yml");
+const playwrightConfig = await read("playwright.config.mjs");
 const readme = await read("README.md");
 const completionAudit = await read("store/completion-audit.md");
 const audit = await read("store/public-launch-audit.md");
 const listing = await read("store/app-store-listing.md");
 
 check(packageJson.name === "agentmash", "package name is agentmash");
+check(packageJson.type === "module", "package uses native ES modules");
 check(packageJson.repository?.url === "https://github.com/Milian0402/AgentMash.git", "package repo points to AgentMash");
 check(manifest.name === "AgentMash" && manifest.short_name === "AgentMash", "manifest uses AgentMash");
 check(manifest.id === "./", "manifest has a stable app id");
@@ -172,28 +187,37 @@ check(index.includes('accept="image/png,image/jpeg,image/webp"') && !index.inclu
 check(hasAll(index, ["support.html", "privacy.html", "terms.html", "publishing.html"]), "footer links key pages");
 check(index.includes("Export workspace") && index.includes("Local export workspace"), "agent-facing surface is framed as local export workspace");
 check(!/Agent lab|Request Queue|Waiting on humans|Returned Signals|Retry queue|No agent requests/i.test(index), "export workspace avoids inbound-traffic wording");
+check(index.includes('type="module" src="app.js"'), "index loads native ES module entry");
+check(
+  hasAll(packageJson.scripts?.check || "", ["node --check state.js", "node --check packet.js", "node --check render.js", "node --check gestures.js"]),
+  "package check syntax-checks app modules"
+);
+check(
+  hasAll(playwrightConfig, ["webServer", "npm run serve", "http://127.0.0.1:5177/"]),
+  "Playwright serves native modules over local HTTP"
+);
 check(index.includes("refineButton") && index.includes('id="signalPanel" hidden'), "rubric and note panel is hidden behind Refine by default");
 check(index.includes("detailsButton") && index.includes('id="detailSheet" hidden'), "card details are hidden behind a details sheet by default");
 check(index.includes("keeperList") && index.includes("Keepers"), "deck completion has keepers summary");
 check(index.includes("emptyRemixButton") && app.includes("remixCurrentDeck"), "deck completion can start a local remix session");
-check(app.includes("variantForRemix") && app.includes("first-line") && styles.includes("is-thumbnail"), "remix sessions create glance variants");
-check(index.includes("endlessToggle") && app.includes("ensureEndlessItem") && app.includes("loopSourceItemId"), "endless mode auto-loops one local card at a time");
+check(appSurface.includes("variantForRemix") && appSurface.includes("first-line") && styles.includes("is-thumbnail"), "remix sessions create glance variants");
+check(index.includes("endlessToggle") && appSurface.includes("ensureEndlessItem") && appSurface.includes("loopSourceItemId"), "endless mode auto-loops one local card at a time");
 check(index.includes("reviewModeTabs") && index.includes("pairwiseStage") && app.includes("choosePairwise"), "human review includes local pairwise mode");
-check(app.includes("agentmash.pairwise-row.v1") && app.includes("pairwiseComparisons"), "pairwise comparisons export as structured rows");
+check(appSurface.includes("agentmash.pairwise-row.v1") && appSurface.includes("pairwiseComparisons"), "pairwise comparisons export as structured rows");
 check(app.includes("humanAddButton") && app.includes("openAddArtifactPanel"), "human add-artifact entry exists");
 check(app.includes('state.dashboard = "human";'), "added artifacts return to human deck");
 check(app.includes("window.confirm") && app.includes("Reset this local AgentMash profile"), "reset requires confirmation");
 check(app.includes("confirmProfileImport") && app.includes("Import this AgentMash profile"), "profile import requires confirmation when local data exists");
 check(app.includes("async function copyText") && app.includes("Copy unavailable"), "copy actions handle clipboard failure");
-check(app.includes("indexedDB") && app.includes("stateForLocalStorage") && app.includes('imageData: ""'), "uploaded image data is kept out of localStorage");
-check(app.includes("Local storage full") && app.includes("setStorageStatus"), "localStorage quota failure surfaces in the UI");
-check(app.includes("signalStrengthFormula") && app.includes("agentmash.feedback.v2"), "feedback packets use schema v2 with signal strength formula");
-check(!app.includes("confidenceFor") && !app.includes(".confidence"), "app output no longer uses confidence field");
-check(!app.includes("agentRetryQueue") && !app.includes("Retry queue"), "retry queue metric is removed");
-check(app.includes("renderRefinePanel") && app.includes("isRefineOpen = false"), "decision flow returns to fast loop after refinement");
-check(app.includes("renderDetailSheet") && app.includes("isDetailSheetOpen = false"), "decision flow closes the details sheet after swipe");
+check(appSurface.includes("indexedDB") && appSurface.includes("stateForLocalStorage") && appSurface.includes('imageData: ""'), "uploaded image data is kept out of localStorage");
+check(appSurface.includes("Local storage full") && appSurface.includes("setStorageStatus"), "localStorage quota failure surfaces in the UI");
+check(appSurface.includes("signalStrengthFormula") && appSurface.includes("agentmash.feedback.v2"), "feedback packets use schema v2 with signal strength formula");
+check(!appSurface.includes("confidenceFor") && !appSurface.includes(".confidence"), "app output no longer uses confidence field");
+check(!appSurface.includes("agentRetryQueue") && !appSurface.includes("Retry queue"), "retry queue metric is removed");
+check(appSurface.includes("renderRefinePanel") && appSurface.includes("isRefineOpen = false"), "decision flow returns to fast loop after refinement");
+check(appSurface.includes("renderDetailSheet") && appSurface.includes("isDetailSheetOpen = false"), "decision flow closes the details sheet after swipe");
 check(
-  hasAll(app, ["ALLOWED_IMAGE_TYPES", "MAX_IMAGE_BYTES", "safeImageData", "Choose a PNG, JPG, or WebP image"]),
+  hasAll(appSurface, ["ALLOWED_IMAGE_TYPES", "MAX_IMAGE_BYTES", "safeImageData", "Choose a PNG, JPG, or WebP image"]),
   "image uploads are type and size constrained"
 );
 check(serviceWorker.includes('const CACHE_NAME = "agentmash-v'), "service worker cache is AgentMash scoped");

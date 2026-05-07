@@ -10,6 +10,7 @@ Make AgentMash good enough to launch publicly as a serious app.
 
 - Product name and private GitHub repository are `AgentMash`.
 - Local repo path is `/Users/maximiliannordler/code/AgentMash`.
+- App code is split into native ES modules: thin entry, state/storage, packets/exports, rendering, and gestures.
 - Human review dashboard is phone-first and supports swipe, buttons, keyboard shortcuts, undo, scoring, tags, and notes.
 - Default Human review flow keeps scoring, tags, and notes behind a `Refine` tap so the first-pass loop stays card-first.
 - Title, prompt, requester line, and artifact detail are hidden behind a `Details` sheet by default so the card stays focused on one visual object.
@@ -46,6 +47,8 @@ Make AgentMash good enough to launch publicly as a serious app.
 
 - `npm run check` passes.
 - `npm run check:launch` passes.
+- `npm run check` syntax-checks `app.js`, `state.js`, `packet.js`, `render.js`, and `gestures.js`.
+- Playwright runs the module app through `npm run serve` at `http://127.0.0.1:5177/`, not a blocked `file://` module load.
 - `npm run check` now includes Playwright e2e coverage for Nice, Undo, Nope, v2 packet shape, Keepers completion state, Remix repeat sessions with variant metadata, Endless auto-looping, Pairwise comparison export, empty Export workspace state, and IndexedDB image storage.
 - `manifest.webmanifest`, `package.json`, and `vercel.json` parse as JSON.
 - Mobile browser check at 390 by 844 showed no horizontal overflow.
@@ -56,6 +59,7 @@ Make AgentMash good enough to launch publicly as a serious app.
 - Manifest screenshots point to tracked screenshot assets.
 - Public manifest screenshots point to `assets/screenshots`.
 - `npm run check` builds `_site/` and verifies internal files are not packaged.
+- `_site/` includes all public app modules and `sw.js` caches those module files.
 - Netlify and Vercel configs are checked for `npm run build` plus `_site/` output.
 - Apple touch icon is linked from `index.html`, cached by `sw.js`, and sized at 180 by 180.
 - `index.html` and `support.html` show the package version.

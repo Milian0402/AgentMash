@@ -6,6 +6,12 @@ export default defineConfig({
   expect: {
     timeout: 5_000
   },
+  webServer: {
+    command: "npm run serve",
+    url: "http://127.0.0.1:5177/",
+    reuseExistingServer: true,
+    timeout: 10_000
+  },
   use: {
     channel: "chrome",
     trace: "retain-on-failure"

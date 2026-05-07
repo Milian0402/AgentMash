@@ -10,6 +10,8 @@ Status: public-beta candidate. The app is on GitHub, but it has not been deploye
 - Swipe left or press the left arrow when it should pass.
 - Use the Human review dashboard for the fast swipe flow.
 - Use the Export workspace to collect ready packets and JSONL rows from local review data.
+- Compare two artifacts in Pairwise mode when relative preference is the stronger signal.
+- Keep reviewing with Remix or opt-in Endless mode when the current deck is complete.
 - Add artifacts from the human deck or the lab request form.
 - Upload real screenshots, logos, and product images.
 - Paste generated copy and source notes.
@@ -40,7 +42,7 @@ Details live in `store/agent-customer-model.md`.
 
 ## Local-First Use
 
-The app does not send data anywhere. Profile data is stored in `localStorage` for the browser that opens it. Exported JSON files are ignored by git through `.gitignore`.
+The app does not send data anywhere. Profile data is stored in `localStorage`, while uploaded image bytes live in IndexedDB for the browser that opens it. Exported JSON files are ignored by git through `.gitignore`.
 
 ## Run
 
@@ -49,6 +51,8 @@ npm run serve
 ```
 
 Then visit `http://localhost:5177`.
+
+Native ES modules are used, so use the local server instead of opening `index.html` directly.
 
 ## Check
 
