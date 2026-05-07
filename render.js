@@ -611,7 +611,7 @@ function tagInsightRows() {
       const tagLabel = sentenceCase(tag).toLowerCase();
       const totalLabel = decisionCountLabel(stats.total);
       return rejectedRate >= niceRate
-        ? `You nope ${tagLabel} cues ${rejectedRate}% of the time across ${totalLabel}.`
+        ? `You reject ${tagLabel} cues ${rejectedRate}% of the time across ${totalLabel}.`
         : `You keep ${tagLabel} cues ${niceRate}% of the time across ${totalLabel}.`;
     });
 }
@@ -644,7 +644,7 @@ function typeInsightRows() {
         return `${pluralTypeLabel(type)} survive ${niceRate}% of the time across ${totalLabel}.`;
       }
       if (nopeRate >= 60) {
-        return `${pluralTypeLabel(type)} get noped ${nopeRate}% of the time across ${totalLabel}.`;
+        return `${pluralTypeLabel(type)} are rejected ${nopeRate}% of the time across ${totalLabel}.`;
       }
       return `${pluralTypeLabel(type)} split close: ${niceRate}% nice across ${totalLabel}.`;
     });

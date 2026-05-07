@@ -217,7 +217,7 @@ test("Nice, Undo, and Nope produce a v2 feedback packet", async ({ page }) => {
   await page.getByRole("button", { name: /Nope/ }).click();
   await expect.poll(() => reviewCount(page)).toBe(1);
   await expect(page.locator("#streakCounter")).toHaveText("1 in a row, 1 today, 1-day streak");
-  await expect(page.locator("#profileInsights")).toContainText("Websites get noped 100% of the time across 1 decision.");
+  await expect(page.locator("#profileInsights")).toContainText("Websites are rejected 100% of the time across 1 decision.");
 
   await page.getByRole("button", { name: "Export workspace" }).click();
   await expect(page.locator("#packetStatus")).toHaveText("Ready");
@@ -297,7 +297,7 @@ test("Profile insights call out local preference patterns", async ({ page }) => 
   }, storageKey);
   await page.reload();
 
-  await expect(page.locator("#profileInsights")).toContainText("You nope generic cues 100% of the time across 2 decisions.");
+  await expect(page.locator("#profileInsights")).toContainText("You reject generic cues 100% of the time across 2 decisions.");
   await expect(page.locator("#profileInsights")).toContainText("Copy lines survive 100% of the time across 1 decision.");
   await expect(page.locator("#profileInsights")).toContainText("3 reviewed today, 3 total.");
 });

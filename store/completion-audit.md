@@ -22,7 +22,7 @@ Make AgentMash good enough to launch publicly as a serious app, while staying in
 - `Refine` opens as a bottom sheet above the decision controls instead of a panel below the swipe buttons.
 - Inside `Refine`, tags and the decision note are visible first, while score sliders stay behind a compact `Scores` toggle.
 - Human review shows an always-visible momentum counter for current run count, today's reviews, and day streak.
-- Human review surfaces profile insights from review tags, artifact types, and review volume, with self-reflection copy such as "You nope generic cues..." instead of raw stat labels.
+- Human review surfaces profile insights from review tags, artifact types, and review volume, with self-reflection copy such as "You reject generic cues..." instead of raw stat labels.
 - On mobile, deck/profile/storage controls sit behind a `Deck` sheet so the first viewport stays focused on the swipe loop.
 - Artifact title, prompt, requester line, and detail copy are hidden behind a `Details` sheet by default.
 - Export workspace turns those human judgements into structured packets and JSONL rows.
