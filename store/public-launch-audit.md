@@ -33,6 +33,7 @@ Make AgentMash good enough to launch publicly as a serious app.
 - Dedicated Apple touch icon is present for iOS home-screen install polish.
 - Every public HTML page links the favicon and Apple touch icon to avoid missing icon requests.
 - Every public HTML page carries AgentMash app-name, light/dark color-scheme, and theme-color metadata.
+- Every public HTML page carries a self-only CSP meta fallback for hosts that ignore custom security header files.
 - The PWA install prompt is visible from the default Human review screen without exposing Import, Export, or Reset in that flow.
 - Light and dark modes follow the user's operating system preference.
 - Top and bottom spacing use iOS safe-area insets to reduce notch and home-indicator collisions.
@@ -103,6 +104,7 @@ Make AgentMash good enough to launch publicly as a serious app.
 - `npm run check` verifies `index.html`, support, privacy, terms, and 404 pages all link the app favicon and Apple touch icon.
 - `npm run check` verifies `publishing.html` is excluded from the public build.
 - `npm run check` verifies every public HTML page has AgentMash app-name metadata plus light and dark theme-color metadata.
+- `npm run check` verifies every public HTML page has CSP fallback metadata with self-only defaults, blocked object embedding, self-only connections, and self-only form actions.
 - Playwright e2e test passed: a synthetic install prompt showed the `Install` button on Human review, kept Import/Export/Reset hidden, and hid Install after the prompt resolved.
 - `index.html` declares `light dark` color schemes, and `styles.css` includes a dark-mode `prefers-color-scheme` branch.
 - `index.html` and `support.html` show the package version.

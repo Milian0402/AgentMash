@@ -145,8 +145,9 @@ const packageLock = JSON.parse(await read("package-lock.json"));
 const manifest = JSON.parse(await read("manifest.webmanifest"));
 const vercel = JSON.parse(await read("vercel.json"));
 const feedbackSchema = JSON.parse(await read("schemas/feedback.v2.json"));
-const index = await read("index.html");
-const support = await read("support.html");
+const htmlPageSources = Object.fromEntries(await Promise.all(htmlPages.map(async (page) => [page, await read(page)])));
+const index = htmlPageSources["index.html"];
+const support = htmlPageSources["support.html"];
 const app = await read("app.js");
 const stateModule = await read("state.js");
 const packetModule = await read("packet.js");
@@ -274,6 +275,16 @@ check(netlify.includes('command = "npm run build"') && netlify.includes('publish
 check(vercel.buildCommand === "npm run build" && vercel.outputDirectory === buildDir, "vercel publishes public build output");
 check(headers.includes("connect-src 'self'") && headers.includes("form-action 'self'"), "CSP blocks outside connections and forms");
 check(headers.includes("payment=()"), "permissions policy blocks payment permission");
+check(
+  Object.entries(htmlPageSources).every(([, source]) => hasAll(source, [
+    'http-equiv="Content-Security-Policy"',
+    "default-src 'self'",
+    "connect-src 'self'",
+    "form-action 'self'",
+    "object-src 'none'"
+  ])),
+  "public HTML pages include CSP fallback metadata"
+);
 check(hasAll(styles, ["safe-area-inset-top", "safe-area-inset-bottom", "--safe-bottom"]), "layout accounts for iOS safe areas");
 check(packageJson.scripts?.build === "node scripts/build-site.mjs", "package has local public build script");
 check(packageJson.scripts?.["serve:build"] === "python3 -m http.server 5178 --directory _site", "package has build preview script");

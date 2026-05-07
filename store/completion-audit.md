@@ -39,6 +39,7 @@ Make AgentMash good enough to launch publicly as a serious app, while staying in
 - Mobile layout accounts for iOS safe-area insets around the top bar and sticky decision controls.
 - Public pages expose the package version for support and debugging.
 - Public pages avoid deferred backend-channel language that would imply a live webhook, polling, or hosted agent pipeline.
+- Public HTML pages include CSP fallback metadata for static hosts that do not honor custom header files.
 - Destructive reset is clearly labelled and confirmed.
 - Destructive reset clears uploaded image bytes from IndexedDB, not only visible profile state.
 - Profile import confirms before replacing existing local data.
@@ -107,6 +108,7 @@ Make AgentMash good enough to launch publicly as a serious app, while staying in
 | Make the PWA feel install-ready on iOS. | `assets/icons/apple-touch-icon.png` is 180 by 180, linked in `index.html`, cached by `sw.js`, and verified by `npm run check`. | Met locally |
 | Avoid missing favicon polish errors. | `support.html`, `privacy.html`, `terms.html`, and `404.html` now link `assets/app-icon.svg` and `assets/icons/apple-touch-icon.png`; `npm run check` verifies every public HTML page links both icons. | Met locally |
 | Keep public pages visually consistent when opened directly. | `index.html`, `support.html`, `privacy.html`, `terms.html`, and `404.html` include AgentMash app-name metadata, light/dark color-scheme metadata, and light/dark theme-color entries. `npm run check` verifies this for every public HTML page. | Met locally |
+| Keep public pages safer on simpler static hosts. | `index.html`, `support.html`, `privacy.html`, `terms.html`, and `404.html` include a self-only CSP meta fallback for hosts that do not honor `_headers`; `scripts/launch-check.mjs` verifies it across public HTML pages. | Met locally |
 | Make install prompt reachable in the default flow. | `app.js` handles `beforeinstallprompt` and `appinstalled`, `styles.css` reveals only `Install` inside the Human review topbar when available, and Playwright verifies Import, Export, and Reset remain hidden while Install is visible and clickable. | Met locally |
 | Support OS dark mode. | `index.html` advertises `light dark` color schemes, and `styles.css` uses `@media (prefers-color-scheme: dark)` to switch core variables, panels, controls, preview surfaces, and swipe chrome. `npm run check` verifies the hook exists. | Met locally |
 | Avoid notch and home-indicator collisions. | `index.html` uses `viewport-fit=cover`; `styles.css` applies safe-area inset variables to the top bar, workspace bottom padding, sticky decision controls, and Refine sheet. | Met locally |
