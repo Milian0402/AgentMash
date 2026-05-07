@@ -2,12 +2,12 @@
 
 A local-first swipe app for turning fast human judgement on AI-generated websites, logos, copy, and product images into structured feedback.
 
-Status: public-beta candidate. The app is on GitHub, but it has not been deployed, listed, sold, or submitted to an app store.
+Status: private launch-prep build. The app has not been deployed, listed, sold, or submitted to an app store.
 
 ## What It Does
 
 - Swipe right or press the right arrow when an artifact is nice.
-- Swipe left or press the left arrow when it should pass.
+- Swipe left or press the left arrow when it is not worth keeping.
 - Use the Human review dashboard for the fast swipe flow.
 - Use the Export workspace to collect ready packets and JSONL rows from local review data.
 - Compare two artifacts in Pairwise mode when relative preference is the stronger signal.
@@ -18,7 +18,7 @@ Status: public-beta candidate. The app is on GitHub, but it has not been deploye
 - Score each artifact on gut pull, coherence, craft, and usefulness.
 - Attach source, run, and local export metadata.
 - Generate structured feedback packets future agents or labs could consume from local exports.
-- Generate lab-ready JSONL eval rows with preference labels, signal strength, failure modes, and repair instructions.
+- Generate local JSONL eval rows with preference labels, signal strength, failure modes, and repair instructions.
 - Save tags, notes, history, and profile metrics locally.
 - Export and import the private profile as JSON.
 - Run as a static PWA with app metadata and offline caching.
@@ -90,7 +90,7 @@ This verifies required pages, app metadata, offline shell files, static-host sec
 - `assets/icons/apple-touch-icon.png`: iOS home-screen icon.
 - `assets/startup`: iOS PWA startup images derived from the local launch screenshots.
 - `assets/screenshots`: public PWA screenshots.
-- `support.html`: support page draft.
+- `support.html`: local self-support page.
 - `privacy.html`: privacy page draft.
 - `terms.html`: terms page draft.
 - `PUBLISHING.md`: private publishing runbook and cost-bearing user-action notes.

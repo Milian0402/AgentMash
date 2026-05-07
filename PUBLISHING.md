@@ -1,6 +1,6 @@
 # Publishing Runbook
 
-AgentMash is currently a private static PWA in `Milian0402/AgentMash` and is being prepared as a public beta candidate.
+AgentMash is currently a private static PWA in `Milian0402/AgentMash` and is being prepared for public launch.
 
 No deployment, paid account, domain purchase, app-store submission, or human outreach has been performed.
 

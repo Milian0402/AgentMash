@@ -158,6 +158,7 @@ Make AgentMash good enough to launch publicly as a serious app.
 - `npm run serve:build` served `_site/`; `/` and `assets/icons/apple-touch-icon.png` returned 200, while `store/completion-audit.md` returned 404.
 - Draft submission assets are sized for Apple iPhone 6.9, Apple iPhone 6.5, Google phone, and Google Play feature graphic planning.
 - GitHub repo is private at `https://github.com/Milian0402/AgentMash`.
+- README and publishing runbook describe the current state as private launch prep instead of a public beta.
 
 ## Runtime Smoke Evidence
 

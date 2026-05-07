@@ -146,6 +146,7 @@ Make AgentMash good enough to launch publicly as a serious app, while staying in
 | Make it closer to App Store or Google Play readiness without paid setup. | `store/app-store-listing.md`, `store/app-store-submission.md`, `store/privacy-data-safety-draft.md`, and `store/submission` draft assets. | Met locally |
 | Prepare native wrapper handoff without changing the zero-dep app. | `store/native-wrapper-handoff.md` names Capacitor as the later shell path, records `com.agentmash.app`, `_site`, setup commands, native v1 privacy rules, and verification steps. No native project or package was installed. | Met locally |
 | Verify core behavior, not just files. | Real browser smoke test on `http://127.0.0.1:5177` passed: title, human dashboard, note save, Nice, Undo, Nope, Export workspace, ready packet, JSONL preview, packet JSON, and download buttons. Console errors: 0. | Met locally |
+| Keep repo-facing launch docs serious. | `README.md` and `PUBLISHING.md` describe the current state as private launch prep, avoid beta-candidate status, and avoid ambiguous `should pass` left-swipe wording. `npm run check` verifies the README guard. | Met locally |
 | Keep the repo private. | `gh repo view Milian0402/AgentMash` showed `visibility: PRIVATE`. | Met locally |
 
 ## Verification Commands

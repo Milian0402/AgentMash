@@ -367,6 +367,7 @@ check(readme.includes("store/app-store-submission.md"), "README links app store 
 check(readme.includes("store/privacy-data-safety-draft.md"), "README links privacy and data safety draft");
 check(readme.includes("store/native-wrapper-handoff.md"), "README links native wrapper handoff");
 check(readme.includes("signal strength"), "README describes signal strength output");
+check(!/public-beta candidate|lab-ready|should pass/i.test(readme), "README avoids beta status and ambiguous verdict wording");
 check(listing.includes("Human taste for AI work"), "store subtitle fits App Store limit");
 check(!listing.includes("Human taste signals for AI work"), "old over-limit store subtitle is absent");
 check(
