@@ -1165,7 +1165,7 @@ body[data-dashboard="human"] .workspace {
   right: 0;
   bottom: 0;
   z-index: 3;
-  padding: 76px 24px 22px;
+  padding: 78px 24px 22px;
   background: linear-gradient(180deg, transparent 0%, rgba(18, 20, 18, 0.6) 38%, rgba(16, 17, 15, 0.9) 100%);
   color: #ffffff;
 }
@@ -1241,6 +1241,63 @@ body[data-dashboard="human"] .workspace {
   background: rgba(0, 0, 0, 0.2);
   font-size: 1rem;
   color: #ffffff !important;
+}
+
+.details-toggle {
+  width: fit-content;
+  min-height: 34px;
+  padding: 0 12px;
+  border: 1px solid rgba(255, 255, 255, 0.22);
+  background: rgba(255, 255, 255, 0.18);
+  color: #ffffff;
+}
+
+.details-toggle.active {
+  background: #ffffff;
+  color: var(--ink);
+}
+
+.detail-sheet {
+  position: absolute;
+  left: 14px;
+  right: 14px;
+  bottom: 14px;
+  z-index: 6;
+  max-height: min(68%, 420px);
+  overflow: auto;
+  display: grid;
+  gap: 12px;
+  padding: 18px;
+  border-radius: 26px;
+  background: rgba(255, 255, 255, 0.96);
+  color: var(--ink);
+  box-shadow: 0 24px 60px rgba(23, 25, 20, 0.28);
+}
+
+.detail-sheet-header {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  align-items: center;
+  color: var(--muted);
+  font-size: 0.74rem;
+  font-weight: 900;
+  text-transform: uppercase;
+}
+
+.detail-sheet h3,
+.detail-sheet p {
+  margin: 0;
+}
+
+.detail-sheet h3 {
+  font-size: clamp(1.35rem, 5vw, 2rem);
+  line-height: 1.05;
+}
+
+.detail-sheet p {
+  color: var(--muted);
+  line-height: 1.45;
 }
 
 .empty-state {

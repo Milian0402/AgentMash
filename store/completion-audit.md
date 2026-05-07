@@ -18,6 +18,7 @@ Make AgentMash good enough to launch publicly as a serious app, while staying in
 - The app has two clear dashboards: Human review and Export workspace.
 - Human review supports fast first-impression judgement through a swipe-card flow.
 - Optional scoring, tags, and notes are hidden behind a `Refine` tap by default.
+- Artifact title, prompt, requester line, and detail copy are hidden behind a `Details` sheet by default.
 - Export workspace turns those human judgements into structured packets and JSONL rows.
 - The app remains local-first with no analytics, payment, contact, telemetry, socket, or third-party API hooks.
 - Public launch pages, PWA metadata, icons, screenshots, offline cache, preview workflow, and static host security configs exist.
@@ -34,6 +35,7 @@ Make AgentMash good enough to launch publicly as a serious app, while staying in
 - Feedback packets use schema v2 with `signalStrength` and a documented formula.
 - Reviewer name edits visibly confirm save status.
 - The Refine panel closes after each decision so the next artifact returns to the fast card-first loop.
+- The Details sheet closes after each decision so the next artifact returns to the clean card state.
 - `npm run check` includes Playwright e2e coverage for review flow, packet shape, empty Export workspace state, and image persistence.
 - App Store and Google Play prep is documented without creating paid accounts.
 - Verification covers static files, metadata, security posture, forbidden hooks, launch docs, store assets, and the core runtime flow.
@@ -50,6 +52,7 @@ Make AgentMash good enough to launch publicly as a serious app, while staying in
 | There should be two dashboards: human user and AI agent/lab. | `index.html` has Human review and Export workspace views; `app.js` switches dashboards and builds local feedback packets/JSONL exports. | Met locally |
 | Human review should feel like a modern swipe-card app without relationship-context wording. | `index.html`, `styles.css`, and refreshed screenshots in `store/screenshots`. `npm run check` rejects relationship-app wording. | Met locally |
 | Keep the default swipe loop focused. | `index.html` hides `signalPanel` by default behind `Refine`; `app.js` closes it after decisions; Playwright verifies hidden, open, then hidden again after a swipe. | Met locally |
+| Make card details tap-to-reveal. | `index.html` hides `detailSheet` behind `Details`; `app.js` closes it after decisions; Playwright verifies hidden, open with artifact title, close, and hidden again. | Met locally |
 | Rename product and repo to AgentMash. | `package.json`, `manifest.webmanifest`, visible HTML, docs, and GitHub remote point to `Milian0402/AgentMash`. | Met locally |
 | Put repo in the code folder. | Local repo path is `/Users/maximiliannordler/code/AgentMash`. | Met locally |
 | Make it ready for public web launch where possible. | Privacy, terms, support, publishing, 404, manifest, service worker, icons, screenshots, preview workflow, and security header configs exist. | Met locally |
@@ -96,7 +99,7 @@ These are still not done because they require user-owned accounts, money, public
 - Store screenshots captured from the native wrapper.
 - App Review or Play review contact details.
 - Legal/privacy review for paid or hosted use.
-- Fullscreen tap-to-reveal card details, end-of-session Keepers screen, endless/remix sessions, and pairwise mode remain product polish work not yet implemented.
+- End-of-session Keepers screen, endless/remix sessions, and pairwise mode remain product polish work not yet implemented.
 
 ## Conclusion
 

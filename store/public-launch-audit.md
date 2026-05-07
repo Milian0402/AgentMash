@@ -12,6 +12,7 @@ Make AgentMash good enough to launch publicly as a serious app.
 - Local repo path is `/Users/maximiliannordler/code/AgentMash`.
 - Human review dashboard is phone-first and supports swipe, buttons, keyboard shortcuts, undo, scoring, tags, and notes.
 - Default Human review flow keeps scoring, tags, and notes behind a `Refine` tap so the first-pass loop stays card-first.
+- Title, prompt, requester line, and artifact detail are hidden behind a `Details` sheet by default so the card stays focused on one visual object.
 - Export workspace collects ready packets, JSON downloads, and JSONL eval rows from local review data.
 - Add Artifact is reachable from the human dashboard and returns to the swipe deck after submit.
 - Starter artifacts are credible launch examples instead of placeholder-only cards.
@@ -29,6 +30,7 @@ Make AgentMash good enough to launch publicly as a serious app.
 - Reviewer name edits show a visible saved/not-saved status.
 - Feedback packets use `agentmash.feedback.v2`, `signalStrength`, and a top-level `signalStrengthFormula`.
 - Refine panel is hidden by default and closes after a decision, keeping the next card in the fast swipe loop.
+- Details sheet is hidden by default and closes after a decision, keeping the next artifact card clean.
 - Export workspace zero-item and zero-review states are covered by Playwright and show zero ready exports, zero unjudged items, no average signal, empty packet status, and zero dataset rows.
 - Agent-facing surface was reframed as a local export workspace, removing inbound-traffic wording such as request queue, waiting on humans, returned signals, and retry queue.
 - Store listing, App Store submission prep, and privacy/data safety drafts are present.
@@ -63,6 +65,7 @@ Make AgentMash good enough to launch publicly as a serious app.
 - Playwright e2e test passed: a tiny PNG upload stored an `imageKey` in `localStorage`, left `imageData` empty in `localStorage`, and stored the data URL in IndexedDB.
 - Playwright e2e test passed: Nice, Undo, and Nope produced a ready `agentmash.feedback.v2` packet with `signalStrength`, no `confidence` field, and `agentmash.eval-row.v2`.
 - Playwright e2e test passed: Refine opens the hidden scoring/note panel and the panel closes again after a decision.
+- Playwright e2e test passed: Details opens the hidden artifact detail sheet and closes it again.
 - Playwright e2e test passed: zero items and zero reviews rendered empty Export workspace counts and an empty packet without stale metrics.
 - `npm run serve:build` served `_site/`; `/` and `assets/icons/apple-touch-icon.png` returned 200, while `store/completion-audit.md` returned 404.
 - Draft submission assets are sized for Apple iPhone 6.9, Apple iPhone 6.5, Google phone, and Google Play feature graphic planning.
@@ -112,4 +115,4 @@ Passed checks:
 - Paid plans, billing, auth, server storage, lab customer accounts, webhooks, or polling endpoints.
 - Legal review.
 - No backend, inbound agent submission, polling, webhook, or customer pipeline exists; the current second dashboard is a local export workspace.
-- Fullscreen tap-to-reveal card details, end-of-session Keepers screen, endless/remix sessions, and pairwise mode remain product polish work not yet implemented.
+- End-of-session Keepers screen, endless/remix sessions, and pairwise mode remain product polish work not yet implemented.

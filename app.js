@@ -184,6 +184,7 @@ let deferredInstallPrompt = null;
 let imageDbPromise = null;
 let reviewerStatusTimer = null;
 let isRefineOpen = false;
+let isDetailSheetOpen = false;
 
 const elements = {
   dashboardSwitch: document.querySelector("#dashboardSwitch"),
@@ -218,6 +219,9 @@ const elements = {
   artifactPromptLabel: document.querySelector("#artifactPromptLabel"),
   agentMetaLabel: document.querySelector("#agentMetaLabel"),
   artifactQuestionLabel: document.querySelector("#artifactQuestionLabel"),
+  detailsButton: document.querySelector("#detailsButton"),
+  detailCloseButton: document.querySelector("#detailCloseButton"),
+  detailSheet: document.querySelector("#detailSheet"),
   emptyState: document.querySelector("#emptyState"),
   rejectButton: document.querySelector("#rejectButton"),
   acceptButton: document.querySelector("#acceptButton"),
@@ -576,6 +580,7 @@ function render() {
   renderAgentDashboard();
   renderLiveScore();
   renderRefinePanel();
+  renderDetailSheet();
 
   elements.emptyState.hidden = Boolean(activeItem);
   elements.swipeCard.hidden = !activeItem;
@@ -584,6 +589,7 @@ function render() {
   elements.undoButton.disabled = state.reviews.length === 0;
 
   if (!activeItem) {
+    isDetailSheetOpen = false;
     saveState();
     renderFeedbackPacket(packetItemForRender(null));
     return;
@@ -680,6 +686,12 @@ function renderRefinePanel() {
   elements.signalPanel.hidden = !isRefineOpen;
   elements.refineButton.classList.toggle("active", isRefineOpen);
   elements.refineButton.setAttribute("aria-expanded", isRefineOpen ? "true" : "false");
+}
+
+function renderDetailSheet() {
+  elements.detailSheet.hidden = !isDetailSheetOpen;
+  elements.detailsButton.classList.toggle("active", isDetailSheetOpen);
+  elements.detailsButton.setAttribute("aria-expanded", isDetailSheetOpen ? "true" : "false");
 }
 
 function renderTags() {
@@ -1121,6 +1133,7 @@ function decide(verdict) {
   state.draftScores = defaultScoresForNext(verdict, scores);
   state.lastPacketItemId = item.id;
   isRefineOpen = false;
+  isDetailSheetOpen = false;
   setCurrentToNext();
   saveState();
   pulseDevice();
@@ -1814,6 +1827,10 @@ function cloneDefaultState() {
 }
 
 function onPointerDown(event) {
+  if (event.target.closest("button, input, textarea, select, a")) {
+    return;
+  }
+
   if (!getActiveItem()) {
     return;
   }
@@ -1930,6 +1947,14 @@ elements.artifactForm.addEventListener("submit", addArtifact);
 elements.refineButton.addEventListener("click", () => {
   isRefineOpen = !isRefineOpen;
   renderRefinePanel();
+});
+elements.detailsButton.addEventListener("click", () => {
+  isDetailSheetOpen = true;
+  renderDetailSheet();
+});
+elements.detailCloseButton.addEventListener("click", () => {
+  isDetailSheetOpen = false;
+  renderDetailSheet();
 });
 elements.rejectButton.addEventListener("click", () => decide("pass"));
 elements.acceptButton.addEventListener("click", () => decide("nice"));

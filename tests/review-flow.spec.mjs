@@ -24,6 +24,12 @@ test("Nice, Undo, and Nope produce a v2 feedback packet", async ({ page }) => {
   await resetApp(page);
 
   await expect(page).toHaveTitle("AgentMash");
+  await expect(page.locator("#detailSheet")).toBeHidden();
+  await page.getByRole("button", { name: "Details" }).click();
+  await expect(page.locator("#detailSheet")).toBeVisible();
+  await expect(page.locator("#detailSheet")).toContainText("OpsPilot landing page");
+  await page.getByRole("button", { name: "Close" }).click();
+  await expect(page.locator("#detailSheet")).toBeHidden();
   await expect(page.locator("#signalPanel")).toBeHidden();
   await page.getByRole("button", { name: "Refine" }).click();
   await expect(page.locator("#signalPanel")).toBeVisible();
