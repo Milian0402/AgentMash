@@ -590,17 +590,30 @@ function tagInsightRows() {
   const counts = new Map();
   state.reviews.forEach((review) => {
     review.tags.forEach((tag) => {
-      const current = counts.get(tag) || { total: 0, rejected: 0 };
+      const current = counts.get(tag) || { total: 0, rejected: 0, nice: 0 };
       current.total += 1;
       current.rejected += review.verdict === "pass" ? 1 : 0;
+      current.nice += review.verdict === "nice" ? 1 : 0;
       counts.set(tag, current);
     });
   });
 
   return [...counts.entries()]
     .filter(([, stats]) => stats.total > 0)
-    .sort(([, a], [, b]) => b.total - a.total || b.rejected - a.rejected)
-    .map(([tag, stats]) => `${sentenceCase(tag)}: ${Math.round(stats.rejected / stats.total * 100)}% rejected across ${stats.total}.`);
+    .sort(([, a], [, b]) => (
+      b.total - a.total
+      || signalDistance(b) - signalDistance(a)
+      || b.rejected - a.rejected
+    ))
+    .map(([tag, stats]) => {
+      const rejectedRate = Math.round(stats.rejected / stats.total * 100);
+      const niceRate = 100 - rejectedRate;
+      const tagLabel = sentenceCase(tag).toLowerCase();
+      const totalLabel = decisionCountLabel(stats.total);
+      return rejectedRate >= niceRate
+        ? `You nope ${tagLabel} cues ${rejectedRate}% of the time across ${totalLabel}.`
+        : `You keep ${tagLabel} cues ${niceRate}% of the time across ${totalLabel}.`;
+    });
 }
 
 function typeInsightRows() {
@@ -618,8 +631,41 @@ function typeInsightRows() {
 
   return [...counts.entries()]
     .filter(([, stats]) => stats.total > 0)
-    .sort(([, a], [, b]) => b.total - a.total || b.nice - a.nice)
-    .map(([type, stats]) => `${typeLabel(type)}: ${Math.round(stats.nice / stats.total * 100)}% nice rate across ${stats.total}.`);
+    .sort(([, a], [, b]) => (
+      b.total - a.total
+      || signalDistance(b) - signalDistance(a)
+      || b.nice - a.nice
+    ))
+    .map(([type, stats]) => {
+      const niceRate = Math.round(stats.nice / stats.total * 100);
+      const nopeRate = 100 - niceRate;
+      const totalLabel = decisionCountLabel(stats.total);
+      if (niceRate >= 60) {
+        return `${pluralTypeLabel(type)} survive ${niceRate}% of the time across ${totalLabel}.`;
+      }
+      if (nopeRate >= 60) {
+        return `${pluralTypeLabel(type)} get noped ${nopeRate}% of the time across ${totalLabel}.`;
+      }
+      return `${pluralTypeLabel(type)} split close: ${niceRate}% nice across ${totalLabel}.`;
+    });
+}
+
+function signalDistance(stats) {
+  const niceRate = stats.nice / stats.total;
+  return Math.abs(niceRate - 0.5);
+}
+
+function decisionCountLabel(count) {
+  return `${count} ${count === 1 ? "decision" : "decisions"}`;
+}
+
+function pluralTypeLabel(type) {
+  return {
+    website: "Websites",
+    logo: "Logos",
+    copy: "Copy lines",
+    product: "Products"
+  }[type] || `${typeLabel(type)} items`;
 }
 
 function sentenceCase(value) {

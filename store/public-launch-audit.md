@@ -16,7 +16,7 @@ Make AgentMash good enough to launch publicly as a serious app.
 - `Refine` opens as a bottom sheet above the decision controls so users do not scroll below the swipe buttons to adjust scores.
 - The Refine sheet keeps tags and the note visible first, with score sliders tucked behind a `Scores` toggle.
 - Human review shows a compact momentum counter for current run count, today's reviews, and day streak, with subtle 10/25/50 milestone animation.
-- Human review shows profile insights summarizing rejection rates, nice rates, and review volume from local data.
+- Human review shows profile insights summarizing local preference patterns, artifact-type survival, and review volume from local data.
 - Decisions use supported vibration patterns and a quiet local WebAudio tick for tactile feedback.
 - Title, prompt, requester line, and artifact detail are hidden behind a `Details` sheet by default so the card stays focused on one visual object.
 - Export workspace collects ready packets, JSON downloads, and JSONL eval rows from local review data.
@@ -124,7 +124,7 @@ Make AgentMash good enough to launch publicly as a serious app.
 - Playwright e2e test passed: two rapid decision events produced one review, left the transition lock active immediately, then unlocked the next card.
 - Playwright e2e test passed: filter labels had no horizontal overflow at 390 by 844.
 - Playwright e2e test passed: the always-visible momentum counter updated through Nice, Undo, and Nope.
-- Playwright e2e test passed: profile insights generated a type-rate insight after a review.
+- Playwright e2e test passed: profile insights generated direct self-reflection copy after one review and after a seeded multi-review pattern.
 - Playwright e2e test passed: the storage health indicator rendered local profile usage and IndexedDB image status.
 - Playwright e2e test passed: Refine opens the hidden scoring/note panel, clears the mobile decision rail, and the panel closes again after a decision.
 - Playwright e2e test passed: Refine shows tags and the note immediately, keeps score controls hidden by default, then reveals them after `Scores`.

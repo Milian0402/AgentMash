@@ -22,7 +22,7 @@ Make AgentMash good enough to launch publicly as a serious app, while staying in
 - `Refine` opens as a bottom sheet above the decision controls instead of a panel below the swipe buttons.
 - Inside `Refine`, tags and the decision note are visible first, while score sliders stay behind a compact `Scores` toggle.
 - Human review shows an always-visible momentum counter for current run count, today's reviews, and day streak.
-- Human review surfaces profile insights from review tags, artifact types, and review volume.
+- Human review surfaces profile insights from review tags, artifact types, and review volume, with self-reflection copy such as "You nope generic cues..." instead of raw stat labels.
 - On mobile, deck/profile/storage controls sit behind a `Deck` sheet so the first viewport stays focused on the swipe loop.
 - Artifact title, prompt, requester line, and detail copy are hidden behind a `Details` sheet by default.
 - Export workspace turns those human judgements into structured packets and JSONL rows.
@@ -88,7 +88,7 @@ Make AgentMash good enough to launch publicly as a serious app, while staying in
 | Keep the default swipe loop focused. | `index.html` hides `signalPanel` by default behind `Refine`; inside that sheet, tags and the note appear before score controls, and sliders stay hidden until `Scores` is tapped. `render.js` manages the panel and score-toggle state, `app.js` resets it after decisions, and Playwright verifies hidden, open, score controls hidden, score controls visible after `Scores`, then hidden again after a swipe. | Met locally |
 | Make Refine feel like a bottom sheet. | `styles.css` positions the first-look `signalPanel` as a fixed bottom sheet above the decision controls, with the controls kept clickable in the higher layer. | Met locally |
 | Add swipe-loop momentum. | `index.html` adds `streakCounter`, `render.js` derives the current run, today count, and day streak from review timestamps, and `styles.css` adds milestone animation at 10, 25, and 50. Playwright verifies the counter updates through Nice, Undo, and Nope. | Met locally |
-| Give humans a return reason. | `index.html` adds `profileInsights`, `render.js` summarizes rejection rates by tag, nice rates by artifact type, and daily/total review volume, and Playwright verifies a generated insight after a review. | Met locally |
+| Give humans a return reason. | `index.html` adds `profileInsights`, `render.js` summarizes local preference patterns by tag, artifact type, and daily/total review volume in direct self-reflection language, and Playwright verifies both single-review and seeded multi-review insight output. | Met locally |
 | Add subtle decision feedback. | `gestures.js` uses richer `navigator.vibrate` patterns when supported and a defensive WebAudio tick for Nice, Nope, and Pairwise decisions. `app.js` passes decision type into `pulseDevice()`. | Met locally |
 | Avoid broken rapid-tap states. | `app.js` locks duplicate decisions during the outgoing-card transition, disables the decision/filter/detail/refine controls until the next card renders, and shortens timing under reduced motion. `gestures.js` blocks keyboard and drag input while locked. Playwright verifies two rapid click events create one review. | Met locally |
 | Keep mobile filters readable. | `styles.css` gives the filter tabs a mobile-specific 3-column layout with nowrap labels, and Playwright verifies no filter label overflows at 390 by 844. | Met locally |

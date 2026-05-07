@@ -217,7 +217,7 @@ test("Nice, Undo, and Nope produce a v2 feedback packet", async ({ page }) => {
   await page.getByRole("button", { name: /Nope/ }).click();
   await expect.poll(() => reviewCount(page)).toBe(1);
   await expect(page.locator("#streakCounter")).toHaveText("1 in a row, 1 today, 1-day streak");
-  await expect(page.locator("#profileInsights")).toContainText("Website: 0% nice rate across 1.");
+  await expect(page.locator("#profileInsights")).toContainText("Websites get noped 100% of the time across 1 decision.");
 
   await page.getByRole("button", { name: "Export workspace" }).click();
   await expect(page.locator("#packetStatus")).toHaveText("Ready");
@@ -241,6 +241,65 @@ test("Nice, Undo, and Nope produce a v2 feedback packet", async ({ page }) => {
   expect(packet.evalRow.humanSignal).toHaveProperty("signalStrength");
   expect(packet.evalRow.agentUse).toHaveProperty("signalStrength");
   expect(packet.return.deliveryStatus).toBe("local_ready");
+});
+
+test("Profile insights call out local preference patterns", async ({ page }) => {
+  await resetApp(page);
+  await page.evaluate((key) => {
+    const profile = JSON.parse(localStorage.getItem(key));
+    const createdAt = new Date().toISOString();
+    profile.reviews = [
+      {
+        id: "insight-review-1",
+        itemId: "site-landing-001",
+        reviewer: "Pattern reviewer",
+        filter: "all",
+        verdict: "pass",
+        scores: { gut: 3, sense: 4, craft: 4, useful: 3 },
+        score: 36,
+        grade: "Reject",
+        recommendation: "Reject this output and retry.",
+        tags: ["generic"],
+        note: "",
+        createdAt
+      },
+      {
+        id: "insight-review-2",
+        itemId: "logo-bakery-001",
+        reviewer: "Pattern reviewer",
+        filter: "all",
+        verdict: "pass",
+        scores: { gut: 4, sense: 4, craft: 5, useful: 3 },
+        score: 42,
+        grade: "Reject",
+        recommendation: "Reject this output and retry.",
+        tags: ["generic"],
+        note: "",
+        createdAt
+      },
+      {
+        id: "insight-review-3",
+        itemId: "copy-launch-001",
+        reviewer: "Pattern reviewer",
+        filter: "all",
+        verdict: "nice",
+        scores: { gut: 8, sense: 8, craft: 7, useful: 8 },
+        score: 78,
+        grade: "Promising",
+        recommendation: "Keep iterating from this direction.",
+        tags: ["clear"],
+        note: "",
+        createdAt
+      }
+    ];
+    profile.currentItemId = "product-render-001";
+    localStorage.setItem(key, JSON.stringify(profile));
+  }, storageKey);
+  await page.reload();
+
+  await expect(page.locator("#profileInsights")).toContainText("You nope generic cues 100% of the time across 2 decisions.");
+  await expect(page.locator("#profileInsights")).toContainText("Copy lines survive 100% of the time across 1 decision.");
+  await expect(page.locator("#profileInsights")).toContainText("3 reviewed today, 3 total.");
 });
 
 test("Rapid decisions are locked and mobile filter labels stay readable", async ({ page }) => {
