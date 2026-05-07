@@ -64,6 +64,7 @@ Make AgentMash good enough to launch publicly as a serious app.
 - Undo preserves the deck filter that produced the decision, so undoing from `All` restores the full deck instead of narrowing to one artifact type.
 - Rapid duplicate decision input is locked while the outgoing card animates, then controls unlock when the next card is ready.
 - Mobile filter labels are checked at 390 by 844 so `Product` does not truncate.
+- Segmented review controls expose pressed-button group semantics instead of incorrect ARIA tab semantics.
 - Switching into Pairwise mode on mobile scrolls the review stage back into view.
 - Mobile Human review hides the footer and lower dashboard controls until the user opens `Deck`.
 - Reduced-motion preference shortens swipe-card transition timing.
@@ -128,6 +129,7 @@ Make AgentMash good enough to launch publicly as a serious app.
 - Playwright e2e test passed: Undo from the `All` deck restored `1 / 4` progress and left the active filter as `all`.
 - Playwright e2e test passed: two rapid decision events produced one review, left the transition lock active immediately, then unlocked the next card.
 - Playwright e2e test passed: filter labels had no horizontal overflow at 390 by 844.
+- Playwright e2e test passed: review-mode and filter segmented controls use group roles, and active filters expose `aria-pressed`.
 - Playwright e2e test passed: the always-visible momentum counter updated through Nice, Undo, and Nope.
 - Playwright e2e test passed: profile insights generated direct self-reflection copy after one review and after a seeded multi-review pattern.
 - Playwright e2e test passed: the storage health indicator rendered local profile usage and IndexedDB image status.

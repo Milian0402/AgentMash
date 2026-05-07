@@ -311,7 +311,9 @@ export function renderDashboardShell() {
 
 export function renderTabs() {
   elements.filterTabs.querySelectorAll(".segment").forEach((button) => {
-    button.classList.toggle("active", button.dataset.filter === state.filter);
+    const active = button.dataset.filter === state.filter;
+    button.classList.toggle("active", active);
+    button.setAttribute("aria-pressed", active ? "true" : "false");
   });
 }
 

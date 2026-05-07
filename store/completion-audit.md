@@ -38,6 +38,7 @@ Make AgentMash good enough to launch publicly as a serious app, while staying in
 - The PWA install prompt is reachable from the default Human review screen without exposing profile import, export, or reset actions there.
 - UI supports automatic light and dark color schemes from the operating system preference.
 - Mobile layout accounts for iOS safe-area insets around the top bar and sticky decision controls.
+- Segmented review controls use pressed-button group semantics rather than incorrect tab roles.
 - Public pages expose the package version for support and debugging.
 - Privacy and terms pages show an effective date and current build version.
 - Public pages avoid deferred backend-channel language that would imply a live webhook, polling, or hosted agent pipeline.
@@ -95,6 +96,7 @@ Make AgentMash good enough to launch publicly as a serious app, while staying in
 | Add subtle decision feedback. | `gestures.js` uses richer `navigator.vibrate` patterns when supported and a defensive WebAudio tick for Nice, Nope, and Pairwise decisions. `app.js` passes decision type into `pulseDevice()`. | Met locally |
 | Avoid broken rapid-tap states. | `app.js` locks duplicate decisions during the outgoing-card transition, disables the decision/filter/detail/refine controls until the next card renders, and shortens timing under reduced motion. `gestures.js` blocks keyboard and drag input while locked. Playwright verifies two rapid click events create one review. | Met locally |
 | Keep mobile filters readable. | `styles.css` gives the filter tabs a mobile-specific 3-column layout with nowrap labels, and Playwright verifies no filter label overflows at 390 by 844. | Met locally |
+| Keep segmented controls accessible. | `index.html` uses `role="group"` for review-mode and filter segmented controls, `render.js` updates `aria-pressed` on active filter buttons, and Playwright verifies the group roles and pressed state. | Met locally |
 | Make card details tap-to-reveal. | `index.html` hides `detailSheet` behind `Details`; `render.js` manages the sheet state and `app.js` resets it after decisions; Playwright verifies hidden, open with artifact title, close, and hidden again. | Met locally |
 | Replace deck-complete dead air with Keepers. | `index.html` renders a Keepers completion state, `render.js` lists recent Nice artifacts from the completed view, and Playwright verifies the surviving artifact appears after the deck empties. | Met locally |
 | Keep the review loop going after completion. | `index.html` adds `Remix deck`, `app.js` remixes the filtered local deck, `state.js` supplies type-specific tagline, mark-only, first-line, and cutout variants, and Playwright verifies old reviews remain, item IDs stay unique, variant metadata exports, JSONL rows grow only after the next swipe, and deck completion shows a survived-count keeper summary. | Met locally |
