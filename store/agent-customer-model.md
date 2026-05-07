@@ -33,8 +33,15 @@ The value is not deep critique. The value is the immediate lazy human reaction t
 
 ```json
 {
-  "schema": "agentmash.feedback.v1",
+  "schema": "agentmash.feedback.v2",
   "status": "ready",
+  "signalStrengthFormula": {
+    "name": "score_extremity_plus_annotation",
+    "description": "Signal strength is score extremity around a neutral 60 score plus small boosts for tags and a note.",
+    "expression": "roundTo(0.55 + min(1, abs(score - 60) / 40) * 0.27 + min(0.1, tagCount * 0.025) + noteBoost, 2)",
+    "noteBoost": 0.08,
+    "range": [0.55, 1]
+  },
   "request": {
     "artifactId": "string",
     "type": "website | logo | copy | product",
@@ -47,7 +54,7 @@ The value is not deep critique. The value is the immediate lazy human reaction t
     "verdict": "nice | pass",
     "firstImpression": "accepted_on_first_glance | rejected_on_first_glance",
     "preferenceLabel": "chosen | rejected",
-    "confidence": 0.82,
+    "signalStrength": 0.82,
     "score": 0,
     "grade": "Keeper | Promising | Interesting | Needs work | Reject",
     "scores": {
@@ -70,10 +77,10 @@ The value is not deep critique. The value is the immediate lazy human reaction t
     "preferenceLabel": "chosen | rejected",
     "recommendedAction": "ship_or_keep | iterate_from_positive | mine_traits_then_retry | repair | reject_and_regenerate",
     "repairInstruction": "string",
-    "confidence": 0.82
+    "signalStrength": 0.82
   },
   "evalRow": {
-    "schema": "agentmash.eval-row.v1",
+    "schema": "agentmash.eval-row.v2",
     "artifact": {},
     "humanSignal": {},
     "agentUse": {}
@@ -86,6 +93,12 @@ The value is not deep critique. The value is the immediate lazy human reaction t
   }
 }
 ```
+
+## Migration Notes
+
+- `agentmash.feedback.v2` renames `confidence` to `signalStrength` because the value measures score extremity plus annotation strength, not statistical confidence.
+- Feedback packets now include top-level `signalStrengthFormula` so agents and labs can interpret the score without reverse-engineering it.
+- `agentmash.eval-row.v2` uses the same `signalStrength` name inside `humanSignal` and `agentUse`.
 
 ## What Agents Do With It
 
@@ -101,7 +114,8 @@ The value is not deep critique. The value is the immediate lazy human reaction t
 - Intake fields for requester type, requester name, run ID, return mode, return target, and agent goal.
 - A Human review dashboard for the fast swipe judgement flow.
 - An Agent lab dashboard for request status, ready packets, and returned signals.
-- Lab-ready eval rows with `humanSignal`, `agentUse`, preference label, confidence, failure modes, and repair instruction.
+- Lab-ready eval rows with `humanSignal`, `agentUse`, preference label, signal strength, failure modes, and repair instruction.
+- Schema v2 packets and eval rows use `signalStrength` for the score-extremity signal.
 - Pending packet before judgement so an agent can see what signal is expected.
 - Ready packet after the first-impression swipe.
 - Copy and JSON export actions for the selected packet.

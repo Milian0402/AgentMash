@@ -179,6 +179,27 @@ body[data-dashboard="human"] .dashboard-tab {
   flex-wrap: wrap;
 }
 
+.storage-status {
+  margin: 0;
+  padding: 10px clamp(16px, 3vw, 34px);
+  border-bottom: 1px solid #f0c7bf;
+  background: var(--red-soft);
+  color: #9b2f24;
+  font-size: 0.86rem;
+  font-weight: 850;
+}
+
+.save-status {
+  margin: -6px 0 0;
+  color: var(--green);
+  font-size: 0.78rem;
+  font-weight: 850;
+}
+
+.save-status.is-error {
+  color: var(--red);
+}
+
 .dashboard-switch {
   display: grid;
   grid-template-columns: repeat(2, minmax(120px, 1fr));

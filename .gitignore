@@ -3,8 +3,11 @@ nice-or-not-profile-*.json
 reviews-export*.json
 *.local.json
 *.log
+node_modules/
 _site/
 .vercel/
 .netlify/
 .playwright-cli/
+playwright-report/
+test-results/
 .claude/

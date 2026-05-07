@@ -1,6 +1,10 @@
 const APP_VERSION = 5;
 const STORAGE_KEY = "agentmash.private-profile.v5";
 const OLD_STORAGE_KEY = "nice-or-not.private-profile.v1";
+const IMAGE_DB_NAME = "agentmash.image-store";
+const IMAGE_DB_VERSION = 1;
+const IMAGE_STORE_NAME = "images";
+const LOCAL_STORAGE_FULL_MESSAGE = "Local storage full. Export your profile, remove large artifacts, or clear browser storage before adding more.";
 const PREVIOUS_STORAGE_KEYS = [
   "nice-or-not.private-profile.v4",
   "nice-or-not.private-profile.v3",
@@ -175,7 +179,10 @@ const defaultState = {
 let state = loadState();
 let dragState = null;
 let pendingImageData = "";
+let pendingImageKey = "";
 let deferredInstallPrompt = null;
+let imageDbPromise = null;
+let reviewerStatusTimer = null;
 
 const elements = {
   dashboardSwitch: document.querySelector("#dashboardSwitch"),
@@ -243,17 +250,25 @@ const elements = {
   packetPreview: document.querySelector("#packetPreview"),
   copyPacketButton: document.querySelector("#copyPacketButton"),
   downloadPacketButton: document.querySelector("#downloadPacketButton"),
+  storageStatus: document.querySelector("#storageStatus"),
   importButton: document.querySelector("#importButton"),
   importFile: document.querySelector("#importFile"),
   exportButton: document.querySelector("#exportButton"),
   resetButton: document.querySelector("#resetButton"),
-  installButton: document.querySelector("#installButton")
+  installButton: document.querySelector("#installButton"),
+  reviewerSaveStatus: document.querySelector("#reviewerSaveStatus")
 };
 
 function loadState() {
-  const stored = [STORAGE_KEY, ...PREVIOUS_STORAGE_KEYS]
-    .map((key) => window.localStorage.getItem(key))
-    .find(Boolean);
+  let stored = "";
+  try {
+    stored = [STORAGE_KEY, ...PREVIOUS_STORAGE_KEYS]
+      .map((key) => window.localStorage.getItem(key))
+      .find(Boolean);
+  } catch {
+    stored = "";
+  }
+
   if (!stored) {
     return cloneDefaultState();
   }
@@ -266,7 +281,7 @@ function loadState() {
 }
 
 function normalizeState(candidate) {
-  const candidateItems = Array.isArray(candidate.items) && candidate.items.length
+  const candidateItems = Array.isArray(candidate.items)
     ? candidate.items.map(normalizeItem)
     : sampleItems;
   const useLaunchSamples = shouldReplaceLegacySamples(candidate, candidateItems);
@@ -280,7 +295,7 @@ function normalizeState(candidate) {
           : []
       );
   const filter = ["all", ...artifactTypes].includes(candidate.filter) ? candidate.filter : "all";
-  const currentItemId = itemIds.has(candidate.currentItemId) ? candidate.currentItemId : items[0].id;
+  const currentItemId = itemIds.has(candidate.currentItemId) ? candidate.currentItemId : items[0]?.id || null;
 
   return {
     version: APP_VERSION,
@@ -307,6 +322,7 @@ function shouldReplaceLegacySamples(candidate, items) {
 
 function normalizeItem(item) {
   const type = artifactTypes.includes(item.type) ? item.type : "website";
+  const imageData = safeImageData(item.imageData);
   return {
     id: cleanText(item.id) || createId(),
     type,
@@ -315,7 +331,8 @@ function normalizeItem(item) {
     body: cleanText(item.body || item.copy || item.description),
     question: cleanText(item.question) || defaultQuestion(type),
     agent: normalizeAgent(item.agent),
-    imageData: safeImageData(item.imageData),
+    imageKey: cleanText(item.imageKey) || (imageData ? createShortId("image") : ""),
+    imageData,
     createdAt: cleanText(item.createdAt) || new Date().toISOString()
   };
 }
@@ -379,7 +396,133 @@ function normalizeTags(tags) {
 }
 
 function saveState() {
-  window.localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+  try {
+    window.localStorage.setItem(STORAGE_KEY, JSON.stringify(stateForLocalStorage()));
+    setStorageStatus("");
+    return true;
+  } catch {
+    setStorageStatus(LOCAL_STORAGE_FULL_MESSAGE);
+    return false;
+  }
+}
+
+function stateForLocalStorage() {
+  return {
+    ...state,
+    items: state.items.map((item) => ({
+      ...item,
+      imageData: ""
+    }))
+  };
+}
+
+function setStorageStatus(message) {
+  elements.storageStatus.textContent = message;
+  elements.storageStatus.hidden = !message;
+}
+
+function showReviewerSaveStatus(message, isError = false) {
+  window.clearTimeout(reviewerStatusTimer);
+  elements.reviewerSaveStatus.textContent = message;
+  elements.reviewerSaveStatus.classList.toggle("is-error", isError);
+  elements.reviewerSaveStatus.hidden = false;
+
+  reviewerStatusTimer = window.setTimeout(() => {
+    elements.reviewerSaveStatus.hidden = true;
+  }, isError ? 3200 : 1600);
+}
+
+function openImageDb() {
+  if (!("indexedDB" in window)) {
+    return Promise.reject(new Error("IndexedDB unavailable"));
+  }
+
+  if (imageDbPromise) {
+    return imageDbPromise;
+  }
+
+  imageDbPromise = new Promise((resolve, reject) => {
+    const request = window.indexedDB.open(IMAGE_DB_NAME, IMAGE_DB_VERSION);
+
+    request.addEventListener("upgradeneeded", () => {
+      const db = request.result;
+      if (!db.objectStoreNames.contains(IMAGE_STORE_NAME)) {
+        db.createObjectStore(IMAGE_STORE_NAME, { keyPath: "key" });
+      }
+    });
+
+    request.addEventListener("success", () => resolve(request.result));
+    request.addEventListener("error", () => reject(request.error || new Error("Image store failed to open")));
+  });
+
+  return imageDbPromise;
+}
+
+async function writeImageData(key, data) {
+  const db = await openImageDb();
+  return new Promise((resolve, reject) => {
+    const transaction = db.transaction(IMAGE_STORE_NAME, "readwrite");
+    transaction.addEventListener("complete", resolve);
+    transaction.addEventListener("error", () => reject(transaction.error || new Error("Image store write failed")));
+    transaction.addEventListener("abort", () => reject(transaction.error || new Error("Image store write aborted")));
+
+    transaction.objectStore(IMAGE_STORE_NAME).put({
+      key,
+      data,
+      updatedAt: new Date().toISOString()
+    });
+  });
+}
+
+async function readImageData(key) {
+  const db = await openImageDb();
+  return new Promise((resolve, reject) => {
+    const transaction = db.transaction(IMAGE_STORE_NAME, "readonly");
+    const request = transaction.objectStore(IMAGE_STORE_NAME).get(key);
+
+    request.addEventListener("success", () => resolve(safeImageData(request.result?.data)));
+    request.addEventListener("error", () => reject(request.error || new Error("Image store read failed")));
+    transaction.addEventListener("abort", () => reject(transaction.error || new Error("Image store read aborted")));
+  });
+}
+
+async function persistInlineImages() {
+  let movedImages = false;
+
+  for (const item of state.items) {
+    if (!item.imageData) {
+      continue;
+    }
+    item.imageKey = item.imageKey || createShortId("image");
+    await writeImageData(item.imageKey, item.imageData);
+    movedImages = true;
+  }
+
+  return movedImages;
+}
+
+async function hydrateStateImages() {
+  await Promise.all(
+    state.items.map(async (item) => {
+      if (!item.imageKey || item.imageData) {
+        return;
+      }
+      item.imageData = await readImageData(item.imageKey);
+    })
+  );
+}
+
+async function restoreStoredImages() {
+  try {
+    const movedImages = await persistInlineImages();
+    await hydrateStateImages();
+    if (movedImages) {
+      saveState();
+    }
+    render();
+  } catch {
+    setStorageStatus("Some saved images could not load. Text reviews and exports still work.");
+  }
 }
 
 function filteredItems() {
@@ -618,14 +761,14 @@ function renderAgentDashboard() {
   const pendingCount = state.items.filter((item) => !reviewByItem.has(item.id)).length;
   const evalRows = buildEvalRows();
   const retryCount = evalRows.filter((row) => row.agentUse.recommendedAction !== "ship_or_keep").length;
-  const avgConfidence = evalRows.length
-    ? Math.round(evalRows.reduce((sum, row) => sum + row.humanSignal.confidence, 0) / evalRows.length * 100)
-    : 0;
+  const avgSignalStrength = evalRows.length
+    ? Math.round(evalRows.reduce((sum, row) => sum + row.humanSignal.signalStrength, 0) / evalRows.length * 100)
+    : null;
 
   elements.agentTotalRequests.textContent = `${state.items.length} requests`;
   elements.agentReadyPackets.textContent = `${readyCount}`;
   elements.agentPendingRequests.textContent = `${pendingCount}`;
-  elements.agentAvgConfidence.textContent = `${avgConfidence}%`;
+  elements.agentAvgConfidence.textContent = avgSignalStrength === null ? "None" : `${avgSignalStrength}%`;
   elements.agentRetryQueue.textContent = `${retryCount}`;
   renderDatasetPreview(evalRows);
   renderAgentUsePanel(evalRows);
@@ -669,7 +812,7 @@ function renderAgentDashboard() {
       chips.className = "signal-chip-row";
       [
         `label: ${preferenceLabelFor(review)}`,
-        `confidence: ${Math.round(confidenceFor(review) * 100)}%`,
+        `signal: ${Math.round(signalStrengthFor(review) * 100)}%`,
         `use: ${recommendedActionFor(review)}`
       ].forEach((value) => {
         const chip = document.createElement("span");
@@ -728,7 +871,7 @@ function renderAgentUsePanel(evalRows) {
   const rows = selectedUse
     ? [
         ["Preference label", selectedUse.preferenceLabel],
-        ["Confidence", `${Math.round(selectedUse.confidence * 100)}%`],
+        ["Signal strength", `${Math.round(selectedUse.signalStrength * 100)}%`],
         ["Recommended action", selectedUse.recommendedAction],
         ["Repair instruction", selectedUse.repairInstruction]
       ]
@@ -800,7 +943,9 @@ function renderFeedbackPacket(activeItem) {
   const review = packetItem ? state.reviews.find((candidate) => candidate.itemId === packetItem.id) : null;
   const packet = packetItem && review ? buildFeedbackPacket(packetItem, review) : buildPendingPacket(packetItem);
 
-  elements.packetStatus.textContent = packet.status === "ready" ? "Ready" : "Pending";
+  elements.packetStatus.textContent = packet.status === "ready"
+    ? "Ready"
+    : packet.status === "empty" ? "Empty" : "Pending";
   elements.packetPreview.textContent = JSON.stringify(packet, null, 2);
   elements.copyPacketButton.disabled = packet.status !== "ready";
   elements.downloadPacketButton.disabled = packet.status !== "ready";
@@ -825,6 +970,14 @@ function renderPreview(item) {
     return `
       <div class="preview-image" aria-label="${escapeHtml(typeLabel(item.type))} image preview">
         <img src="${item.imageData}" alt="${escapeHtml(item.title)}" />
+      </div>
+    `;
+  }
+
+  if (item.imageKey) {
+    return `
+      <div class="preview-image" aria-label="${escapeHtml(typeLabel(item.type))} image preview">
+        <span class="help-text">Image loading from this browser.</span>
       </div>
     `;
   }
@@ -1023,6 +1176,7 @@ function addArtifact(event) {
       returnTarget: elements.agentReturnTarget.value.trim(),
       submittedAt: new Date().toISOString()
     },
+    imageKey: pendingImageKey,
     imageData: pendingImageData,
     createdAt: new Date().toISOString()
   };
@@ -1032,6 +1186,7 @@ function addArtifact(event) {
   state.currentItemId = item.id;
   state.dashboard = "human";
   pendingImageData = "";
+  pendingImageKey = "";
   elements.artifactForm.reset();
   elements.imageStatus.textContent = "No image selected.";
   elements.agentRequesterType.value = "agent";
@@ -1052,6 +1207,7 @@ function openAddArtifactPanel() {
 function handleImageSelection() {
   const [file] = elements.artifactImage.files;
   pendingImageData = "";
+  pendingImageKey = "";
 
   if (!file) {
     elements.imageStatus.textContent = "No image selected.";
@@ -1071,19 +1227,36 @@ function handleImageSelection() {
   }
 
   const reader = new FileReader();
-  reader.addEventListener("load", () => {
+  reader.addEventListener("load", async () => {
     const imageData = safeImageData(reader.result);
     if (!imageData) {
       elements.imageStatus.textContent = "That image format could not be stored.";
       return;
     }
-    pendingImageData = imageData;
-    elements.imageStatus.textContent = `${file.name} ready for local review.`;
+
+    try {
+      const imageKey = createShortId("image");
+      await writeImageData(imageKey, imageData);
+      pendingImageData = imageData;
+      pendingImageKey = imageKey;
+      elements.imageStatus.textContent = `${file.name} ready for local review.`;
+    } catch {
+      pendingImageData = "";
+      pendingImageKey = "";
+      elements.artifactImage.value = "";
+      elements.imageStatus.textContent = "Local image storage is full or unavailable. Add a text-only artifact or use a smaller image.";
+    }
   });
   reader.readAsDataURL(file);
 }
 
-function exportProfile() {
+async function exportProfile() {
+  try {
+    await hydrateStateImages();
+  } catch {
+    setStorageStatus("Some saved images could not be included in this export.");
+  }
+
   const payload = {
     exportedAt: new Date().toISOString(),
     app: "AgentMash",
@@ -1197,7 +1370,7 @@ function downloadDataset() {
 
 function importProfile(file) {
   const reader = new FileReader();
-  reader.addEventListener("load", () => {
+  reader.addEventListener("load", async () => {
     try {
       const parsed = JSON.parse(String(reader.result));
       const profile = parsed.profile || parsed;
@@ -1205,8 +1378,19 @@ function importProfile(file) {
         return;
       }
       state = normalizeState(profile);
+      try {
+        await persistInlineImages();
+      } catch {
+        state.items = state.items.map((item) => ({
+          ...item,
+          imageData: ""
+        }));
+      }
       setCurrentToNext();
       saveState();
+      if (state.items.some((item) => item.imageKey && !item.imageData)) {
+        setStorageStatus("Profile imported, but image storage is full or unavailable. Text, reviews, and packet data were saved without embedded images.");
+      }
       render();
     } catch {
       window.alert("That file does not look like an AgentMash profile.");
@@ -1244,6 +1428,7 @@ function resetProfile() {
 
   state = cloneDefaultState();
   pendingImageData = "";
+  pendingImageKey = "";
   elements.reviewNote.value = "";
   elements.imageStatus.textContent = "No image selected.";
   saveState();
@@ -1253,14 +1438,16 @@ function resetProfile() {
 function buildPendingPacket(item) {
   if (!item) {
     return {
-      schema: "agentmash.feedback.v1",
+      schema: "agentmash.feedback.v2",
       status: "empty",
-      message: "No active agent request."
+      message: "No active agent request.",
+      signalStrengthFormula: signalStrengthFormula()
     };
   }
   return {
-    schema: "agentmash.feedback.v1",
+    schema: "agentmash.feedback.v2",
     status: "pending",
+    signalStrengthFormula: signalStrengthFormula(),
     request: requestEnvelope(item),
     expectedReturn: returnEnvelope(item.agent),
     pendingHumanSignal: {
@@ -1279,10 +1466,11 @@ function buildFeedbackPacket(item, review) {
   const humanSignal = humanSignalFor(item, review);
   const agentUse = agentUseFor(item, review);
   return {
-    schema: "agentmash.feedback.v1",
+    schema: "agentmash.feedback.v2",
     status: "ready",
     packetId: `feedback-${review.id}`,
     generatedAt: new Date().toISOString(),
+    signalStrengthFormula: signalStrengthFormula(),
     request: requestEnvelope(item),
     humanSignal,
     humanJudgement: {
@@ -1290,7 +1478,7 @@ function buildFeedbackPacket(item, review) {
       verdict: review.verdict,
       firstImpression: humanSignal.firstImpression,
       preferenceLabel: humanSignal.preferenceLabel,
-      confidence: humanSignal.confidence,
+      signalStrength: humanSignal.signalStrength,
       score: review.score,
       grade: review.grade,
       scores: review.scores,
@@ -1316,7 +1504,7 @@ function buildFeedbackPacket(item, review) {
 
 function buildEvalRow(item, review) {
   return {
-    schema: "agentmash.eval-row.v1",
+    schema: "agentmash.eval-row.v2",
     rowId: `eval-${review.id}`,
     createdAt: review.createdAt,
     artifact: {
@@ -1343,7 +1531,7 @@ function humanSignalFor(item, review) {
     firstImpression: review.verdict === "nice" ? "accepted_on_first_glance" : "rejected_on_first_glance",
     score: review.score,
     grade: review.grade,
-    confidence: confidenceFor(review),
+    signalStrength: signalStrengthFor(review),
     scoreVector: scoreVectorFor(review),
     tags: review.tags,
     failureModes: failureModesFor(review),
@@ -1358,8 +1546,18 @@ function agentUseFor(item, review) {
     preferenceLabel: preferenceLabelFor(review),
     recommendedAction: recommendedActionFor(review),
     repairInstruction: repairInstructionFor(item, review),
-    confidence: confidenceFor(review),
+    signalStrength: signalStrengthFor(review),
     returnTarget: item.agent.returnTarget || "local export"
+  };
+}
+
+function signalStrengthFormula() {
+  return {
+    name: "score_extremity_plus_annotation",
+    description: "Signal strength is score extremity around a neutral 60 score plus small boosts for tags and a note.",
+    expression: "roundTo(0.55 + min(1, abs(score - 60) / 40) * 0.27 + min(0.1, tagCount * 0.025) + noteBoost, 2)",
+    noteBoost: 0.08,
+    range: [0.55, 1]
   };
 }
 
@@ -1436,7 +1634,7 @@ function preferenceLabelFor(review) {
   return review.verdict === "nice" ? "chosen" : "rejected";
 }
 
-function confidenceFor(review) {
+function signalStrengthFor(review) {
   const distanceFromMaybe = Math.min(1, Math.abs(review.score - 60) / 40);
   const tagBoost = Math.min(0.1, review.tags.length * 0.025);
   const noteBoost = review.note ? 0.08 : 0;
@@ -1699,7 +1897,8 @@ elements.dashboardSwitch.addEventListener("click", (event) => {
 
 elements.reviewerName.addEventListener("input", () => {
   state.reviewer = elements.reviewerName.value.trim() || defaultState.reviewer;
-  saveState();
+  const saved = saveState();
+  showReviewerSaveStatus(saved ? "Saved" : "Not saved", !saved);
 });
 
 elements.filterTabs.addEventListener("click", (event) => {
@@ -1780,4 +1979,5 @@ elements.installButton.addEventListener("click", async () => {
 });
 
 render();
+restoreStoredImages();
 registerServiceWorker();

@@ -15,6 +15,9 @@ const requiredFiles = [
   "404.html",
   "README.md",
   "PUBLISHING.md",
+  "package-lock.json",
+  "playwright.config.mjs",
+  "tests/review-flow.spec.mjs",
   "scripts/build-site.mjs",
   "store/completion-audit.md",
   "store/public-launch-audit.md",
@@ -171,6 +174,10 @@ check(app.includes('state.dashboard = "human";'), "added artifacts return to hum
 check(app.includes("window.confirm") && app.includes("Reset this local AgentMash profile"), "reset requires confirmation");
 check(app.includes("confirmProfileImport") && app.includes("Import this AgentMash profile"), "profile import requires confirmation when local data exists");
 check(app.includes("async function copyText") && app.includes("Copy unavailable"), "copy actions handle clipboard failure");
+check(app.includes("indexedDB") && app.includes("stateForLocalStorage") && app.includes('imageData: ""'), "uploaded image data is kept out of localStorage");
+check(app.includes("Local storage full") && app.includes("setStorageStatus"), "localStorage quota failure surfaces in the UI");
+check(app.includes("signalStrengthFormula") && app.includes("agentmash.feedback.v2"), "feedback packets use schema v2 with signal strength formula");
+check(!app.includes("confidenceFor") && !app.includes(".confidence"), "app output no longer uses confidence field");
 check(
   hasAll(app, ["ALLOWED_IMAGE_TYPES", "MAX_IMAGE_BYTES", "safeImageData", "Choose a PNG, JPG, or WebP image"]),
   "image uploads are type and size constrained"
@@ -186,6 +193,9 @@ check(headers.includes("connect-src 'self'") && headers.includes("form-action 's
 check(headers.includes("payment=()"), "permissions policy blocks payment permission");
 check(packageJson.scripts?.build === "node scripts/build-site.mjs", "package has local public build script");
 check(packageJson.scripts?.["serve:build"] === "python3 -m http.server 5178 --directory _site", "package has build preview script");
+check(packageJson.scripts?.check.includes("npm run test:e2e"), "package check runs Playwright e2e tests");
+check(packageJson.scripts?.["test:e2e"] === "playwright test", "package has Playwright e2e script");
+check(packageJson.devDependencies?.["@playwright/test"], "Playwright is a dev dependency only");
 check(pagesWorkflow.includes("npm run build"), "GitHub Pages workflow uses public build script");
 check(!pagesWorkflow.includes(" store"), "GitHub Pages workflow does not copy internal store docs directly");
 check(readme.includes("store/public-launch-audit.md"), "README links public launch audit");
@@ -196,6 +206,7 @@ check(audit.includes("Remaining Public Launch Blockers"), "launch audit lists re
 check(audit.includes("Runtime Smoke Evidence"), "launch audit includes runtime smoke evidence");
 check(readme.includes("store/app-store-submission.md"), "README links app store submission prep");
 check(readme.includes("store/privacy-data-safety-draft.md"), "README links privacy and data safety draft");
+check(readme.includes("signal strength"), "README describes signal strength output");
 check(listing.includes("Human taste for AI work"), "store subtitle fits App Store limit");
 check(!listing.includes("Human taste signals for AI work"), "old over-limit store subtitle is absent");
 

@@ -16,7 +16,7 @@ Status: public-beta candidate. The app is on GitHub, but it has not been deploye
 - Score each artifact on gut pull, coherence, craft, and usefulness.
 - Attach agent/lab request metadata and return targets.
 - Generate structured feedback packets agents could consume online.
-- Generate lab-ready JSONL eval rows with preference labels, confidence, failure modes, and repair instructions.
+- Generate lab-ready JSONL eval rows with preference labels, signal strength, failure modes, and repair instructions.
 - Save tags, notes, history, and profile metrics locally.
 - Export and import the private profile as JSON.
 - Run as a static PWA with app metadata and offline caching.

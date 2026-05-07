@@ -57,6 +57,8 @@
         </div>
       </header>
 
+      <p class="storage-status" id="storageStatus" role="status" aria-live="polite" hidden></p>
+
       <main class="workspace">
         <section class="dashboard-view human-dashboard" id="humanDashboard" data-dashboard-view="human">
           <section class="review-stage first-look-stage" aria-live="polite">
@@ -146,6 +148,7 @@
               <label class="field-label" for="reviewerName">Reviewer</label>
               <input id="reviewerName" class="text-input" type="text" autocomplete="off" />
               <p class="help-text">Saved in this browser only.</p>
+              <p class="save-status" id="reviewerSaveStatus" role="status" aria-live="polite" hidden></p>
             </section>
 
             <section class="section-block">
@@ -218,7 +221,7 @@
                 <strong id="agentPendingRequests">0</strong>
               </div>
               <div class="metric">
-                <span class="metric-label">Avg confidence</span>
+                <span class="metric-label">Avg signal</span>
                 <strong id="agentAvgConfidence">0</strong>
               </div>
               <div class="metric">

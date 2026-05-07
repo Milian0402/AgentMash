@@ -27,6 +27,12 @@ Make AgentMash good enough to launch publicly as a serious app, while staying in
 - Profile import confirms before replacing existing local data.
 - Copy actions have a graceful browser-denial path.
 - User-uploaded image artifacts are constrained to safe raster formats and a local-storage-friendly size.
+- Uploaded image bytes live in IndexedDB, while profile state without `imageData` remains in `localStorage`.
+- `saveState()` handles local-storage quota failures with a visible UI warning.
+- Agent Lab empty states render correctly with zero items and zero reviews.
+- Feedback packets use schema v2 with `signalStrength` and a documented formula.
+- Reviewer name edits visibly confirm save status.
+- `npm run check` includes Playwright e2e coverage for review flow, packet shape, empty Agent Lab state, and image persistence.
 - App Store and Google Play prep is documented without creating paid accounts.
 - Verification covers static files, metadata, security posture, forbidden hooks, launch docs, store assets, and the core runtime flow.
 - Remaining requirements that need user accounts, money, contact details, deployment, or legal decisions are named and not pretended done.
@@ -51,6 +57,11 @@ Make AgentMash good enough to launch publicly as a serious app, while staying in
 | Avoid accidental profile overwrite. | Profile import prompts when local reviews, uploads, notes, added artifacts, or reviewer name exist. The support page tells users to export before importing. | Met locally |
 | Avoid misleading copy status. | Packet and dataset copy use a shared helper with Clipboard API, fallback copy, and `Copy unavailable` status when blocked. | Met locally |
 | Keep user uploads safe for a public local-first app. | The artifact form accepts only PNG, JPG, and WebP. `app.js` rejects other image types, caps images at 2.5 MB, and sanitizes imported image data. | Met locally |
+| Avoid localStorage quota crashes from image uploads. | `app.js` stores uploaded image data in IndexedDB, writes only `imageKey` plus text state to `localStorage`, wraps `saveState()` in `try/catch`, and shows `Local storage full` in the UI when saving fails. Playwright verifies image data is absent from `localStorage` and present in IndexedDB. | Met locally |
+| Keep Agent Lab empty metrics honest. | Playwright verifies zero items and zero reviews render `0 requests`, `0` ready packets, `0` waiting items, `None` average signal, `0` retry queue, `0 rows`, and an empty packet. | Met locally |
+| Rename misleading confidence output. | Feedback packets use `agentmash.feedback.v2`, `signalStrength`, and top-level `signalStrengthFormula`; eval rows use `agentmash.eval-row.v2`; `store/agent-customer-model.md` documents the migration. | Met locally |
+| Confirm reviewer name persistence visibly. | `index.html`, `styles.css`, and `app.js` show a saved/not-saved status after reviewer name edits. | Met locally |
+| Add Playwright regression coverage. | `tests/review-flow.spec.mjs` is wired through `npm run check` and covers Nice, Undo, Nope, v2 packet shape, empty Agent Lab state, and IndexedDB image persistence. | Met locally |
 | Make it closer to App Store or Google Play readiness without paid setup. | `store/app-store-listing.md`, `store/app-store-submission.md`, `store/privacy-data-safety-draft.md`, and `store/submission` draft assets. | Met locally |
 | Verify core behavior, not just files. | Real browser smoke test on `http://127.0.0.1:5177` passed: title, human dashboard, note save, Nice, Undo, Nope, Agent lab, ready packet, JSONL preview, packet JSON, and download buttons. Console errors: 0. | Met locally |
 | Keep the repo private. | `gh repo view Milian0402/AgentMash` showed `visibility: PRIVATE`. | Met locally |
@@ -64,6 +75,7 @@ Make AgentMash good enough to launch publicly as a serious app, while staying in
 - `curl -sS -o /dev/null -w %{http_code} http://127.0.0.1:5177/`
 - `curl -sS -o /dev/null -w %{http_code} http://127.0.0.1:5177/store/submission/google-play-feature-graphic.png`
 - Playwright CLI browser smoke test against `http://127.0.0.1:5177`
+- Playwright e2e tests through `npm run check`
 
 ## Not Achieved Yet
 
@@ -80,6 +92,7 @@ These are still not done because they require user-owned accounts, money, public
 - Store screenshots captured from the native wrapper.
 - App Review or Play review contact details.
 - Legal/privacy review for paid or hosted use.
+- Agent Lab wording scope decision: user must choose local export workspace wording or hide Agent Lab behind Advanced before that priority can be implemented.
 
 ## Conclusion
 
