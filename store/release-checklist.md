@@ -13,6 +13,7 @@ Last local verification: May 7, 2026. No deployment, paid account, domain purcha
 - [x] Confirm `_site/` excludes internal `store/`, `scripts/`, tests, repo metadata, package files, and host config files.
 - [x] Confirm GitHub Pages, Netlify, and Vercel configs use `_site/` as the publish or output directory.
 - [x] Confirm the service worker caches the public app shell, icons, screenshots, pages, and native modules.
+- [x] Confirm the service worker renders the app shell after an offline reload.
 - [x] Test desktop layout at 1440 by 1000.
 - [x] Test mobile layout at 390 by 844.
 - [x] Confirm starter artifacts cover website, logo, copy, and product image review types.

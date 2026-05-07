@@ -268,6 +268,10 @@ check(
   hasAll(testSpec, ["Stress profile handles 500 items, 250 reviews, and 100 more swipes", "Array.from({ length: 500 }", "toBe(350)"]),
   "Playwright covers large local profile stress path"
 );
+check(
+  hasAll(testSpec, ["Service worker keeps the app shell available offline", "context.setOffline(true)", "navigator.serviceWorker.ready"]),
+  "Playwright covers offline PWA app shell"
+);
 check(pagesWorkflow.includes("npm run build"), "GitHub Pages workflow uses public build script");
 check(!pagesWorkflow.includes(" store"), "GitHub Pages workflow does not copy internal store docs directly");
 check(readme.includes("store/public-launch-audit.md"), "README links public launch audit");

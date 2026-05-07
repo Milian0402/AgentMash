@@ -407,6 +407,25 @@ test("Profile export and import roundtrip restores uploaded images", async ({ pa
   expect(restoredImage).toBe(exportedItem.imageData);
 });
 
+test("Service worker keeps the app shell available offline", async ({ page, context }) => {
+  await resetApp(page);
+  await page.evaluate(async () => {
+    const registration = await navigator.serviceWorker.ready;
+    await registration.update();
+    const cacheName = (await caches.keys()).find((key) => key.startsWith("agentmash-v"));
+    const cache = await caches.open(cacheName);
+    const cached = await cache.keys();
+    return cached.map((request) => request.url);
+  });
+
+  await context.setOffline(true);
+  await page.reload();
+  await expect(page).toHaveTitle("AgentMash");
+  await expect(page.getByRole("button", { name: "Human review" })).toBeVisible();
+  await expect(page.locator("#swipeCard")).toBeVisible();
+  await context.setOffline(false);
+});
+
 test("Stress profile handles 500 items, 250 reviews, and 100 more swipes", async ({ page }) => {
   test.setTimeout(60_000);
   await seedStressProfile(page);
