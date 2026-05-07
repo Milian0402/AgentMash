@@ -1,4 +1,4 @@
-const CACHE_NAME = "agentmash-v26";
+const CACHE_NAME = "agentmash-v28";
 const APP_SHELL = [
   "./",
   "./index.html",
@@ -14,6 +14,8 @@ const APP_SHELL = [
   "./assets/icons/app-icon-512.png",
   "./assets/icons/app-icon-1024.png",
   "./assets/icons/apple-touch-icon.png",
+  "./assets/startup/apple-iphone-6-9-human-review.png",
+  "./assets/startup/apple-iphone-6-5-human-review.png",
   "./assets/screenshots/mobile-review.png",
   "./assets/screenshots/desktop-review.png",
   "./privacy.html",

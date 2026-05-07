@@ -88,6 +88,7 @@ This verifies required pages, app metadata, offline shell files, static-host sec
 - `sw.js`: offline app shell cache.
 - `assets/icons`: installable PNG app icons.
 - `assets/icons/apple-touch-icon.png`: iOS home-screen icon.
+- `assets/startup`: iOS PWA startup images derived from the local launch screenshots.
 - `assets/screenshots`: public PWA screenshots.
 - `support.html`: support page draft.
 - `privacy.html`: privacy page draft.

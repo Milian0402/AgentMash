@@ -32,6 +32,7 @@ Make AgentMash good enough to launch publicly as a serious app, while staying in
 - Internal publishing notes stay out of the packaged public site so users do not see pre-launch status language.
 - Public build output excludes internal launch docs, submission drafts, scripts, and repo metadata.
 - Mobile install polish includes a dedicated Apple touch icon.
+- Mobile install polish includes local iOS startup images for common large iPhone launch surfaces.
 - All public pages link the app icon and Apple touch icon so legal/support pages do not fall back to missing `/favicon.ico` requests.
 - Public HTML pages share AgentMash application-name, light/dark color-scheme, and theme-color metadata.
 - The PWA install prompt is reachable from the default Human review screen without exposing profile import, export, or reset actions there.
@@ -106,7 +107,7 @@ Make AgentMash good enough to launch publicly as a serious app, while staying in
 | Verify offline PWA behavior. | Playwright waits for the service worker, switches the browser context offline, reloads, and verifies the AgentMash app shell and swipe card still render. | Met locally |
 | Avoid publishing internal launch docs and submission drafts. | `npm run build` writes `_site/` with only public app files. GitHub Pages, Netlify, and Vercel configs publish `_site/`. `npm run check` verifies `store/`, `scripts/`, `.github`, docs, package metadata, and host config files are not packaged. | Met locally |
 | Keep internal launch status out of the public app. | `publishing.html` remains in the repo for local guidance but is no longer linked from `index.html`, copied into `_site/`, or cached by `sw.js`. `npm run check` verifies it is excluded from the public build. | Met locally |
-| Make the PWA feel install-ready on iOS. | `assets/icons/apple-touch-icon.png` is 180 by 180, linked in `index.html`, cached by `sw.js`, and verified by `npm run check`. | Met locally |
+| Make the PWA feel install-ready on iOS. | `assets/icons/apple-touch-icon.png` is 180 by 180, startup images in `assets/startup` are 1290 by 2796 and 1242 by 2688, `index.html` links them through Apple PWA metadata, `sw.js` caches them, and `npm run check` verifies the files and links. | Met locally |
 | Avoid missing favicon polish errors. | `support.html`, `privacy.html`, `terms.html`, and `404.html` now link `assets/app-icon.svg` and `assets/icons/apple-touch-icon.png`; `npm run check` verifies every public HTML page links both icons. | Met locally |
 | Keep public pages visually consistent when opened directly. | `index.html`, `support.html`, `privacy.html`, `terms.html`, and `404.html` include AgentMash app-name metadata, light/dark color-scheme metadata, and light/dark theme-color entries. `npm run check` verifies this for every public HTML page. | Met locally |
 | Keep public pages safer on simpler static hosts. | `index.html`, `support.html`, `privacy.html`, `terms.html`, and `404.html` include a self-only CSP meta fallback for hosts that do not honor `_headers`; `scripts/launch-check.mjs` verifies it across public HTML pages. | Met locally |

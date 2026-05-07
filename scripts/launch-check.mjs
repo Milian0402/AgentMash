@@ -44,6 +44,8 @@ const requiredFiles = [
   "assets/icons/app-icon-512.png",
   "assets/icons/app-icon-1024.png",
   "assets/icons/apple-touch-icon.png",
+  "assets/startup/apple-iphone-6-9-human-review.png",
+  "assets/startup/apple-iphone-6-5-human-review.png",
   "assets/screenshots/mobile-review.png",
   "assets/screenshots/desktop-review.png",
   "store/screenshots/mobile-review.png",
@@ -77,6 +79,8 @@ const appShellFiles = [
   "./assets/icons/app-icon-512.png",
   "./assets/icons/app-icon-1024.png",
   "./assets/icons/apple-touch-icon.png",
+  "./assets/startup/apple-iphone-6-9-human-review.png",
+  "./assets/startup/apple-iphone-6-5-human-review.png",
   "./assets/screenshots/mobile-review.png",
   "./assets/screenshots/desktop-review.png",
   "./privacy.html",
@@ -94,6 +98,8 @@ const securityHeaders = [
 ];
 const submissionPngSizes = {
   "assets/icons/apple-touch-icon.png": "180x180",
+  "assets/startup/apple-iphone-6-9-human-review.png": "1290x2796",
+  "assets/startup/apple-iphone-6-5-human-review.png": "1242x2688",
   "store/submission/apple-iphone-6-9-human-review.png": "1290x2796",
   "store/submission/apple-iphone-6-5-human-review.png": "1242x2688",
   "store/submission/google-phone-human-review.png": "1080x1920",
@@ -197,6 +203,14 @@ check(
   "privacy and terms expose effective date"
 );
 check(index.includes('rel="apple-touch-icon"') && index.includes("assets/icons/apple-touch-icon.png"), "index links Apple touch icon");
+check(
+  hasAll(index, [
+    'rel="apple-touch-startup-image"',
+    "assets/startup/apple-iphone-6-9-human-review.png",
+    "assets/startup/apple-iphone-6-5-human-review.png"
+  ]),
+  "index links iOS startup images"
+);
 check(index.includes('name="mobile-web-app-capable"'), "index includes mobile web app install metadata");
 check(index.includes("Reset profile") && !index.includes("Reset demo"), "reset action uses profile wording");
 check(index.includes('name="color-scheme" content="light dark"') && styles.includes("@media (prefers-color-scheme: dark)") && styles.includes("color-scheme: dark"), "app follows OS light and dark color scheme");
