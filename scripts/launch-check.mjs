@@ -148,6 +148,8 @@ const feedbackSchema = JSON.parse(await read("schemas/feedback.v2.json"));
 const htmlPageSources = Object.fromEntries(await Promise.all(htmlPages.map(async (page) => [page, await read(page)])));
 const index = htmlPageSources["index.html"];
 const support = htmlPageSources["support.html"];
+const privacy = htmlPageSources["privacy.html"];
+const terms = htmlPageSources["terms.html"];
 const app = await read("app.js");
 const stateModule = await read("state.js");
 const packetModule = await read("packet.js");
@@ -186,7 +188,14 @@ check(
   "manifest screenshot metadata is complete"
 );
 check(index.includes("<title>AgentMash</title>") && index.includes("<h1>AgentMash</h1>"), "index brands AgentMash");
-check(index.includes(`v${packageJson.version}`) && support.includes(`AgentMash v${packageJson.version}`), "public pages expose package version");
+check(
+  [index, support, privacy, terms].every((source) => source.includes(`v${packageJson.version}`)),
+  "public app and legal pages expose package version"
+);
+check(
+  privacy.includes("Effective May 7, 2026") && terms.includes("Effective May 7, 2026"),
+  "privacy and terms expose effective date"
+);
 check(index.includes('rel="apple-touch-icon"') && index.includes("assets/icons/apple-touch-icon.png"), "index links Apple touch icon");
 check(index.includes('name="mobile-web-app-capable"'), "index includes mobile web app install metadata");
 check(index.includes("Reset profile") && !index.includes("Reset demo"), "reset action uses profile wording");

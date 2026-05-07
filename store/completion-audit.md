@@ -38,6 +38,7 @@ Make AgentMash good enough to launch publicly as a serious app, while staying in
 - UI supports automatic light and dark color schemes from the operating system preference.
 - Mobile layout accounts for iOS safe-area insets around the top bar and sticky decision controls.
 - Public pages expose the package version for support and debugging.
+- Privacy and terms pages show an effective date and current build version.
 - Public pages avoid deferred backend-channel language that would imply a live webhook, polling, or hosted agent pipeline.
 - Public HTML pages include CSP fallback metadata for static hosts that do not honor custom header files.
 - Destructive reset is clearly labelled and confirmed.
@@ -112,7 +113,7 @@ Make AgentMash good enough to launch publicly as a serious app, while staying in
 | Make install prompt reachable in the default flow. | `app.js` handles `beforeinstallprompt` and `appinstalled`, `styles.css` reveals only `Install` inside the Human review topbar when available, and Playwright verifies Import, Export, and Reset remain hidden while Install is visible and clickable. | Met locally |
 | Support OS dark mode. | `index.html` advertises `light dark` color schemes, and `styles.css` uses `@media (prefers-color-scheme: dark)` to switch core variables, panels, controls, preview surfaces, and swipe chrome. `npm run check` verifies the hook exists. | Met locally |
 | Avoid notch and home-indicator collisions. | `index.html` uses `viewport-fit=cover`; `styles.css` applies safe-area inset variables to the top bar, workspace bottom padding, sticky decision controls, and Refine sheet. | Met locally |
-| Make public support reports actionable. | `index.html` and `support.html` show the package version, and `npm run check` verifies it matches `package.json`. | Met locally |
+| Make public support and legal reports actionable. | `index.html`, `support.html`, `privacy.html`, and `terms.html` show the package version, `privacy.html` and `terms.html` show an effective date, and `npm run check` verifies those values. | Met locally |
 | Avoid accidental local data loss. | Reset is labelled `Reset profile`, requires browser confirmation, clears IndexedDB image bytes, and is verified by `npm run check`. | Met locally |
 | Avoid accidental profile overwrite. | Profile import prompts when local reviews, uploads, notes, added artifacts, or reviewer name exist. The support page tells users to export before importing. | Met locally |
 | Avoid misleading copy status. | Packet and dataset copy use a shared helper with Clipboard API, fallback copy, and `Copy unavailable` status when blocked. | Met locally |
