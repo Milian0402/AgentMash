@@ -39,7 +39,7 @@ Make AgentMash good enough to launch publicly as a serious app.
 - The PWA install prompt is visible from the default Human review screen without exposing Import, Export, or Reset in that flow.
 - Light and dark modes follow the user's operating system preference.
 - Top and bottom spacing use iOS safe-area insets to reduce notch and home-indicator collisions.
-- Public footer and support page expose the current release version for support/debugging.
+- Public footer and support page expose the current release version for support/debugging without labeling the public app as beta.
 - Public support and privacy pages avoid prelaunch placeholder language such as missing support inbox copy.
 - Privacy and terms pages expose the effective date and current build version.
 - Reset uses profile wording and requires confirmation before clearing local data.
@@ -104,7 +104,7 @@ Make AgentMash good enough to launch publicly as a serious app.
 - Public manifest screenshots point to `assets/screenshots`.
 - `npm run check` builds `_site/` and verifies internal files are not packaged.
 - `_site/` includes all public app modules and `sw.js` caches those module files.
-- `sw.js` cache name is `agentmash-v30` after public HTML metadata, CSP fallback, iOS startup image, and public support-copy changes, so the offline app shell refreshes when this build is published.
+- `sw.js` cache name is `agentmash-v31` after public HTML metadata, CSP fallback, iOS startup image, and public support-copy changes, so the offline app shell refreshes when this build is published.
 - Playwright e2e test passed: after service worker readiness, the app reloaded offline and rendered the AgentMash shell and swipe card.
 - Netlify and Vercel configs are checked for `npm run build` plus `_site/` output.
 - Apple touch icon is linked from `index.html`, cached by `sw.js`, and sized at 180 by 180.
@@ -113,7 +113,7 @@ Make AgentMash good enough to launch publicly as a serious app.
 - `npm run check` verifies `publishing.html` is excluded from the public build.
 - `npm run check` verifies every public HTML page has AgentMash app-name metadata plus light and dark theme-color metadata.
 - `npm run check` verifies public preview metadata uses local feedback-packet wording and avoids `agent-ready feedback`.
-- `npm run check` verifies public pages avoid prelaunch support placeholder wording.
+- `npm run check` verifies public pages avoid beta labels and prelaunch support placeholder wording.
 - `npm run check` verifies every public HTML page has CSP fallback metadata with self-only defaults, blocked object embedding, self-only connections, and self-only form actions.
 - Playwright e2e test passed: a synthetic install prompt showed the `Install` button on Human review, kept Import/Export/Reset hidden, and hid Install after the prompt resolved.
 - `index.html` declares `light dark` color schemes, and `styles.css` includes a dark-mode `prefers-color-scheme` branch.
