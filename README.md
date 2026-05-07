@@ -92,7 +92,7 @@ This verifies required pages, app metadata, offline shell files, static-host sec
 - `support.html`: support page draft.
 - `privacy.html`: privacy page draft.
 - `terms.html`: terms page draft.
-- `publishing.html`: user-facing launch status page.
+- `PUBLISHING.md` and `store/research-and-cost-guide.md`: internal publishing and cost-bearing user-action notes.
 - `PUBLISHING.md`: private publishing runbook.
 - `.github/workflows/pages.yml`: manual GitHub Pages deploy workflow.
 - `_headers`, `netlify.toml`, and `vercel.json`: static host security headers.

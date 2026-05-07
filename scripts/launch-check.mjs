@@ -60,7 +60,6 @@ const htmlPages = [
   "support.html",
   "privacy.html",
   "terms.html",
-  "publishing.html",
   "404.html"
 ];
 const appShellFiles = [
@@ -83,7 +82,6 @@ const appShellFiles = [
   "./privacy.html",
   "./support.html",
   "./terms.html",
-  "./publishing.html",
   "./404.html"
 ];
 const securityHeaders = [
@@ -193,7 +191,7 @@ check(index.includes('name="mobile-web-app-capable"'), "index includes mobile we
 check(index.includes("Reset profile") && !index.includes("Reset demo"), "reset action uses profile wording");
 check(index.includes('name="color-scheme" content="light dark"') && styles.includes("@media (prefers-color-scheme: dark)") && styles.includes("color-scheme: dark"), "app follows OS light and dark color scheme");
 check(index.includes('accept="image/png,image/jpeg,image/webp"') && !index.includes("image/svg+xml"), "user uploads exclude SVG");
-check(hasAll(index, ["support.html", "privacy.html", "terms.html", "publishing.html"]), "footer links key pages");
+check(hasAll(index, ["support.html", "privacy.html", "terms.html"]) && !index.includes("publishing.html"), "footer links only user-facing public pages");
 check(index.includes("Export workspace") && index.includes("Local export workspace"), "agent-facing surface is framed as local export workspace");
 check(!/Agent lab|Request Queue|Waiting on humans|Returned Signals|Retry queue|No agent requests/i.test(index), "export workspace avoids inbound-traffic wording");
 check(index.includes("Export metadata") && index.includes("Export format"), "add artifact form uses local export wording");
@@ -354,6 +352,7 @@ check(!/[^\x00-\x7F]/.test(combinedText), "text files are ASCII");
 check(!/Nice or Not|is-it-nice/.test(combinedText), "old product/repo names are absent");
 check(!/\b(dating|tinder|hinge|mate|mates)\b/i.test(launchSurfaceText), "no relationship-app wording");
 check(!/\b(webhook|polling)\b/i.test(publicHtmlText), "public pages avoid deferred backend channel wording");
+check(!publicBuildEntries.includes("publishing.html"), "public build excludes internal publishing notes");
 check(!/mailto:|tel:|XMLHttpRequest|sendBeacon|WebSocket|stripe|paypal|posthog|sentry/i.test(launchSurfaceText), "no contact, payment, analytics, or socket hooks");
 
 for (const file of textFiles.filter((file) => file !== "sw.js")) {

@@ -19,7 +19,6 @@ const APP_SHELL = [
   "./privacy.html",
   "./support.html",
   "./terms.html",
-  "./publishing.html",
   "./404.html"
 ];
 
