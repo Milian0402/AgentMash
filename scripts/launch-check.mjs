@@ -98,6 +98,10 @@ const securityHeaders = [
 ];
 const submissionPngSizes = {
   "assets/icons/apple-touch-icon.png": "180x180",
+  "assets/screenshots/mobile-review.png": "390x844",
+  "assets/screenshots/desktop-review.png": "1440x1000",
+  "store/screenshots/mobile-review.png": "390x844",
+  "store/screenshots/desktop-review.png": "1440x1000",
   "assets/startup/apple-iphone-6-9-human-review.png": "1290x2796",
   "assets/startup/apple-iphone-6-5-human-review.png": "1242x2688",
   "store/submission/apple-iphone-6-9-human-review.png": "1290x2796",

@@ -95,6 +95,7 @@ Make AgentMash good enough to launch publicly as a serious app.
 - `npm run check` now includes Playwright e2e coverage for Nice, Undo, Nope, rapid duplicate decision locking, mobile header clearance, mobile Refine sheet clearance, mobile Pairwise scroll, export contract badges, legacy import normalization, v2 packet shape, visual image payloads, normalized export verdicts, dataset return format, Keepers completion state, Remix repeat sessions with variant metadata, Endless auto-looping, Pairwise comparison export, human-screen install prompt, empty Export workspace state, IndexedDB image storage, pending upload submit-only storage, profile image export/import, offline app-shell loading, and a 500-item local stress path.
 - `manifest.webmanifest`, `package.json`, and `vercel.json` parse as JSON.
 - `npm run check` verifies manifest and package descriptions use structured feedback-packet wording.
+- `npm run check` verifies public PWA screenshot PNG dimensions match the manifest-declared 390 by 844 and 1440 by 1000 sizes.
 - `schemas/feedback.v2.json` parses as JSON and is checked for the `agentmash.feedback.v2` contract.
 - The runtime packet schema and app code are checked to keep return modes local-only: `json` and `dataset`.
 - `store/native-wrapper-handoff.md` records the later native shell path, bundle IDs, `_site` web directory, and no-analytics native rules.
