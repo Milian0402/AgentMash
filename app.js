@@ -9,6 +9,8 @@ const PREVIOUS_STORAGE_KEYS = [
 ];
 
 const artifactTypes = ["website", "logo", "copy", "product"];
+const ALLOWED_IMAGE_TYPES = ["image/png", "image/jpeg", "image/webp"];
+const MAX_IMAGE_BYTES = 2_500_000;
 const quickTags = [
   "clear",
   "coherent",
@@ -313,11 +315,16 @@ function normalizeItem(item) {
     body: cleanText(item.body || item.copy || item.description),
     question: cleanText(item.question) || defaultQuestion(type),
     agent: normalizeAgent(item.agent),
-    imageData: typeof item.imageData === "string" && item.imageData.startsWith("data:image/")
-      ? item.imageData
-      : "",
+    imageData: safeImageData(item.imageData),
     createdAt: cleanText(item.createdAt) || new Date().toISOString()
   };
+}
+
+function safeImageData(value) {
+  if (typeof value !== "string") {
+    return "";
+  }
+  return ALLOWED_IMAGE_TYPES.some((type) => value.startsWith(`data:${type};base64,`)) ? value : "";
 }
 
 function normalizeReview(review) {
@@ -1051,15 +1058,26 @@ function handleImageSelection() {
     return;
   }
 
-  if (!file.type.startsWith("image/")) {
-    elements.imageStatus.textContent = "Choose an image file.";
+  if (!ALLOWED_IMAGE_TYPES.includes(file.type)) {
+    elements.imageStatus.textContent = "Choose a PNG, JPG, or WebP image.";
+    elements.artifactImage.value = "";
+    return;
+  }
+
+  if (file.size > MAX_IMAGE_BYTES) {
+    elements.imageStatus.textContent = "Choose an image under 2.5 MB for local storage.";
     elements.artifactImage.value = "";
     return;
   }
 
   const reader = new FileReader();
   reader.addEventListener("load", () => {
-    pendingImageData = String(reader.result);
+    const imageData = safeImageData(reader.result);
+    if (!imageData) {
+      elements.imageStatus.textContent = "That image format could not be stored.";
+      return;
+    }
+    pendingImageData = imageData;
     elements.imageStatus.textContent = `${file.name} ready for local review.`;
   });
   reader.readAsDataURL(file);

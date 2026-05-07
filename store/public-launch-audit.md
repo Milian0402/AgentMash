@@ -22,6 +22,7 @@ Make AgentMash good enough to launch publicly as a serious app.
 - Public footer and support page expose the current release version for support/debugging.
 - Reset uses profile wording and requires confirmation before clearing local data.
 - Copy actions handle browser clipboard denial without throwing or falsely reporting success.
+- User image uploads are restricted to PNG, JPG, or WebP files under 2.5 MB.
 - Store listing, App Store submission prep, and privacy/data safety drafts are present.
 - Draft store submission image assets are present in `store/submission`.
 - App data stays local unless the user imports, exports, copies, or downloads it.
@@ -46,6 +47,8 @@ Make AgentMash good enough to launch publicly as a serious app.
 - Playwright reset smoke test passed: cancel kept one review, confirm cleared it, and console errors stayed at zero.
 - Copy buttons show `Copy unavailable` if the browser blocks clipboard writes and the fallback path fails.
 - Playwright clipboard-denial smoke test passed for packet and dataset copy buttons with zero console errors.
+- SVG uploads are excluded from the public artifact form; imported image data is sanitized to PNG, JPG, or WebP data URLs.
+- Playwright upload smoke test passed: SVG rejected, over-2.5 MB PNG rejected, small PNG accepted, and console errors stayed at zero.
 - `npm run serve:build` served `_site/`; `/` and `assets/icons/apple-touch-icon.png` returned 200, while `store/completion-audit.md` returned 404.
 - Draft submission assets are sized for Apple iPhone 6.9, Apple iPhone 6.5, Google phone, and Google Play feature graphic planning.
 - GitHub repo is private at `https://github.com/Milian0402/AgentMash`.

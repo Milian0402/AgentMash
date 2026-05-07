@@ -15,6 +15,8 @@
 - [ ] Add one logo image.
 - [ ] Add one copy sample.
 - [ ] Add one product image.
+- [ ] Confirm SVG upload is rejected.
+- [ ] Confirm oversized image upload is rejected.
 - [ ] Swipe Nice and Pass.
 - [ ] Undo a decision.
 - [ ] Export and import a profile.
