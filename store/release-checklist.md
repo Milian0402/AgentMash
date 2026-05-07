@@ -25,6 +25,7 @@ Last local verification: May 7, 2026. No deployment, paid account, domain purcha
 - [x] Confirm storage health reports local profile usage and IndexedDB image usage.
 - [x] Stress-test 500 local artifacts, 250 existing reviews, and 100 more swipes.
 - [x] Swipe Nice and Nope.
+- [x] Confirm rapid duplicate decisions create one review and lock controls until the next card is ready.
 - [x] Undo a decision.
 - [x] Confirm Undo preserves the active deck filter.
 - [x] Open and close Details.
@@ -34,7 +35,9 @@ Last local verification: May 7, 2026. No deployment, paid account, domain purcha
 - [x] Confirm profile insights update after a review.
 - [x] Confirm decisions use supported haptic patterns and a quiet local WebAudio tick.
 - [x] Confirm light and dark color schemes follow OS preference.
+- [x] Confirm reduced-motion timing keeps swipe decisions usable.
 - [x] Confirm the mobile layout uses iOS safe-area inset spacing.
+- [x] Confirm mobile filter labels do not truncate at 390 by 844.
 - [x] Complete a deck and show Keepers.
 - [x] Start a Remix session.
 - [x] Enable Endless mode and verify one loop card is created at a time.

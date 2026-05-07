@@ -50,6 +50,9 @@ Make AgentMash good enough to launch publicly as a serious app.
 - Refine panel is hidden by default and closes after a decision, keeping the next card in the fast swipe loop.
 - Details sheet is hidden by default and closes after a decision, keeping the next artifact card clean.
 - Undo preserves the deck filter that produced the decision, so undoing from `All` restores the full deck instead of narrowing to one artifact type.
+- Rapid duplicate decision input is locked while the outgoing card animates, then controls unlock when the next card is ready.
+- Mobile filter labels are checked at 390 by 844 so `Product` does not truncate.
+- Reduced-motion preference shortens swipe-card transition timing.
 - Deck completion shows a Keepers summary instead of dead air, listing recent artifacts that survived the review flow.
 - Deck completion can start a local Remix session that creates type-specific tagline, mark-only, first-line, and cutout glance variants without overwriting existing export rows.
 - Endless mode can auto-loop one local glance-variant card at a time when the swipe deck empties, avoiding bulk storage growth.
@@ -68,7 +71,7 @@ Make AgentMash good enough to launch publicly as a serious app.
 - `npm run check:launch` passes.
 - `npm run check` syntax-checks `app.js`, `state.js`, `packet.js`, `render.js`, and `gestures.js`.
 - Playwright runs the module app through `npm run serve` at `http://127.0.0.1:5177/`, not a blocked `file://` module load.
-- `npm run check` now includes Playwright e2e coverage for Nice, Undo, Nope, Undo preserving the active deck, v2 packet shape, normalized export verdicts, dataset return format, Keepers completion state, Remix repeat sessions with variant metadata, Endless auto-looping, Pairwise comparison export, human-screen install prompt, empty Export workspace state, IndexedDB image storage, pending upload submit-only storage, profile image export/import, offline app-shell loading, and a 500-item local stress path.
+- `npm run check` now includes Playwright e2e coverage for Nice, Undo, Nope, rapid duplicate decision locking, mobile filter readability, Undo preserving the active deck, v2 packet shape, normalized export verdicts, dataset return format, Keepers completion state, Remix repeat sessions with variant metadata, Endless auto-looping, Pairwise comparison export, human-screen install prompt, empty Export workspace state, IndexedDB image storage, pending upload submit-only storage, profile image export/import, offline app-shell loading, and a 500-item local stress path.
 - `manifest.webmanifest`, `package.json`, and `vercel.json` parse as JSON.
 - `schemas/feedback.v2.json` parses as JSON and is checked for the `agentmash.feedback.v2` contract.
 - The runtime packet schema and app code are checked to keep return modes local-only: `json` and `dataset`.
@@ -82,7 +85,7 @@ Make AgentMash good enough to launch publicly as a serious app.
 - Public manifest screenshots point to `assets/screenshots`.
 - `npm run check` builds `_site/` and verifies internal files are not packaged.
 - `_site/` includes all public app modules and `sw.js` caches those module files.
-- `sw.js` cache name was bumped to `agentmash-v21` after public app-shell metadata and packet-contract changes.
+- `sw.js` cache name was bumped to `agentmash-v22` after public app-shell metadata, packet-contract, and swipe-loop polish changes.
 - Playwright e2e test passed: after service worker readiness, the app reloaded offline and rendered the AgentMash shell and swipe card.
 - Netlify and Vercel configs are checked for `npm run build` plus `_site/` output.
 - Apple touch icon is linked from `index.html`, cached by `sw.js`, and sized at 180 by 180.
@@ -104,6 +107,8 @@ Make AgentMash good enough to launch publicly as a serious app.
 - Playwright e2e test passed: Nice, Undo, and Nope produced a ready `agentmash.feedback.v2` packet with `signalStrength`, no `confidence` field, `accepted` / `rejected` export verdicts, and `agentmash.eval-row.v2`.
 - Playwright e2e test passed: a dataset-mode pending packet reported `application/x-ndjson` in the expected return envelope.
 - Playwright e2e test passed: Undo from the `All` deck restored `1 / 4` progress and left the active filter as `all`.
+- Playwright e2e test passed: two rapid decision events produced one review, left the transition lock active immediately, then unlocked the next card.
+- Playwright e2e test passed: filter labels had no horizontal overflow at 390 by 844.
 - Playwright e2e test passed: the always-visible momentum counter updated through Nice, Undo, and Nope.
 - Playwright e2e test passed: profile insights generated a type-rate insight after a review.
 - Playwright e2e test passed: the storage health indicator rendered local profile usage and IndexedDB image status.
@@ -114,7 +119,7 @@ Make AgentMash good enough to launch publicly as a serious app.
 - Playwright e2e test passed: Endless mode creates one local loop card after deck completion, records it as a normal v2 review on swipe, then creates only one next loop card.
 - Playwright e2e test passed: Pairwise mode records a comparison without creating a swipe review, exports `agentmash.pairwise-row.v1`, then keeps normal v2 packets and rows working after returning to Swipe mode.
 - Playwright e2e test passed: zero items and zero reviews rendered empty Export workspace counts and an empty packet without stale metrics.
-- Playwright e2e test passed: a 500-item profile with 250 existing reviews accepted 100 more keyboard decisions, preserved 350 unique review rows, avoided storage warnings, and kept Export workspace usable.
+- Playwright e2e test passed: a 500-item profile with 250 existing reviews accepted 100 more keyboard decisions under reduced-motion timing, preserved 350 unique review rows, avoided storage warnings, and kept Export workspace usable.
 - Local simulated-user review was run with three personas: mobile swiper, lab/export consumer, and launch QA. No outreach occurred. Findings were converted into the Undo deck fix, export verdict/format normalization, and public-page icon metadata checks.
 - `npm run serve:build` served `_site/`; `/` and `assets/icons/apple-touch-icon.png` returned 200, while `store/completion-audit.md` returned 404.
 - Draft submission assets are sized for Apple iPhone 6.9, Apple iPhone 6.5, Google phone, and Google Play feature graphic planning.

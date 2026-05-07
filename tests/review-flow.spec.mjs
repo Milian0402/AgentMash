@@ -232,6 +232,38 @@ test("Nice, Undo, and Nope produce a v2 feedback packet", async ({ page }) => {
   expect(packet.return.deliveryStatus).toBe("local_ready");
 });
 
+test("Rapid decisions are locked and mobile filter labels stay readable", async ({ page }) => {
+  await page.setViewportSize({ width: 390, height: 844 });
+  await resetApp(page);
+
+  const clippedFilters = await page.locator("#filterTabs .segment").evaluateAll((buttons) => {
+    return buttons
+      .filter((button) => button.scrollWidth > button.clientWidth + 1)
+      .map((button) => button.textContent.trim());
+  });
+  expect(clippedFilters).toEqual([]);
+
+  const lockState = await page.locator("#acceptButton").evaluate((button) => {
+    const click = new MouseEvent("click", { bubbles: true, cancelable: true });
+    button.dispatchEvent(click);
+    button.dispatchEvent(click);
+    return {
+      transition: document.body.dataset.decisionTransition,
+      acceptDisabled: button.disabled,
+      reviewCount: JSON.parse(localStorage.getItem("agentmash.private-profile.v5")).reviews.length
+    };
+  });
+
+  expect(lockState).toEqual({
+    transition: "true",
+    acceptDisabled: true,
+    reviewCount: 1
+  });
+  await expect(page.locator("#stageProgress")).toHaveText("2 / 4");
+  await expect(page.locator("#acceptButton")).toBeEnabled();
+  await expect.poll(() => reviewCount(page)).toBe(1);
+});
+
 test("Export workspace empty state reads correctly with zero items and reviews", async ({ page }) => {
   await page.goto(appUrl);
   await page.evaluate((key) => {
@@ -547,6 +579,7 @@ test("Service worker keeps the app shell available offline", async ({ page, cont
 
 test("Stress profile handles 500 items, 250 reviews, and 100 more swipes", async ({ page }) => {
   test.setTimeout(60_000);
+  await page.emulateMedia({ reducedMotion: "reduce" });
   await seedStressProfile(page);
 
   await expect(page.locator("#stageProgress")).toHaveText("251 / 500");
@@ -556,6 +589,8 @@ test("Stress profile handles 500 items, 250 reviews, and 100 more swipes", async
 
   for (let index = 0; index < 100; index += 1) {
     await page.keyboard.press(index % 2 === 0 ? "ArrowRight" : "ArrowLeft");
+    await expect.poll(() => reviewCount(page), { timeout: 1_500 }).toBe(251 + index);
+    await expect(page.locator("#acceptButton")).toBeEnabled();
   }
 
   await expect.poll(() => reviewCount(page), { timeout: 10_000 }).toBe(350);

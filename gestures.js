@@ -10,7 +10,7 @@ import {
 let dragState = null;
 let audioContext = null;
 
-export function installGestureHandlers({ decide, choosePairwise, undoLastComparison, undoLastReview }) {
+export function installGestureHandlers({ decide, choosePairwise, undoLastComparison, undoLastReview, isDecisionLocked }) {
   elements.swipeCard.addEventListener("pointerdown", onPointerDown);
   elements.swipeCard.addEventListener("pointermove", onPointerMove);
   elements.swipeCard.addEventListener("pointerup", (event) => onPointerUp(event, decide));
@@ -18,6 +18,11 @@ export function installGestureHandlers({ decide, choosePairwise, undoLastCompari
 
   window.addEventListener("keydown", (event) => {
     if (event.target.matches("input, textarea, select")) {
+      return;
+    }
+
+    if (isDecisionLocked()) {
+      event.preventDefault();
       return;
     }
 
@@ -61,6 +66,10 @@ export function installGestureHandlers({ decide, choosePairwise, undoLastCompari
 
 function onPointerDown(event) {
   if (event.target.closest("button, input, textarea, select, a")) {
+    return;
+  }
+
+  if (document.body.dataset.decisionTransition === "true") {
     return;
   }
 

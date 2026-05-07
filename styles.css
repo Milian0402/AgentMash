@@ -167,6 +167,16 @@ body[data-dashboard="human"] {
   }
 }
 
+@media (prefers-reduced-motion: reduce) {
+  .swipe-card,
+  .swipe-badge,
+  .swipe-actions .decision-button,
+  .streak-counter {
+    transition-duration: 1ms;
+    animation-duration: 1ms;
+  }
+}
+
 button,
 input,
 select,
@@ -647,6 +657,8 @@ body[data-dashboard="human"] .workspace {
   padding: 8px 9px;
   font-size: 0.82rem;
   font-weight: 850;
+  min-width: 0;
+  white-space: nowrap;
 }
 
 .segment.active {
@@ -791,6 +803,15 @@ body[data-dashboard="human"] .workspace {
 
 .swipe-card.is-dragging {
   transition: none;
+}
+
+.swipe-card.is-transitioning {
+  pointer-events: none;
+}
+
+body[data-decision-transition="true"] .segment,
+body[data-decision-transition="true"] .decision-button {
+  cursor: wait;
 }
 
 .swipe-card.swipe-nice {
@@ -2308,6 +2329,15 @@ body[data-dashboard="human"] .workspace {
 
   .dashboard-switch {
     width: 100%;
+  }
+
+  #filterTabs {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
+  #filterTabs .segment {
+    padding-inline: 6px;
+    font-size: 0.78rem;
   }
 
   body[data-dashboard="human"] .topbar {

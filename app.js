@@ -53,6 +53,8 @@ import { installGestureHandlers, pulseDevice } from "./gestures.js";
 let pendingImageData = "";
 let deferredInstallPrompt = null;
 let imageSelectionToken = 0;
+let isDecisionTransitioning = false;
+let decisionAnimationTimer = 0;
 
 async function restoreStoredImages() {
   try {
@@ -78,6 +80,10 @@ function toggleTag(tag) {
 }
 
 function decide(verdict) {
+  if (isDecisionTransitioning) {
+    return;
+  }
+
   const item = getActiveItem();
   if (!item) {
     return;
@@ -86,6 +92,7 @@ function decide(verdict) {
   const scores = normalizeScores(state.draftScores);
   const score = calculateScore(scores);
   const grade = gradeFor(score, verdict);
+  setDecisionTransitioning(true);
 
   state.reviews = state.reviews.filter((review) => review.itemId !== item.id);
   state.reviews.push({
@@ -154,6 +161,10 @@ function undoLastComparison() {
 }
 
 function undoLastReview() {
+  if (isDecisionTransitioning) {
+    return;
+  }
+
   const review = state.reviews.pop();
   if (!review) {
     return;
@@ -174,6 +185,7 @@ function undoLastReview() {
 }
 
 function animateDecision(verdict) {
+  window.clearTimeout(decisionAnimationTimer);
   const x = verdict === "nice" ? window.innerWidth : -window.innerWidth;
   const rotation = verdict === "nice" ? 12 : -12;
   elements.swipeBadge.textContent = verdict === "nice" ? "Nice" : "Nope";
@@ -181,9 +193,33 @@ function animateDecision(verdict) {
   elements.swipeCard.style.transform = `translateX(${x}px) rotate(${rotation}deg)`;
   elements.swipeCard.style.opacity = "0";
 
-  window.setTimeout(() => {
+  decisionAnimationTimer = window.setTimeout(() => {
+    setDecisionTransitioning(false);
     render();
-  }, 190);
+  }, decisionAnimationDuration());
+}
+
+function decisionAnimationDuration() {
+  return window.matchMedia("(prefers-reduced-motion: reduce)").matches ? 35 : 190;
+}
+
+function setDecisionTransitioning(isLocked) {
+  isDecisionTransitioning = isLocked;
+  document.body.dataset.decisionTransition = isLocked ? "true" : "false";
+  elements.swipeCard.classList.toggle("is-transitioning", isLocked);
+  elements.swipeCard.setAttribute("aria-busy", isLocked ? "true" : "false");
+  [
+    elements.rejectButton,
+    elements.acceptButton,
+    elements.undoButton,
+    elements.refineButton,
+    elements.detailsButton
+  ].forEach((button) => {
+    button.disabled = isLocked;
+  });
+  elements.filterTabs.querySelectorAll("button").forEach((button) => {
+    button.disabled = isLocked;
+  });
 }
 
 async function addArtifact(event) {
@@ -565,6 +601,10 @@ elements.endlessToggle.addEventListener("click", () => {
 });
 
 elements.filterTabs.addEventListener("click", (event) => {
+  if (isDecisionTransitioning) {
+    return;
+  }
+
   const button = event.target.closest("button[data-filter]");
   if (!button) {
     return;
@@ -613,7 +653,8 @@ installGestureHandlers({
   decide,
   choosePairwise,
   undoLastComparison,
-  undoLastReview
+  undoLastReview,
+  isDecisionLocked: () => isDecisionTransitioning
 });
 
 window.addEventListener("beforeinstallprompt", (event) => {

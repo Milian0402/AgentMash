@@ -252,6 +252,7 @@ check(!appSurface.includes("confidenceFor") && !appSurface.includes(".confidence
 check(!appSurface.includes("agentRetryQueue") && !appSurface.includes("Retry queue"), "retry queue metric is removed");
 check(appSurface.includes("renderRefinePanel") && appSurface.includes("isRefineOpen = false"), "decision flow returns to fast loop after refinement");
 check(appSurface.includes("renderDetailSheet") && appSurface.includes("isDetailSheetOpen = false"), "decision flow closes the details sheet after swipe");
+check(app.includes("isDecisionTransitioning") && gesturesModule.includes("isDecisionLocked"), "rapid duplicate decisions are locked during swipe animation");
 check(hasAll(gesturesModule, ["AudioContext", "navigator.vibrate", "nice: [8, 22, 14]", "playDecisionClick"]), "decisions use haptic and audio feedback where available");
 check(
   hasAll(appSurface, ["ALLOWED_IMAGE_TYPES", "MAX_IMAGE_BYTES", "safeImageData", "Choose a PNG, JPG, or WebP image"]),
@@ -277,6 +278,7 @@ check(
   "Playwright covers image export import roundtrip"
 );
 check(hasAll(testSpec, ["application/x-ndjson", "rejected", "accepted"]), "Playwright covers normalized export packet contract");
+check(hasAll(testSpec, ["Rapid decisions are locked", "decisionTransition", "clippedFilters"]), "Playwright covers transition lock and mobile filter readability");
 check(
   hasAll(testSpec, ["Changing a pending upload stores only the submitted image", "imageStoreKeys", "first.png", "second.png"]),
   "Playwright covers pending upload submit-only storage"
