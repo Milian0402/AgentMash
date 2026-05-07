@@ -21,6 +21,7 @@ Make AgentMash good enough to launch publicly as a serious app.
 - Dedicated Apple touch icon is present for iOS home-screen install polish.
 - Public footer and support page expose the current release version for support/debugging.
 - Reset uses profile wording and requires confirmation before clearing local data.
+- Copy actions handle browser clipboard denial without throwing or falsely reporting success.
 - Store listing, App Store submission prep, and privacy/data safety drafts are present.
 - Draft store submission image assets are present in `store/submission`.
 - App data stays local unless the user imports, exports, copies, or downloads it.
@@ -43,6 +44,8 @@ Make AgentMash good enough to launch publicly as a serious app.
 - `index.html` and `support.html` show the package version.
 - `index.html` avoids demo reset wording and `app.js` confirms before reset.
 - Playwright reset smoke test passed: cancel kept one review, confirm cleared it, and console errors stayed at zero.
+- Copy buttons show `Copy unavailable` if the browser blocks clipboard writes and the fallback path fails.
+- Playwright clipboard-denial smoke test passed for packet and dataset copy buttons with zero console errors.
 - `npm run serve:build` served `_site/`; `/` and `assets/icons/apple-touch-icon.png` returned 200, while `store/completion-audit.md` returned 404.
 - Draft submission assets are sized for Apple iPhone 6.9, Apple iPhone 6.5, Google phone, and Google Play feature graphic planning.
 - GitHub repo is private at `https://github.com/Milian0402/AgentMash`.

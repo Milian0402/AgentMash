@@ -1099,10 +1099,7 @@ async function copyPacket() {
     return;
   }
   const text = JSON.stringify(packet, null, 2);
-  if (navigator.clipboard && window.isSecureContext) {
-    await navigator.clipboard.writeText(text);
-  }
-  elements.packetStatus.textContent = "Copied";
+  elements.packetStatus.textContent = (await copyText(text)) ? "Copied" : "Copy unavailable";
 }
 
 function downloadPacket() {
@@ -1130,10 +1127,38 @@ async function copyDataset() {
   if (!text) {
     return;
   }
+  elements.datasetStatus.textContent = (await copyText(text)) ? "Copied" : "Copy unavailable";
+}
+
+async function copyText(text) {
   if (navigator.clipboard && window.isSecureContext) {
-    await navigator.clipboard.writeText(text);
+    try {
+      await navigator.clipboard.writeText(text);
+      return true;
+    } catch {
+      // Fall through to the selection-based copy path below.
+    }
   }
-  elements.datasetStatus.textContent = "Copied";
+
+  const field = document.createElement("textarea");
+  field.value = text;
+  field.setAttribute("readonly", "");
+  field.style.position = "fixed";
+  field.style.top = "-999px";
+  field.style.opacity = "0";
+  document.body.append(field);
+  field.select();
+  field.setSelectionRange(0, field.value.length);
+
+  let copied = false;
+  try {
+    copied = document.execCommand("copy");
+  } catch {
+    copied = false;
+  }
+
+  field.remove();
+  return copied;
 }
 
 function downloadDataset() {

@@ -24,6 +24,7 @@ Make AgentMash good enough to launch publicly as a serious app, while staying in
 - Mobile install polish includes a dedicated Apple touch icon.
 - Public pages expose the package version for support and debugging.
 - Destructive reset is clearly labelled and confirmed.
+- Copy actions have a graceful browser-denial path.
 - App Store and Google Play prep is documented without creating paid accounts.
 - Verification covers static files, metadata, security posture, forbidden hooks, launch docs, store assets, and the core runtime flow.
 - Remaining requirements that need user accounts, money, contact details, deployment, or legal decisions are named and not pretended done.
@@ -45,6 +46,7 @@ Make AgentMash good enough to launch publicly as a serious app, while staying in
 | Make the PWA feel install-ready on iOS. | `assets/icons/apple-touch-icon.png` is 180 by 180, linked in `index.html`, cached by `sw.js`, and verified by `npm run check`. | Met locally |
 | Make public support reports actionable. | `index.html` and `support.html` show the package version, and `npm run check` verifies it matches `package.json`. | Met locally |
 | Avoid accidental local data loss. | Reset is labelled `Reset profile`, requires browser confirmation, and is verified by `npm run check`. | Met locally |
+| Avoid misleading copy status. | Packet and dataset copy use a shared helper with Clipboard API, fallback copy, and `Copy unavailable` status when blocked. | Met locally |
 | Make it closer to App Store or Google Play readiness without paid setup. | `store/app-store-listing.md`, `store/app-store-submission.md`, `store/privacy-data-safety-draft.md`, and `store/submission` draft assets. | Met locally |
 | Verify core behavior, not just files. | Real browser smoke test on `http://127.0.0.1:5177` passed: title, human dashboard, note save, Nice, Undo, Nope, Agent lab, ready packet, JSONL preview, packet JSON, and download buttons. Console errors: 0. | Met locally |
 | Keep the repo private. | `gh repo view Milian0402/AgentMash` showed `visibility: PRIVATE`. | Met locally |
