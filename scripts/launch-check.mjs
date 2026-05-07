@@ -169,6 +169,7 @@ check(hasAll(index, ["support.html", "privacy.html", "terms.html", "publishing.h
 check(app.includes("humanAddButton") && app.includes("openAddArtifactPanel"), "human add-artifact entry exists");
 check(app.includes('state.dashboard = "human";'), "added artifacts return to human deck");
 check(app.includes("window.confirm") && app.includes("Reset this local AgentMash profile"), "reset requires confirmation");
+check(app.includes("confirmProfileImport") && app.includes("Import this AgentMash profile"), "profile import requires confirmation when local data exists");
 check(app.includes("async function copyText") && app.includes("Copy unavailable"), "copy actions handle clipboard failure");
 check(
   hasAll(app, ["ALLOWED_IMAGE_TYPES", "MAX_IMAGE_BYTES", "safeImageData", "Choose a PNG, JPG, or WebP image"]),

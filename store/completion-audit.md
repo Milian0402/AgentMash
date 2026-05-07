@@ -24,6 +24,7 @@ Make AgentMash good enough to launch publicly as a serious app, while staying in
 - Mobile install polish includes a dedicated Apple touch icon.
 - Public pages expose the package version for support and debugging.
 - Destructive reset is clearly labelled and confirmed.
+- Profile import confirms before replacing existing local data.
 - Copy actions have a graceful browser-denial path.
 - User-uploaded image artifacts are constrained to safe raster formats and a local-storage-friendly size.
 - App Store and Google Play prep is documented without creating paid accounts.
@@ -47,6 +48,7 @@ Make AgentMash good enough to launch publicly as a serious app, while staying in
 | Make the PWA feel install-ready on iOS. | `assets/icons/apple-touch-icon.png` is 180 by 180, linked in `index.html`, cached by `sw.js`, and verified by `npm run check`. | Met locally |
 | Make public support reports actionable. | `index.html` and `support.html` show the package version, and `npm run check` verifies it matches `package.json`. | Met locally |
 | Avoid accidental local data loss. | Reset is labelled `Reset profile`, requires browser confirmation, and is verified by `npm run check`. | Met locally |
+| Avoid accidental profile overwrite. | Profile import prompts when local reviews, uploads, notes, added artifacts, or reviewer name exist. The support page tells users to export before importing. | Met locally |
 | Avoid misleading copy status. | Packet and dataset copy use a shared helper with Clipboard API, fallback copy, and `Copy unavailable` status when blocked. | Met locally |
 | Keep user uploads safe for a public local-first app. | The artifact form accepts only PNG, JPG, and WebP. `app.js` rejects other image types, caps images at 2.5 MB, and sanitizes imported image data. | Met locally |
 | Make it closer to App Store or Google Play readiness without paid setup. | `store/app-store-listing.md`, `store/app-store-submission.md`, `store/privacy-data-safety-draft.md`, and `store/submission` draft assets. | Met locally |

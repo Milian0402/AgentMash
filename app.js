@@ -1201,6 +1201,9 @@ function importProfile(file) {
     try {
       const parsed = JSON.parse(String(reader.result));
       const profile = parsed.profile || parsed;
+      if (!confirmProfileImport()) {
+        return;
+      }
       state = normalizeState(profile);
       setCurrentToNext();
       saveState();
@@ -1210,6 +1213,25 @@ function importProfile(file) {
     }
   });
   reader.readAsText(file);
+}
+
+function confirmProfileImport() {
+  if (!hasLocalProfileData()) {
+    return true;
+  }
+
+  return window.confirm(
+    "Import this AgentMash profile? This replaces reviews, uploads, notes, and added artifacts in this browser. Export first if you want a backup."
+  );
+}
+
+function hasLocalProfileData() {
+  const sampleIds = new Set(sampleItems.map((item) => item.id));
+  return (
+    state.reviews.length > 0
+    || state.items.some((item) => !sampleIds.has(item.id) || item.imageData)
+    || state.reviewer !== defaultState.reviewer
+  );
 }
 
 function resetProfile() {
