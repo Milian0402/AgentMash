@@ -228,6 +228,8 @@ test("Nice, Undo, and Nope produce a v2 feedback packet", async ({ page }) => {
 
   expect(packet.schema).toBe("agentmash.feedback.v2");
   expect(packet.status).toBe("ready");
+  expect(packet.request.submittedAt).toBe("2026-05-07T00:00:00.000Z");
+  expect(packet.evalRow.artifact.submittedAt).toBe("2026-05-07T00:00:00.000Z");
   expect(packet.signalStrengthFormula.name).toBe("score_extremity_plus_annotation");
   expect(packet.humanJudgement.verdict).toBe("rejected");
   expect(packet.humanJudgement).toHaveProperty("signalStrength");
@@ -318,6 +320,79 @@ test("Export workspace empty state reads correctly with zero items and reviews",
     status: "empty",
     message: "No active artifact."
   });
+});
+
+test("Legacy imported reviews without grade or recommendation still load", async ({ page }) => {
+  await page.goto(appUrl);
+  await page.evaluate((key) => {
+    const installedAt = "2026-05-07T00:00:00.000Z";
+    localStorage.setItem(
+      key,
+      JSON.stringify({
+        version: 5,
+        reviewer: "Legacy reviewer",
+        filter: "all",
+        dashboard: "human",
+        reviewMode: "swipe",
+        endlessMode: false,
+        loopCursor: 0,
+        pairwise: { leftItemId: null, rightItemId: null },
+        items: [
+          {
+            id: "legacy-import-item",
+            type: "logo",
+            title: "Legacy import mark",
+            prompt: "Legacy profile import smoke.",
+            body: "A compact local-first mark.",
+            question: "Is this logo nice?",
+            agent: {
+              requesterType: "agent",
+              requesterName: "legacy-agent",
+              runId: "legacy-run-001",
+              goal: "Confirm partial review import works.",
+              returnMode: "json",
+              returnTarget: "local",
+              submittedAt: installedAt
+            },
+            variant: "original",
+            loopSourceItemId: "",
+            imageKey: "",
+            imageData: "",
+            createdAt: installedAt
+          }
+        ],
+        reviews: [
+          {
+            id: "legacy-review-001",
+            itemId: "legacy-import-item",
+            reviewer: "Legacy reviewer",
+            verdict: "nice",
+            scores: { gut: 9, sense: 8, craft: 8, useful: 8 },
+            score: 84,
+            tags: ["clear"],
+            note: "",
+            createdAt: installedAt
+          }
+        ],
+        pairwiseComparisons: [],
+        currentItemId: "legacy-import-item",
+        activeTags: [],
+        draftScores: { gut: 6, sense: 6, craft: 6, useful: 6 },
+        lastPacketItemId: "legacy-import-item",
+        installedAt
+      })
+    );
+  }, storageKey);
+  await page.reload();
+
+  await expect(page.locator("#reviewedCount")).toHaveText("1");
+  await expect(page.locator("#queueCount")).toHaveText("0");
+  await page.getByRole("button", { name: "Export workspace" }).click();
+  await expect(page.locator("#packetStatus")).toHaveText("Ready");
+  await expect(page.locator("#packetContractStatus")).toHaveText("v2 valid");
+  const packet = await page.locator("#packetPreview").evaluate((node) => JSON.parse(node.textContent));
+  expect(packet.humanJudgement.grade).toBe("Keeper");
+  expect(packet.interpretation.recommendation).toBe("Use as a keeper, add it to the agent's positive examples, and preserve the prompt pattern.");
 });
 
 test("Deck completion shows keepers instead of dead air", async ({ page }) => {
@@ -538,6 +613,14 @@ test("Changing a pending upload stores only the submitted image", async ({ page 
   await page.getByRole("button", { name: "Export workspace" }).click();
   const packet = await page.locator("#packetPreview").evaluate((node) => JSON.parse(node.textContent));
   expect(packet.expectedReturn.format).toBe("application/x-ndjson");
+  expect(packet.request.submittedAt).toEqual(expect.any(String));
+  expect(packet.request.image).toMatchObject({
+    imageKey: storedKey,
+    hasImage: true,
+    included: true,
+    mediaType: "image/png"
+  });
+  expect(packet.request.image.dataUrl).toContain("data:image/png;base64,");
 });
 
 test("Profile export and import roundtrip restores uploaded images", async ({ page }) => {

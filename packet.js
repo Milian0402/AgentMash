@@ -71,7 +71,10 @@ export function artifactSummary(item) {
     type: item.type,
     title: item.title,
     runId: item.agent.runId,
-    requesterName: item.agent.requesterName
+    requesterType: item.agent.requesterType,
+    requesterName: item.agent.requesterName,
+    submittedAt: submittedAtFor(item),
+    image: imageEnvelope(item, { includeData: false })
   };
 }
 
@@ -167,7 +170,9 @@ export function buildEvalRow(item, review) {
       requesterName: item.agent.requesterName,
       requesterType: item.agent.requesterType,
       runId: item.agent.runId,
-      goal: item.agent.goal
+      goal: item.agent.goal,
+      submittedAt: submittedAtFor(item),
+      image: imageEnvelope(item)
     },
     humanSignal: humanSignalFor(item, review),
     agentUse: agentUseFor(item, review)
@@ -248,7 +253,24 @@ export function requestEnvelope(item) {
     requesterType: item.agent.requesterType,
     requesterName: item.agent.requesterName,
     goal: item.agent.goal,
-    submittedAt: item.agent.submittedAt
+    submittedAt: submittedAtFor(item),
+    image: imageEnvelope(item)
+  };
+}
+
+export function submittedAtFor(item) {
+  return item.agent?.submittedAt || item.createdAt || new Date().toISOString();
+}
+
+export function imageEnvelope(item, { includeData = true } = {}) {
+  const dataUrl = includeData ? item.imageData || "" : "";
+  const mediaType = dataUrl.match(/^data:([^;]+);base64,/)?.[1] || "";
+  return {
+    imageKey: item.imageKey || "",
+    hasImage: Boolean(item.imageKey || item.imageData),
+    included: Boolean(dataUrl),
+    mediaType,
+    dataUrl
   };
 }
 
@@ -343,6 +365,7 @@ function validateEvalRow(row, errors, path) {
   requireString(errors, row?.rowId, `${path}.rowId`);
   requireString(errors, row?.createdAt, `${path}.createdAt`);
   requireObject(errors, row?.artifact, `${path}.artifact`);
+  validateRequest(row?.artifact, errors, `${path}.artifact`);
   validateHumanSignal(row?.humanSignal, errors, `${path}.humanSignal`);
   validateAgentUse(row?.agentUse, errors, `${path}.agentUse`);
 }
@@ -355,6 +378,7 @@ function validateRequest(request, errors, path) {
   requireString(errors, request?.runId, `${path}.runId`);
   requireValue(errors, ["agent", "lab", "team"].includes(request?.requesterType), `${path}.requesterType`);
   requireString(errors, request?.requesterName, `${path}.requesterName`);
+  requireString(errors, request?.submittedAt, `${path}.submittedAt`);
 }
 
 function validateHumanSignal(signal, errors, path) {
@@ -441,10 +465,11 @@ export function signalStrengthFor(review) {
 
 export function trainingUseFor(review) {
   const uses = ["preference_label", "score_vector", "eval_dataset_row"];
-  if (review.tags.length || failureModesFor(review).length) {
+  const failureModes = failureModesFor(review);
+  if (failureModes.length) {
     uses.push("failure_taxonomy");
   }
-  if (review.note || review.verdict === "pass" || review.score < 78) {
+  if (review.verdict === "pass" || review.score < 78 || failureModes.length) {
     uses.push("prompt_repair");
   }
   return uses;

@@ -225,6 +225,27 @@
         "submittedAt": {
           "type": "string",
           "format": "date-time"
+        },
+        "image": {
+          "type": "object",
+          "properties": {
+            "imageKey": {
+              "type": "string"
+            },
+            "hasImage": {
+              "type": "boolean"
+            },
+            "included": {
+              "type": "boolean"
+            },
+            "mediaType": {
+              "type": "string"
+            },
+            "dataUrl": {
+              "type": "string"
+            }
+          },
+          "additionalProperties": true
         }
       },
       "additionalProperties": true

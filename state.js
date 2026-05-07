@@ -298,6 +298,7 @@ export function normalizeReview(review) {
   const scores = normalizeScores(review.scores || { sense: review.senseScore });
   const verdict = review.verdict === "nice" ? "nice" : "pass";
   const score = Number.isFinite(Number(review.score)) ? Number(review.score) : calculateScore(scores);
+  const grade = cleanText(review.grade) || gradeFor(score, verdict);
 
   return {
     id: cleanText(review.id) || createId(),
@@ -307,7 +308,7 @@ export function normalizeReview(review) {
     verdict,
     scores,
     score,
-    grade: cleanText(review.grade) || gradeFor(score, verdict),
+    grade,
     recommendation: cleanText(review.recommendation) || recommendationFor({ verdict, score, grade }),
     tags: normalizeTags(review.tags),
     note: cleanText(review.note),
