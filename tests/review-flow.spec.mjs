@@ -95,6 +95,7 @@ async function addTinyImageArtifact(page, title) {
   });
   await expect(page.locator("#imageStatus")).toContainText("ready for local review");
   await page.getByRole("button", { name: "Add to review deck" }).click();
+  await expect(page.locator("#artifactTitleLabel")).toContainText(title);
 }
 
 async function seedStressProfile(page) {
@@ -417,7 +418,7 @@ test("Uploaded images are stored in IndexedDB instead of localStorage", async ({
   await expect(page.locator("#imageStorageUsage")).toContainText("IndexedDB");
 });
 
-test("Changing a pending upload replaces the IndexedDB draft image", async ({ page }) => {
+test("Changing a pending upload stores only the submitted image", async ({ page }) => {
   await resetApp(page);
 
   await page.getByRole("button", { name: "Add artifact" }).click();
@@ -428,8 +429,7 @@ test("Changing a pending upload replaces the IndexedDB draft image", async ({ pa
     buffer: Buffer.from(tinyPngBase64, "base64")
   });
   await expect(page.locator("#imageStatus")).toContainText("first.png ready for local review");
-  await expect.poll(async () => (await imageStoreKeys(page)).length).toBe(1);
-  const [firstKey] = await imageStoreKeys(page);
+  await expect.poll(async () => (await imageStoreKeys(page)).length).toBe(0);
 
   await page.setInputFiles("#artifactImage", {
     name: "second.png",
@@ -437,17 +437,16 @@ test("Changing a pending upload replaces the IndexedDB draft image", async ({ pa
     buffer: Buffer.from(tinyPngBase64, "base64")
   });
   await expect(page.locator("#imageStatus")).toContainText("second.png ready for local review");
-  await expect.poll(async () => (await imageStoreKeys(page)).length).toBe(1);
-  const [secondKey] = await imageStoreKeys(page);
-
-  expect(secondKey).not.toBe(firstKey);
+  await expect.poll(async () => (await imageStoreKeys(page)).length).toBe(0);
 
   await page.getByRole("button", { name: "Add to review deck" }).click();
+  await expect.poll(async () => (await imageStoreKeys(page)).length).toBe(1);
+  const [storedKey] = await imageStoreKeys(page);
   const storedProfile = await page.evaluate((key) => JSON.parse(localStorage.getItem(key)), storageKey);
 
   expect(storedProfile.items[0]).toMatchObject({
     title: "Replacement upload smoke",
-    imageKey: secondKey,
+    imageKey: storedKey,
     imageData: ""
   });
 });

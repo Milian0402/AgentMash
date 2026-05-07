@@ -47,7 +47,7 @@ Last local verification: May 7, 2026. No deployment, paid account, domain purcha
 - [x] Confirm manifest screenshots load from public assets.
 - [x] Confirm support, privacy, terms, publishing, and 404 pages render locally.
 - [x] Confirm no analytics, payment, contact, telemetry, socket, third-party API, or outbound fetch hooks exist in the public app surface.
-- [x] Confirm replacing a pending image upload clears the old IndexedDB draft image.
+- [x] Confirm pending image uploads are written to IndexedDB only after submit.
 
 ## Needs User Action Before Public Website Launch
 

@@ -478,21 +478,6 @@ export async function readImageData(key) {
   });
 }
 
-export async function deleteImageData(key) {
-  if (!key) {
-    return;
-  }
-
-  const db = await openImageDb();
-  return new Promise((resolve, reject) => {
-    const transaction = db.transaction(IMAGE_STORE_NAME, "readwrite");
-    transaction.addEventListener("complete", resolve);
-    transaction.addEventListener("error", () => reject(transaction.error || new Error("Image store delete failed")));
-    transaction.addEventListener("abort", () => reject(transaction.error || new Error("Image store delete aborted")));
-    transaction.objectStore(IMAGE_STORE_NAME).delete(key);
-  });
-}
-
 export async function estimateImageStoreBytes() {
   const db = await openImageDb();
   return new Promise((resolve, reject) => {

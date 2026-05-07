@@ -37,7 +37,7 @@ Make AgentMash good enough to launch publicly as a serious app.
 - Copy actions handle browser clipboard denial without throwing or falsely reporting success.
 - User image uploads are restricted to PNG, JPG, or WebP files under 2.5 MB and stored in IndexedDB instead of `localStorage`.
 - `saveState()` strips image data before writing profile state and shows a visible local-storage-full warning if browser storage rejects the save.
-- Replacing a pending image upload clears the old IndexedDB draft before storing the next image.
+- Pending image choices stay out of IndexedDB until the artifact is submitted.
 - Profile export/import includes uploaded image bytes and restores them to IndexedDB while keeping `localStorage` image-free.
 - Human review shows storage health for local profile usage and IndexedDB image usage.
 - Reviewer name edits show a visible saved/not-saved status.
@@ -63,7 +63,7 @@ Make AgentMash good enough to launch publicly as a serious app.
 - `npm run check:launch` passes.
 - `npm run check` syntax-checks `app.js`, `state.js`, `packet.js`, `render.js`, and `gestures.js`.
 - Playwright runs the module app through `npm run serve` at `http://127.0.0.1:5177/`, not a blocked `file://` module load.
-- `npm run check` now includes Playwright e2e coverage for Nice, Undo, Nope, v2 packet shape, Keepers completion state, Remix repeat sessions with variant metadata, Endless auto-looping, Pairwise comparison export, empty Export workspace state, IndexedDB image storage, pending upload replacement cleanup, profile image export/import, offline app-shell loading, and a 500-item local stress path.
+- `npm run check` now includes Playwright e2e coverage for Nice, Undo, Nope, v2 packet shape, Keepers completion state, Remix repeat sessions with variant metadata, Endless auto-looping, Pairwise comparison export, empty Export workspace state, IndexedDB image storage, pending upload submit-only storage, profile image export/import, offline app-shell loading, and a 500-item local stress path.
 - `manifest.webmanifest`, `package.json`, and `vercel.json` parse as JSON.
 - `schemas/feedback.v2.json` parses as JSON and is checked for the `agentmash.feedback.v2` contract.
 - The runtime packet schema and app code are checked to keep return modes local-only: `json` and `dataset`.
@@ -77,7 +77,7 @@ Make AgentMash good enough to launch publicly as a serious app.
 - Public manifest screenshots point to `assets/screenshots`.
 - `npm run check` builds `_site/` and verifies internal files are not packaged.
 - `_site/` includes all public app modules and `sw.js` caches those module files.
-- `sw.js` cache name was bumped to `agentmash-v17` after public app-shell code changes.
+- `sw.js` cache name was bumped to `agentmash-v18` after public app-shell code changes.
 - Playwright e2e test passed: after service worker readiness, the app reloaded offline and rendered the AgentMash shell and swipe card.
 - Netlify and Vercel configs are checked for `npm run build` plus `_site/` output.
 - Apple touch icon is linked from `index.html`, cached by `sw.js`, and sized at 180 by 180.
@@ -92,7 +92,7 @@ Make AgentMash good enough to launch publicly as a serious app.
 - SVG uploads are excluded from the public artifact form; imported image data is sanitized to PNG, JPG, or WebP data URLs.
 - Playwright upload smoke test passed: SVG rejected, over-2.5 MB PNG rejected, small PNG accepted, and console errors stayed at zero.
 - Playwright e2e test passed: a tiny PNG upload stored an `imageKey` in `localStorage`, left `imageData` empty in `localStorage`, and stored the data URL in IndexedDB.
-- Playwright e2e test passed: selecting `first.png`, then selecting `second.png`, left only one IndexedDB draft key and submitted the replacement key.
+- Playwright e2e test passed: selecting `first.png`, then selecting `second.png`, left zero IndexedDB image keys until submit and exactly one submitted image key after.
 - Playwright e2e test passed: profile export bundled uploaded image data, reset cleared the profile and removed the old IndexedDB image bytes, import restored the artifact, `localStorage` kept only the `imageKey`, and IndexedDB contained the restored data URL.
 - Playwright e2e test passed: Nice, Undo, and Nope produced a ready `agentmash.feedback.v2` packet with `signalStrength`, no `confidence` field, and `agentmash.eval-row.v2`.
 - Playwright e2e test passed: the always-visible momentum counter updated through Nice, Undo, and Nope.

@@ -12,7 +12,6 @@ import {
   defaultScores,
   defaultScoresForNext,
   defaultState,
-  deleteImageData,
   filteredItems,
   getActiveItem,
   getPairwiseItems,
@@ -51,7 +50,6 @@ import { buildExportRows } from "./packet.js";
 import { installGestureHandlers, pulseDevice } from "./gestures.js";
 
 let pendingImageData = "";
-let pendingImageKey = "";
 let deferredInstallPrompt = null;
 let imageSelectionToken = 0;
 
@@ -184,7 +182,7 @@ function animateDecision(verdict) {
   }, 190);
 }
 
-function addArtifact(event) {
+async function addArtifact(event) {
   event.preventDefault();
   const type = elements.artifactType.value;
   const title = elements.artifactTitle.value.trim();
@@ -192,6 +190,17 @@ function addArtifact(event) {
   if (!title) {
     elements.artifactTitle.focus();
     return;
+  }
+
+  let imageKey = "";
+  if (pendingImageData) {
+    imageKey = createShortId("image");
+    try {
+      await writeImageData(imageKey, pendingImageData);
+    } catch {
+      elements.imageStatus.textContent = "Local image storage is full or unavailable. Add a text-only artifact or use a smaller image.";
+      return;
+    }
   }
 
   const item = {
@@ -210,7 +219,7 @@ function addArtifact(event) {
       returnTarget: elements.agentReturnTarget.value.trim(),
       submittedAt: new Date().toISOString()
     },
-    imageKey: pendingImageKey,
+    imageKey,
     imageData: pendingImageData,
     createdAt: new Date().toISOString()
   };
@@ -220,7 +229,6 @@ function addArtifact(event) {
   state.currentItemId = item.id;
   state.dashboard = "human";
   pendingImageData = "";
-  pendingImageKey = "";
   imageSelectionToken += 1;
   elements.artifactForm.reset();
   elements.imageStatus.textContent = "No image selected.";
@@ -269,26 +277,11 @@ function openAddArtifactPanel() {
   }, 0);
 }
 
-async function clearPendingImage() {
-  const key = pendingImageKey;
-  pendingImageData = "";
-  pendingImageKey = "";
-  if (!key) {
-    return;
-  }
-
-  try {
-    await deleteImageData(key);
-  } catch {
-    setStorageStatus("A pending image could not be cleared. Reset the profile or clear browser storage if image usage looks high.");
-  }
-}
-
-async function handleImageSelection() {
+function handleImageSelection() {
   const selectionToken = imageSelectionToken + 1;
   imageSelectionToken = selectionToken;
   const [file] = elements.artifactImage.files;
-  await clearPendingImage();
+  pendingImageData = "";
 
   if (!file) {
     elements.imageStatus.textContent = "No image selected.";
@@ -315,22 +308,12 @@ async function handleImageSelection() {
       return;
     }
 
-    try {
-      const imageKey = createShortId("image");
-      await writeImageData(imageKey, imageData);
-      if (selectionToken !== imageSelectionToken) {
-        await deleteImageData(imageKey);
-        return;
-      }
-      pendingImageData = imageData;
-      pendingImageKey = imageKey;
-      elements.imageStatus.textContent = `${file.name} ready for local review.`;
-    } catch {
-      pendingImageData = "";
-      pendingImageKey = "";
-      elements.artifactImage.value = "";
-      elements.imageStatus.textContent = "Local image storage is full or unavailable. Add a text-only artifact or use a smaller image.";
+    if (selectionToken !== imageSelectionToken) {
+      return;
     }
+
+    pendingImageData = imageData;
+    elements.imageStatus.textContent = `${file.name} ready for local review.`;
   });
   reader.readAsDataURL(file);
 }
@@ -518,7 +501,6 @@ async function resetProfile() {
   }
   replaceState(cloneDefaultState());
   pendingImageData = "";
-  pendingImageKey = "";
   imageSelectionToken += 1;
   elements.reviewNote.value = "";
   elements.imageStatus.textContent = "No image selected.";
