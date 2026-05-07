@@ -17,7 +17,7 @@ Status: public-beta candidate. The app is on GitHub, but it has not been deploye
 - Paste generated copy and source notes.
 - Score each artifact on gut pull, coherence, craft, and usefulness.
 - Attach source, run, and local export metadata.
-- Generate structured feedback packets agents could consume online.
+- Generate structured feedback packets future agents or labs could consume from local exports.
 - Generate lab-ready JSONL eval rows with preference labels, signal strength, failure modes, and repair instructions.
 - Save tags, notes, history, and profile metrics locally.
 - Export and import the private profile as JSON.
@@ -92,8 +92,8 @@ This verifies required pages, app metadata, offline shell files, static-host sec
 - `support.html`: support page draft.
 - `privacy.html`: privacy page draft.
 - `terms.html`: terms page draft.
-- `PUBLISHING.md` and `store/research-and-cost-guide.md`: internal publishing and cost-bearing user-action notes.
-- `PUBLISHING.md`: private publishing runbook.
+- `PUBLISHING.md`: private publishing runbook and cost-bearing user-action notes.
+- `store/research-and-cost-guide.md`: design research and cost guide.
 - `.github/workflows/pages.yml`: manual GitHub Pages deploy workflow.
 - `_headers`, `netlify.toml`, and `vercel.json`: static host security headers.
 - `store/app-store-listing.md`: store listing copy.
