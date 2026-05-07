@@ -32,6 +32,7 @@ Make AgentMash good enough to launch publicly as a serious app.
 - Refine panel is hidden by default and closes after a decision, keeping the next card in the fast swipe loop.
 - Details sheet is hidden by default and closes after a decision, keeping the next artifact card clean.
 - Deck completion shows a Keepers summary instead of dead air, listing recent artifacts that survived the review flow.
+- Deck completion can start a local Remix session that creates fresh review cards without overwriting existing export rows.
 - Export workspace zero-item and zero-review states are covered by Playwright and show zero ready exports, zero unjudged items, no average signal, empty packet status, and zero dataset rows.
 - Agent-facing surface was reframed as a local export workspace, removing inbound-traffic wording such as request queue, waiting on humans, returned signals, and retry queue.
 - Store listing, App Store submission prep, and privacy/data safety drafts are present.
@@ -42,7 +43,7 @@ Make AgentMash good enough to launch publicly as a serious app.
 
 - `npm run check` passes.
 - `npm run check:launch` passes.
-- `npm run check` now includes Playwright e2e coverage for Nice, Undo, Nope, v2 packet shape, Keepers completion state, empty Export workspace state, and IndexedDB image storage.
+- `npm run check` now includes Playwright e2e coverage for Nice, Undo, Nope, v2 packet shape, Keepers completion state, Remix repeat sessions, empty Export workspace state, and IndexedDB image storage.
 - `manifest.webmanifest`, `package.json`, and `vercel.json` parse as JSON.
 - Mobile browser check at 390 by 844 showed no horizontal overflow.
 - Desktop browser check at 1440 by 1000 showed no horizontal overflow.
@@ -68,6 +69,7 @@ Make AgentMash good enough to launch publicly as a serious app.
 - Playwright e2e test passed: Refine opens the hidden scoring/note panel and the panel closes again after a decision.
 - Playwright e2e test passed: Details opens the hidden artifact detail sheet and closes it again.
 - Playwright e2e test passed: completing the deck after a Nice judgement renders a Keepers summary with the surviving artifact.
+- Playwright e2e test passed: Remix deck doubles local items from 4 to 8, keeps the original 4 reviews, adds a fifth review on the next swipe, preserves unique reviewed item IDs, and shows 5 JSONL rows.
 - Playwright e2e test passed: zero items and zero reviews rendered empty Export workspace counts and an empty packet without stale metrics.
 - `npm run serve:build` served `_site/`; `/` and `assets/icons/apple-touch-icon.png` returned 200, while `store/completion-audit.md` returned 404.
 - Draft submission assets are sized for Apple iPhone 6.9, Apple iPhone 6.5, Google phone, and Google Play feature graphic planning.
@@ -117,4 +119,4 @@ Passed checks:
 - Paid plans, billing, auth, server storage, lab customer accounts, webhooks, or polling endpoints.
 - Legal review.
 - No backend, inbound agent submission, polling, webhook, or customer pipeline exists; the current second dashboard is a local export workspace.
-- Endless/remix sessions and pairwise mode remain product polish work not yet implemented.
+- Fully automatic variant generation and pairwise mode remain product polish work not yet implemented.

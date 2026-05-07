@@ -115,6 +115,33 @@ test("Deck completion shows keepers instead of dead air", async ({ page }) => {
   await expect(page.locator("#emptyState")).toBeVisible();
   await expect(page.locator("#emptyTitle")).toHaveText("Keepers");
   await expect(page.locator("#keeperList")).toContainText("OpsPilot landing page");
+  await expect(page.getByRole("button", { name: "Remix 4 cards" })).toBeVisible();
+});
+
+test("Remix deck starts another local session without overwriting exports", async ({ page }) => {
+  await resetApp(page);
+
+  for (const count of [1, 2, 3, 4]) {
+    await page.getByRole("button", { name: /Nice/ }).click();
+    await expect.poll(() => reviewCount(page)).toBe(count);
+  }
+
+  await page.getByRole("button", { name: "Remix 4 cards" }).click();
+  await expect(page.locator("#swipeCard")).toBeVisible();
+
+  let profile = await page.evaluate((key) => JSON.parse(localStorage.getItem(key)), storageKey);
+  expect(profile.items).toHaveLength(8);
+  expect(profile.reviews).toHaveLength(4);
+
+  await page.getByRole("button", { name: /Nope/ }).click();
+  await expect.poll(() => reviewCount(page)).toBe(5);
+
+  profile = await page.evaluate((key) => JSON.parse(localStorage.getItem(key)), storageKey);
+  const reviewedItemIds = profile.reviews.map((review) => review.itemId);
+  expect(new Set(reviewedItemIds).size).toBe(reviewedItemIds.length);
+
+  await page.getByRole("button", { name: "Export workspace" }).click();
+  await expect(page.locator("#datasetStatus")).toHaveText("5 rows");
 });
 
 test("Uploaded images are stored in IndexedDB instead of localStorage", async ({ page }) => {

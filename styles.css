@@ -1346,6 +1346,12 @@ body[data-dashboard="human"] .workspace {
   font-weight: 850;
 }
 
+.empty-actions {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+}
+
 .signal-panel {
   display: grid;
   gap: 12px;
@@ -2034,6 +2040,10 @@ body[data-dashboard="human"] .workspace {
 
   .swipe-actions .decision-key {
     display: none;
+  }
+
+  .empty-actions {
+    grid-template-columns: 1fr;
   }
 
   .signal-panel {

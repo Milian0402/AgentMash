@@ -226,6 +226,7 @@ const elements = {
   emptyTitle: document.querySelector("#emptyTitle"),
   emptyCopy: document.querySelector("#emptyCopy"),
   keeperList: document.querySelector("#keeperList"),
+  emptyRemixButton: document.querySelector("#emptyRemixButton"),
   emptyAddButton: document.querySelector("#emptyAddButton"),
   rejectButton: document.querySelector("#rejectButton"),
   acceptButton: document.querySelector("#acceptButton"),
@@ -739,6 +740,8 @@ function renderCompletionSummary(filtered) {
   elements.emptyCopy.textContent = keepers.length
     ? `${keepers.length} keeper${keepers.length === 1 ? "" : "s"} from ${reviewsInView.length} decisions in this view.`
     : "No keepers in this view yet. Add another artifact or switch filters.";
+  elements.emptyRemixButton.hidden = filtered.length === 0;
+  elements.emptyRemixButton.textContent = filtered.length > 1 ? `Remix ${filtered.length} cards` : "Remix deck";
   elements.keeperList.replaceChildren();
 
   keepers.forEach((review) => {
@@ -1251,6 +1254,36 @@ function addArtifact(event) {
   elements.imageStatus.textContent = "No image selected.";
   elements.agentRequesterType.value = "agent";
   elements.agentReturnMode.value = "json";
+  saveState();
+  render();
+}
+
+function remixCurrentDeck() {
+  const sourceItems = filteredItems();
+  if (!sourceItems.length) {
+    return;
+  }
+
+  const createdAt = new Date().toISOString();
+  const remixItems = sourceItems.map((item) => ({
+    ...item,
+    id: createId(),
+    agent: {
+      ...item.agent,
+      runId: createShortId("remix"),
+      submittedAt: createdAt
+    },
+    createdAt
+  }));
+
+  state.items = [...remixItems, ...state.items];
+  state.currentItemId = remixItems[0].id;
+  state.lastPacketItemId = null;
+  state.activeTags = [];
+  state.draftScores = { ...defaultScores };
+  elements.reviewNote.value = "";
+  isRefineOpen = false;
+  isDetailSheetOpen = false;
   saveState();
   render();
 }
@@ -1978,6 +2011,7 @@ elements.filterTabs.addEventListener("click", (event) => {
 });
 
 elements.humanAddButton.addEventListener("click", openAddArtifactPanel);
+elements.emptyRemixButton.addEventListener("click", remixCurrentDeck);
 elements.emptyAddButton.addEventListener("click", openAddArtifactPanel);
 elements.artifactType.addEventListener("change", () => {
   renderRubric(elements.artifactType.value);

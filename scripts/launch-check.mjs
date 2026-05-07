@@ -174,6 +174,7 @@ check(!/Agent lab|Request Queue|Waiting on humans|Returned Signals|Retry queue|N
 check(index.includes("refineButton") && index.includes('id="signalPanel" hidden'), "rubric and note panel is hidden behind Refine by default");
 check(index.includes("detailsButton") && index.includes('id="detailSheet" hidden'), "card details are hidden behind a details sheet by default");
 check(index.includes("keeperList") && index.includes("Keepers"), "deck completion has keepers summary");
+check(index.includes("emptyRemixButton") && app.includes("remixCurrentDeck"), "deck completion can start a local remix session");
 check(app.includes("humanAddButton") && app.includes("openAddArtifactPanel"), "human add-artifact entry exists");
 check(app.includes('state.dashboard = "human";'), "added artifacts return to human deck");
 check(app.includes("window.confirm") && app.includes("Reset this local AgentMash profile"), "reset requires confirmation");
