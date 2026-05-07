@@ -66,7 +66,7 @@ After you connect hosting and any domain, run:
 npm run verify:public -- https://YOUR-PUBLIC-URL
 ```
 
-The verifier checks the public app shell, support/privacy/terms/404 pages, manifest, service worker, Apple touch icon, update-friendly cache headers for `sw.js` and `manifest.webmanifest`, and that internal files such as `store/completion-audit.md`, `package.json`, and `PUBLISHING.md` are not public.
+The verifier checks the public app shell, final canonical/Open Graph/Twitter URLs, preview image URLs, public support contact metadata, support/privacy/terms/404 pages, manifest, service worker, Apple touch icon, update-friendly cache headers for `sw.js` and `manifest.webmanifest`, and that internal files such as `store/completion-audit.md`, `package.json`, and `PUBLISHING.md` are not public.
 
 Warnings mean the site can load but the host should be reviewed, usually because security headers or no-cache headers are missing. Failures should be fixed before announcing the link.
 

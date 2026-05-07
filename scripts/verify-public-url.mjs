@@ -121,6 +121,22 @@ function hasHtmlFallbackCsp(body) {
   );
 }
 
+function hasExactTag(body, tag, label) {
+  if (body.includes(tag)) {
+    pass(`${label} is configured`);
+  } else {
+    fail(`${label} is missing or does not match the public URL`);
+  }
+}
+
+function hasPublicSupportContact(body, label) {
+  if (body.includes("data-public-support-contact")) {
+    pass(`${label} includes public support contact metadata`);
+  } else {
+    fail(`${label} is missing public support contact metadata; run npm run configure:public first`);
+  }
+}
+
 async function checkOk(base, path, label) {
   const response = await request(urlFor(base, path));
   if (response.status === 200) {
@@ -155,6 +171,14 @@ async function main() {
     fail("home page does not look like the AgentMash app shell");
   }
 
+  const homeUrl = base.toString();
+  const previewImageUrl = urlFor(base, "/assets/icons/app-icon-1024.png");
+  hasExactTag(home.body, `<link rel="canonical" href="${homeUrl}" />`, "canonical URL");
+  hasExactTag(home.body, `<meta property="og:url" content="${homeUrl}" />`, "Open Graph URL");
+  hasExactTag(home.body, `<meta property="og:image" content="${previewImageUrl}" />`, "Open Graph image");
+  hasExactTag(home.body, `<meta name="twitter:url" content="${homeUrl}" />`, "Twitter URL");
+  hasExactTag(home.body, `<meta name="twitter:image" content="${previewImageUrl}" />`, "Twitter image");
+
   for (const header of securityHeaders) {
     if (home.headers[header]) {
       pass(`home page sends ${header}`);
@@ -163,6 +187,7 @@ async function main() {
     }
   }
 
+  const publicPages = new Map();
   for (const [path, label] of [
     ["/support.html", "support page"],
     ["/privacy.html", "privacy page"],
@@ -170,12 +195,15 @@ async function main() {
     ["/404.html", "404 page"]
   ]) {
     const page = await checkOk(base, path, label);
+    publicPages.set(path, page);
     if (hasHtmlFallbackCsp(page.body)) {
       pass(`${label} includes CSP meta fallback`);
     } else {
       fail(`${label} is missing CSP meta fallback`);
     }
   }
+  hasPublicSupportContact(publicPages.get("/support.html")?.body || "", "support page");
+  hasPublicSupportContact(publicPages.get("/privacy.html")?.body || "", "privacy page");
 
   const manifest = await checkOk(base, "/manifest.webmanifest", "web manifest");
   try {

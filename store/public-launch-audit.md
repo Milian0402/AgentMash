@@ -108,6 +108,7 @@ Make AgentMash good enough to launch publicly as a serious app.
 - `npm run check` verifies public PWA screenshot PNG dimensions match the manifest-declared 390 by 844 and 1440 by 1000 sizes.
 - `npm run check` verifies `_headers`, Netlify, and Vercel keep the service worker and manifest update-friendly with `Cache-Control: no-cache`.
 - `npm run check` syntax-checks the live public URL verifier without contacting any host.
+- `npm run check` verifies the live public URL verifier checks final canonical/Open Graph/Twitter metadata, preview image URLs, and public support contact metadata.
 - `npm run check` verifies the local public-readiness script exists.
 - `npm run check` verifies the local final-metadata configurator exists, is syntax-checked, covers canonical/Open Graph/Twitter/support/privacy fields, and has no network hooks.
 - `schemas/feedback.v2.json` parses as JSON and is checked for the `agentmash.feedback.v2` contract.

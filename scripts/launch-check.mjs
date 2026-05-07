@@ -179,6 +179,7 @@ const netlify = await read("netlify.toml");
 const pagesWorkflow = await read(".github/workflows/pages.yml");
 const playwrightConfig = await read("playwright.config.mjs");
 const testSpec = await read("tests/review-flow.spec.mjs");
+const verifyPublicScript = await read("scripts/verify-public-url.mjs");
 const configurePublicScript = await read("scripts/configure-public-launch.mjs");
 const readme = await read("README.md");
 const completionAudit = await read("store/completion-audit.md");
@@ -368,6 +369,10 @@ check(
   hasAll(configurePublicScript, ["og:url", "twitter:url", "canonical", "data-public-support-contact", "--dry-run"]) &&
     !/\b(fetch|XMLHttpRequest|sendBeacon|WebSocket)\b/i.test(configurePublicScript),
   "public metadata configurator is local-only and covers URL/support launch fields"
+);
+check(
+  hasAll(verifyPublicScript, ["canonical URL", "Open Graph URL", "Twitter URL", "Open Graph image", "Twitter image", "data-public-support-contact"]),
+  "public URL verifier checks final URL, preview image, and support metadata"
 );
 check(
   hasAll(testSpec, ["Profile export and import roundtrip restores uploaded images", "readFile", "#importFile", "storedImageForKey"]),
