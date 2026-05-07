@@ -15,7 +15,7 @@
 - [ ] Export and import a profile.
 - [ ] Confirm no console errors.
 - [ ] Confirm app icons load in the manifest.
-- [ ] Confirm privacy, terms, publishing, and 404 pages render.
+- [ ] Confirm support, privacy, terms, publishing, and 404 pages render.
 
 ## Public Website
 
@@ -23,6 +23,7 @@
 - [ ] Decide whether to buy a domain.
 - [ ] Decide whether to use GitHub Pages, Netlify, Vercel, or Cloudflare Pages.
 - [ ] Add a real support contact.
+- [ ] Confirm `support.html` is publicly reachable.
 - [ ] Update Open Graph metadata with the final URL.
 - [ ] Deploy static files.
 - [ ] Confirm `privacy.html` is publicly reachable.

@@ -10,7 +10,7 @@ No deployment, paid account, domain purchase, app-store submission, or human out
 - `main` contains the static app.
 - Local preview runs with `npm run serve`.
 - Syntax check runs with `npm run check`.
-- Privacy, terms, app metadata, icons, and offline caching are present.
+- Privacy, terms, support, app metadata, icons, and offline caching are present.
 - A manual GitHub Pages workflow is present, but it does not run on push.
 
 ## Free Web Publishing Paths
@@ -37,10 +37,10 @@ These can be free at small scale, but always confirm limits before enabling them
 
 - Pick a final public URL.
 - Decide whether to buy a domain.
-- Add a real support contact to `privacy.html`.
+- Add a real support contact to `support.html` and link it from `privacy.html`.
 - Update Open Graph URLs after the final domain exists.
 - Enable HTTPS on the host.
-- Confirm `privacy.html`, `terms.html`, and `manifest.webmanifest` are reachable.
+- Confirm `support.html`, `privacy.html`, `terms.html`, and `manifest.webmanifest` are reachable.
 - Test the installed PWA on desktop and mobile.
 - Confirm service worker updates after a new deploy.
 

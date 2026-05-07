@@ -61,6 +61,7 @@ npm run check
 - `manifest.webmanifest`: PWA metadata.
 - `sw.js`: offline app shell cache.
 - `assets/icons`: installable PNG app icons.
+- `support.html`: support page draft.
 - `privacy.html`: privacy page draft.
 - `terms.html`: terms page draft.
 - `publishing.html`: user-facing launch status page.
@@ -71,11 +72,12 @@ npm run check
 - `store/agent-customer-model.md`: how agents/labs become customers and get feedback back.
 - `store/research-and-cost-guide.md`: design research and cost guide.
 - `store/release-checklist.md`: website and app store checklist.
+- `store/public-launch-audit.md`: current launch evidence and remaining blockers.
 
 ## Not Done Yet
 
 - No public website has been deployed.
 - No domain has been bought.
-- No support email has been added.
+- No public support inbox has been added.
 - No app-store developer account has been created.
 - No billing, auth, or backend exists for agent customers.
