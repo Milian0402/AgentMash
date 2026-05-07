@@ -169,6 +169,8 @@ check(hasAll(serviceWorker, appShellFiles), "service worker app shell includes l
 check(hasAll(headers, securityHeaders), "_headers defines security headers");
 check(hasAll(netlify, securityHeaders), "netlify config defines security headers");
 check(hasAll(JSON.stringify(vercel), securityHeaders), "vercel config defines security headers");
+check(netlify.includes('command = "npm run build"') && netlify.includes('publish = "_site"'), "netlify publishes public build output");
+check(vercel.buildCommand === "npm run build" && vercel.outputDirectory === buildDir, "vercel publishes public build output");
 check(headers.includes("connect-src 'self'") && headers.includes("form-action 'self'"), "CSP blocks outside connections and forms");
 check(headers.includes("payment=()"), "permissions policy blocks payment permission");
 check(packageJson.scripts?.build === "node scripts/build-site.mjs", "package has local public build script");

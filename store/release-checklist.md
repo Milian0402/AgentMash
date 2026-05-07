@@ -7,6 +7,7 @@
 - [ ] Run `npm run build`.
 - [ ] Run `npm run serve:build`.
 - [ ] Confirm `_site/` excludes internal `store/`, `scripts/`, and repo metadata.
+- [ ] Confirm the chosen host uses `_site/` as the publish/output directory.
 - [ ] Run the app locally with `npm run serve`.
 - [ ] Test desktop at 1440 by 1000.
 - [ ] Test mobile at 390 by 844.

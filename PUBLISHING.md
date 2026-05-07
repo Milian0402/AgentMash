@@ -22,8 +22,8 @@ No deployment, paid account, domain purchase, app-store submission, or human out
 These can be free at small scale, but always confirm limits before enabling them.
 
 - GitHub Pages: good first preview choice because the repo is already on GitHub. The included workflow is manual so it does not consume Actions minutes unless started. GitHub Pages does not apply the custom security header configs in this repo.
-- Netlify: `netlify.toml` is ready for static hosting and security headers.
-- Vercel: `vercel.json` is ready for static hosting and security headers.
+- Netlify: `netlify.toml` runs `npm run build`, publishes `_site/`, and applies security headers.
+- Vercel: `vercel.json` runs `npm run build`, publishes `_site/`, and applies security headers.
 - Cloudflare Pages: `_headers` is ready for static hosting and security headers.
 
 ## Things That Can Cost Money
@@ -41,6 +41,7 @@ These can be free at small scale, but always confirm limits before enabling them
 
 - Run `npm run build`.
 - Confirm `_site/` contains public app files only.
+- Confirm the chosen host publishes `_site/`, not the repo root.
 - Pick a final public URL.
 - Decide whether to buy a domain.
 - Add a real support contact to `support.html` and link it from `privacy.html`.
