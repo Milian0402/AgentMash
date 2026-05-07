@@ -12,6 +12,7 @@ import {
   defaultScores,
   defaultScoresForNext,
   defaultState,
+  deleteImageData,
   filteredItems,
   getActiveItem,
   getPairwiseItems,
@@ -52,6 +53,7 @@ import { installGestureHandlers, pulseDevice } from "./gestures.js";
 let pendingImageData = "";
 let pendingImageKey = "";
 let deferredInstallPrompt = null;
+let imageSelectionToken = 0;
 
 async function restoreStoredImages() {
   try {
@@ -219,6 +221,7 @@ function addArtifact(event) {
   state.dashboard = "human";
   pendingImageData = "";
   pendingImageKey = "";
+  imageSelectionToken += 1;
   elements.artifactForm.reset();
   elements.imageStatus.textContent = "No image selected.";
   elements.agentRequesterType.value = "agent";
@@ -266,10 +269,26 @@ function openAddArtifactPanel() {
   }, 0);
 }
 
-function handleImageSelection() {
-  const [file] = elements.artifactImage.files;
+async function clearPendingImage() {
+  const key = pendingImageKey;
   pendingImageData = "";
   pendingImageKey = "";
+  if (!key) {
+    return;
+  }
+
+  try {
+    await deleteImageData(key);
+  } catch {
+    setStorageStatus("A pending image could not be cleared. Reset the profile or clear browser storage if image usage looks high.");
+  }
+}
+
+async function handleImageSelection() {
+  const selectionToken = imageSelectionToken + 1;
+  imageSelectionToken = selectionToken;
+  const [file] = elements.artifactImage.files;
+  await clearPendingImage();
 
   if (!file) {
     elements.imageStatus.textContent = "No image selected.";
@@ -299,6 +318,10 @@ function handleImageSelection() {
     try {
       const imageKey = createShortId("image");
       await writeImageData(imageKey, imageData);
+      if (selectionToken !== imageSelectionToken) {
+        await deleteImageData(imageKey);
+        return;
+      }
       pendingImageData = imageData;
       pendingImageKey = imageKey;
       elements.imageStatus.textContent = `${file.name} ready for local review.`;
@@ -496,6 +519,7 @@ async function resetProfile() {
   replaceState(cloneDefaultState());
   pendingImageData = "";
   pendingImageKey = "";
+  imageSelectionToken += 1;
   elements.reviewNote.value = "";
   elements.imageStatus.textContent = "No image selected.";
   saveState();

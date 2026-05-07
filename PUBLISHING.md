@@ -59,7 +59,7 @@ These can be free at small scale, but always confirm limits before enabling them
 - Add artifact upload limits and retention rules.
 - Add a server-side queue for human review tasks.
 - Store feedback packets by `runId`.
-- Add one return channel first: JSON polling is simplest, webhook is more useful for labs.
+- Define one hosted return channel only after authentication, deletion rules, and support coverage exist. Keep the local JSON and JSONL exports as the first supported path.
 - Add billing only after usage limits, support contact, and deletion policy are clear.
 
 ## App Store Checklist

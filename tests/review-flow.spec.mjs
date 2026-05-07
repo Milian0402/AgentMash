@@ -10,6 +10,7 @@ async function resetApp(page) {
   await page.evaluate((key) => {
     localStorage.removeItem(key);
   }, storageKey);
+  await clearStoredImages(page);
   await page.reload();
 }
 
@@ -42,6 +43,46 @@ async function storedImageForKey(page, imageKey) {
       request.addEventListener("error", () => reject(request.error));
     });
   }, imageKey);
+}
+
+async function clearStoredImages(page) {
+  await page.evaluate(async () => {
+    const db = await new Promise((resolve, reject) => {
+      const request = indexedDB.open("agentmash.image-store", 1);
+      request.addEventListener("upgradeneeded", () => {
+        const db = request.result;
+        if (!db.objectStoreNames.contains("images")) {
+          db.createObjectStore("images", { keyPath: "key" });
+        }
+      });
+      request.addEventListener("success", () => resolve(request.result));
+      request.addEventListener("error", () => reject(request.error));
+    });
+
+    await new Promise((resolve, reject) => {
+      const transaction = db.transaction("images", "readwrite");
+      transaction.addEventListener("complete", resolve);
+      transaction.addEventListener("error", () => reject(transaction.error));
+      transaction.objectStore("images").clear();
+    });
+  });
+}
+
+async function imageStoreKeys(page) {
+  return page.evaluate(async () => {
+    const db = await new Promise((resolve, reject) => {
+      const request = indexedDB.open("agentmash.image-store", 1);
+      request.addEventListener("success", () => resolve(request.result));
+      request.addEventListener("error", () => reject(request.error));
+    });
+
+    return new Promise((resolve, reject) => {
+      const transaction = db.transaction("images", "readonly");
+      const request = transaction.objectStore("images").getAllKeys();
+      request.addEventListener("success", () => resolve(request.result));
+      request.addEventListener("error", () => reject(request.error));
+    });
+  });
 }
 
 async function addTinyImageArtifact(page, title) {
@@ -374,6 +415,41 @@ test("Uploaded images are stored in IndexedDB instead of localStorage", async ({
 
   expect(storedImage).toContain("data:image/png;base64,");
   await expect(page.locator("#imageStorageUsage")).toContainText("IndexedDB");
+});
+
+test("Changing a pending upload replaces the IndexedDB draft image", async ({ page }) => {
+  await resetApp(page);
+
+  await page.getByRole("button", { name: "Add artifact" }).click();
+  await page.locator("#artifactTitle").fill("Replacement upload smoke");
+  await page.setInputFiles("#artifactImage", {
+    name: "first.png",
+    mimeType: "image/png",
+    buffer: Buffer.from(tinyPngBase64, "base64")
+  });
+  await expect(page.locator("#imageStatus")).toContainText("first.png ready for local review");
+  await expect.poll(async () => (await imageStoreKeys(page)).length).toBe(1);
+  const [firstKey] = await imageStoreKeys(page);
+
+  await page.setInputFiles("#artifactImage", {
+    name: "second.png",
+    mimeType: "image/png",
+    buffer: Buffer.from(tinyPngBase64, "base64")
+  });
+  await expect(page.locator("#imageStatus")).toContainText("second.png ready for local review");
+  await expect.poll(async () => (await imageStoreKeys(page)).length).toBe(1);
+  const [secondKey] = await imageStoreKeys(page);
+
+  expect(secondKey).not.toBe(firstKey);
+
+  await page.getByRole("button", { name: "Add to review deck" }).click();
+  const storedProfile = await page.evaluate((key) => JSON.parse(localStorage.getItem(key)), storageKey);
+
+  expect(storedProfile.items[0]).toMatchObject({
+    title: "Replacement upload smoke",
+    imageKey: secondKey,
+    imageData: ""
+  });
 });
 
 test("Profile export and import roundtrip restores uploaded images", async ({ page }) => {

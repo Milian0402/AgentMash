@@ -229,6 +229,7 @@ check(appSurface.includes("clearImageStore") && app.includes("await clearImageSt
 check(app.includes("confirmProfileImport") && app.includes("Import this AgentMash profile"), "profile import requires confirmation when local data exists");
 check(app.includes("async function copyText") && app.includes("Copy unavailable"), "copy actions handle clipboard failure");
 check(appSurface.includes("indexedDB") && appSurface.includes("stateForLocalStorage") && appSurface.includes('imageData: ""'), "uploaded image data is kept out of localStorage");
+check(appSurface.includes("deleteImageData") && appSurface.includes("clearPendingImage"), "pending image replacements clear old IndexedDB drafts");
 check(index.includes("storageHealthStatus") && renderModule.includes("estimateImageStoreBytes") && renderModule.includes("localStorageProfileBytes"), "human dashboard shows storage health");
 check(appSurface.includes("Local storage full") && appSurface.includes("setStorageStatus"), "localStorage quota failure surfaces in the UI");
 check(appSurface.includes("signalStrengthFormula") && appSurface.includes("agentmash.feedback.v2"), "feedback packets use schema v2 with signal strength formula");
@@ -266,6 +267,10 @@ check(packageJson.devDependencies?.["@playwright/test"], "Playwright is a dev de
 check(
   hasAll(testSpec, ["Profile export and import roundtrip restores uploaded images", "readFile", "#importFile", "storedImageForKey"]),
   "Playwright covers image export import roundtrip"
+);
+check(
+  hasAll(testSpec, ["Changing a pending upload replaces the IndexedDB draft image", "imageStoreKeys", "first.png", "second.png"]),
+  "Playwright covers pending upload replacement cleanup"
 );
 check(
   hasAll(testSpec, ["Stress profile handles 500 items, 250 reviews, and 100 more swipes", "Array.from({ length: 500 }", "toBe(350)"]),
