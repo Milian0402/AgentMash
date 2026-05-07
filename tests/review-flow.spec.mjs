@@ -316,6 +316,12 @@ test("Rapid decisions are locked and mobile filter labels stay readable", async 
   await expect(page.locator("#filterTabs")).toHaveAttribute("role", "group");
   await expect(page.locator('#filterTabs [data-filter="all"]')).toHaveAttribute("aria-pressed", "true");
   await expect(page.locator('#filterTabs [data-filter="product"]')).toHaveAttribute("aria-pressed", "false");
+  await page.locator("#acceptButton").focus();
+  const decisionFocusRing = await page.locator("#acceptButton").evaluate((button) => {
+    const style = getComputedStyle(button);
+    return { outlineStyle: style.outlineStyle, outlineWidth: style.outlineWidth };
+  });
+  expect(decisionFocusRing).toEqual({ outlineStyle: "solid", outlineWidth: "3px" });
 
   const headerHasClearance = await page.evaluate(() => {
     const brand = document.querySelector(".brand-lockup").getBoundingClientRect();

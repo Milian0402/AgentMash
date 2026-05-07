@@ -237,6 +237,10 @@ check(
   ]) && renderModule.includes('button.setAttribute("aria-pressed", active ? "true" : "false")'),
   "segmented controls use pressed-button semantics"
 );
+check(
+  styles.includes(":focus-visible") && styles.includes("outline: 3px solid var(--blue)") && testSpec.includes("decisionFocusRing"),
+  "keyboard focus rings are visible and covered"
+);
 check(hasAll(styles, [".first-look-stage .signal-panel", "position: fixed", "bottom-sheet-rise"]), "Refine panel opens as a bottom sheet");
 check(index.includes("detailsButton") && index.includes('id="detailSheet" hidden'), "card details are hidden behind a details sheet by default");
 check(index.includes('id="streakCounter"') && renderModule.includes("renderMomentum") && styles.includes("streak-pop"), "human review includes visible momentum counter");

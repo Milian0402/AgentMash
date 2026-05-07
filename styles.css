@@ -635,6 +635,11 @@ body[data-dashboard="human"] .workspace {
   box-shadow: 0 0 0 3px rgba(38, 109, 138, 0.14);
 }
 
+:where(button, a, input, select, textarea, .swipe-card):focus-visible {
+  outline: 3px solid var(--blue);
+  outline-offset: 3px;
+}
+
 .help-text {
   margin: -6px 0 0;
   color: var(--muted);
