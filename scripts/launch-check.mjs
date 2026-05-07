@@ -133,6 +133,7 @@ const packageJson = JSON.parse(await read("package.json"));
 const manifest = JSON.parse(await read("manifest.webmanifest"));
 const vercel = JSON.parse(await read("vercel.json"));
 const index = await read("index.html");
+const support = await read("support.html");
 const app = await read("app.js");
 const serviceWorker = await read("sw.js");
 const headers = await read("_headers");
@@ -160,6 +161,7 @@ check(
   "manifest screenshot metadata is complete"
 );
 check(index.includes("<title>AgentMash</title>") && index.includes("<h1>AgentMash</h1>"), "index brands AgentMash");
+check(index.includes(`v${packageJson.version}`) && support.includes(`AgentMash v${packageJson.version}`), "public pages expose package version");
 check(index.includes('rel="apple-touch-icon"') && index.includes("assets/icons/apple-touch-icon.png"), "index links Apple touch icon");
 check(hasAll(index, ["support.html", "privacy.html", "terms.html", "publishing.html"]), "footer links key pages");
 check(app.includes("humanAddButton") && app.includes("openAddArtifactPanel"), "human add-artifact entry exists");

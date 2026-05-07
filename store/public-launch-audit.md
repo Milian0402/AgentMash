@@ -19,6 +19,7 @@ Make AgentMash good enough to launch publicly as a serious app.
 - Public build script packages `_site/` without internal launch docs, submission drafts, scripts, or repo metadata.
 - GitHub Pages, Netlify, and Vercel configs publish `_site/` instead of repo root.
 - Dedicated Apple touch icon is present for iOS home-screen install polish.
+- Public footer and support page expose the current release version for support/debugging.
 - Store listing, App Store submission prep, and privacy/data safety drafts are present.
 - Draft store submission image assets are present in `store/submission`.
 - App data stays local unless the user imports, exports, copies, or downloads it.
@@ -38,6 +39,7 @@ Make AgentMash good enough to launch publicly as a serious app.
 - `npm run check` builds `_site/` and verifies internal files are not packaged.
 - Netlify and Vercel configs are checked for `npm run build` plus `_site/` output.
 - Apple touch icon is linked from `index.html`, cached by `sw.js`, and sized at 180 by 180.
+- `index.html` and `support.html` show the package version.
 - `npm run serve:build` served `_site/`; `/` and `assets/icons/apple-touch-icon.png` returned 200, while `store/completion-audit.md` returned 404.
 - Draft submission assets are sized for Apple iPhone 6.9, Apple iPhone 6.5, Google phone, and Google Play feature graphic planning.
 - GitHub repo is private at `https://github.com/Milian0402/AgentMash`.

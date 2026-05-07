@@ -22,6 +22,7 @@ Make AgentMash good enough to launch publicly as a serious app, while staying in
 - Public launch pages, PWA metadata, icons, screenshots, offline cache, preview workflow, and static host security configs exist.
 - Public build output excludes internal launch docs, submission drafts, scripts, and repo metadata.
 - Mobile install polish includes a dedicated Apple touch icon.
+- Public pages expose the package version for support and debugging.
 - App Store and Google Play prep is documented without creating paid accounts.
 - Verification covers static files, metadata, security posture, forbidden hooks, launch docs, store assets, and the core runtime flow.
 - Remaining requirements that need user accounts, money, contact details, deployment, or legal decisions are named and not pretended done.
@@ -41,6 +42,7 @@ Make AgentMash good enough to launch publicly as a serious app, while staying in
 | Make it ready for public web launch where possible. | Privacy, terms, support, publishing, 404, manifest, service worker, icons, screenshots, preview workflow, and security header configs exist. | Met locally |
 | Avoid publishing internal launch docs and submission drafts. | `npm run build` writes `_site/` with only public app files. GitHub Pages, Netlify, and Vercel configs publish `_site/`. `npm run check` verifies `store/`, `scripts/`, `.github`, docs, package metadata, and host config files are not packaged. | Met locally |
 | Make the PWA feel install-ready on iOS. | `assets/icons/apple-touch-icon.png` is 180 by 180, linked in `index.html`, cached by `sw.js`, and verified by `npm run check`. | Met locally |
+| Make public support reports actionable. | `index.html` and `support.html` show the package version, and `npm run check` verifies it matches `package.json`. | Met locally |
 | Make it closer to App Store or Google Play readiness without paid setup. | `store/app-store-listing.md`, `store/app-store-submission.md`, `store/privacy-data-safety-draft.md`, and `store/submission` draft assets. | Met locally |
 | Verify core behavior, not just files. | Real browser smoke test on `http://127.0.0.1:5177` passed: title, human dashboard, note save, Nice, Undo, Nope, Agent lab, ready packet, JSONL preview, packet JSON, and download buttons. Console errors: 0. | Met locally |
 | Keep the repo private. | `gh repo view Milian0402/AgentMash` showed `visibility: PRIVATE`. | Met locally |
