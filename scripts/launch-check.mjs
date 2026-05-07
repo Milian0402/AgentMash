@@ -235,6 +235,7 @@ check(!appSurface.includes("confidenceFor") && !appSurface.includes(".confidence
 check(!appSurface.includes("agentRetryQueue") && !appSurface.includes("Retry queue"), "retry queue metric is removed");
 check(appSurface.includes("renderRefinePanel") && appSurface.includes("isRefineOpen = false"), "decision flow returns to fast loop after refinement");
 check(appSurface.includes("renderDetailSheet") && appSurface.includes("isDetailSheetOpen = false"), "decision flow closes the details sheet after swipe");
+check(hasAll(gesturesModule, ["AudioContext", "navigator.vibrate", "nice: [8, 22, 14]", "playDecisionClick"]), "decisions use haptic and audio feedback where available");
 check(
   hasAll(appSurface, ["ALLOWED_IMAGE_TYPES", "MAX_IMAGE_BYTES", "safeImageData", "Choose a PNG, JPG, or WebP image"]),
   "image uploads are type and size constrained"

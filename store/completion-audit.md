@@ -43,6 +43,7 @@ Make AgentMash good enough to launch publicly as a serious app, while staying in
 - Reviewer name edits visibly confirm save status.
 - The Refine panel closes after each decision so the next artifact returns to the fast card-first loop.
 - The Details sheet closes after each decision so the next artifact returns to the clean card state.
+- Decisions use supported local haptics plus a quiet WebAudio tick to give the swipe loop tactile feedback.
 - Deck completion shows a Keepers summary instead of dead air.
 - Deck completion can start a local Remix session with type-specific tagline, mark-only, first-line, and cutout glance variants without overwriting existing export rows.
 - Endless mode auto-loops one local glance-variant card at a time when enabled.
@@ -65,6 +66,7 @@ Make AgentMash good enough to launch publicly as a serious app, while staying in
 | Keep the default swipe loop focused. | `index.html` hides `signalPanel` by default behind `Refine`; `render.js` manages the panel state and `app.js` resets it after decisions; Playwright verifies hidden, open, then hidden again after a swipe. | Met locally |
 | Make Refine feel like a bottom sheet. | `styles.css` positions the first-look `signalPanel` as a fixed bottom sheet above the decision controls, with the controls kept clickable in the higher layer. | Met locally |
 | Add swipe-loop momentum. | `index.html` adds `streakCounter`, `render.js` derives the current run, today count, and day streak from review timestamps, and `styles.css` adds milestone animation at 10, 25, and 50. Playwright verifies the counter updates through Nice, Undo, and Nope. | Met locally |
+| Add subtle decision feedback. | `gestures.js` uses richer `navigator.vibrate` patterns when supported and a defensive WebAudio tick for Nice, Nope, and Pairwise decisions. `app.js` passes decision type into `pulseDevice()`. | Met locally |
 | Make card details tap-to-reveal. | `index.html` hides `detailSheet` behind `Details`; `render.js` manages the sheet state and `app.js` resets it after decisions; Playwright verifies hidden, open with artifact title, close, and hidden again. | Met locally |
 | Replace deck-complete dead air with Keepers. | `index.html` renders a Keepers completion state, `render.js` lists recent Nice artifacts from the completed view, and Playwright verifies the surviving artifact appears after the deck empties. | Met locally |
 | Keep the review loop going after completion. | `index.html` adds `Remix deck`, `app.js` remixes the filtered local deck, `state.js` supplies type-specific tagline, mark-only, first-line, and cutout variants, and Playwright verifies old reviews remain, item IDs stay unique, variant metadata exports, and JSONL rows grow only after the next swipe. | Met locally |

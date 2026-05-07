@@ -107,7 +107,7 @@ function decide(verdict) {
   resetReviewPanels();
   setCurrentToNext();
   saveState();
-  pulseDevice();
+  pulseDevice(verdict);
   animateDecision(verdict);
 }
 
@@ -133,7 +133,7 @@ function choosePairwise(side) {
   });
   setNextPairwise(pair);
   saveState();
-  pulseDevice();
+  pulseDevice("pairwise");
   render();
 }
 

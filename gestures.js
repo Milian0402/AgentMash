@@ -8,6 +8,7 @@ import {
 } from "./render.js";
 
 let dragState = null;
+let audioContext = null;
 
 export function installGestureHandlers({ decide, choosePairwise, undoLastComparison, undoLastReview }) {
   elements.swipeCard.addEventListener("pointerdown", onPointerDown);
@@ -123,8 +124,52 @@ function onPointerUp(event, decide) {
   elements.swipeCard.style.removeProperty("--drag-progress");
 }
 
-export function pulseDevice() {
-  if (navigator.vibrate) {
-    navigator.vibrate(12);
+export function pulseDevice(kind = "decision") {
+  playDecisionClick(kind);
+
+  if (!navigator.vibrate) {
+    return;
+  }
+
+  const patterns = {
+    nice: [8, 22, 14],
+    pass: [18],
+    pairwise: [10, 18, 10],
+    decision: [12]
+  };
+  navigator.vibrate(patterns[kind] || patterns.decision);
+}
+
+function playDecisionClick(kind) {
+  const AudioContext = window.AudioContext || window.webkitAudioContext;
+  if (!AudioContext) {
+    return;
+  }
+
+  try {
+    audioContext ||= new AudioContext();
+    const now = audioContext.currentTime;
+    const oscillator = audioContext.createOscillator();
+    const gain = audioContext.createGain();
+    const frequencies = {
+      nice: [260, 360],
+      pass: [180, 120],
+      pairwise: [220, 300],
+      decision: [220, 180]
+    };
+    const [startFrequency, endFrequency] = frequencies[kind] || frequencies.decision;
+
+    oscillator.type = "sine";
+    oscillator.frequency.setValueAtTime(startFrequency, now);
+    oscillator.frequency.exponentialRampToValueAtTime(endFrequency, now + 0.035);
+    gain.gain.setValueAtTime(0.0001, now);
+    gain.gain.exponentialRampToValueAtTime(0.022, now + 0.006);
+    gain.gain.exponentialRampToValueAtTime(0.0001, now + 0.055);
+
+    oscillator.connect(gain).connect(audioContext.destination);
+    oscillator.start(now);
+    oscillator.stop(now + 0.06);
+  } catch {
+    audioContext = null;
   }
 }
