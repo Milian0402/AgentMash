@@ -196,6 +196,7 @@ const elements = {
   agentGoal: document.querySelector("#agentGoal"),
   stageEyebrow: document.querySelector("#stageEyebrow"),
   stageTitle: document.querySelector("#stageTitle"),
+  stageProgress: document.querySelector("#stageProgress"),
   swipeCard: document.querySelector("#swipeCard"),
   swipeBadge: document.querySelector("#swipeBadge"),
   cardPreview: document.querySelector("#cardPreview"),
@@ -395,6 +396,7 @@ function render() {
   elements.queueCount.textContent = `${pending.length}`;
   elements.stageEyebrow.textContent = `${typeLabel(activeType)} judgement`;
   elements.stageTitle.textContent = activeItem ? "Trust your first reaction" : "Nothing left in this view";
+  elements.stageProgress.textContent = activeItem ? "Ready" : "Done";
   elements.standardType.textContent = typeLabel(activeType);
 
   renderTabs();
@@ -420,6 +422,7 @@ function render() {
 
   const filteredIndex = filtered.findIndex((item) => item.id === activeItem.id) + 1;
   state.currentItemId = activeItem.id;
+  elements.stageProgress.textContent = `${filteredIndex} / ${filtered.length}`;
   elements.cardPreview.innerHTML = renderPreview(activeItem);
   elements.artifactTypeLabel.textContent = typeLabel(activeItem.type);
   elements.artifactIndexLabel.textContent = `${filteredIndex} of ${filtered.length}`;
@@ -429,8 +432,10 @@ function render() {
   elements.artifactQuestionLabel.textContent = activeItem.question;
   elements.swipeCard.style.transform = "";
   elements.swipeCard.style.opacity = "1";
+  elements.swipeCard.style.removeProperty("--drag-progress");
   elements.swipeBadge.textContent = "";
   elements.swipeCard.classList.remove("swipe-nice", "swipe-pass", "is-dragging");
+  clearSwipeIntent();
   renderFeedbackPacket(packetItemForRender(activeItem));
   saveState();
 }
@@ -912,6 +917,7 @@ function decide(verdict) {
   state.lastPacketItemId = item.id;
   setCurrentToNext();
   saveState();
+  pulseDevice();
   animateDecision(verdict);
 }
 
@@ -937,6 +943,7 @@ function animateDecision(verdict) {
   const x = verdict === "nice" ? window.innerWidth : -window.innerWidth;
   const rotation = verdict === "nice" ? 12 : -12;
   elements.swipeBadge.textContent = verdict === "nice" ? "Nice" : "Nope";
+  elements.swipeCard.classList.add(verdict === "nice" ? "swipe-nice" : "swipe-pass");
   elements.swipeCard.style.transform = `translateX(${x}px) rotate(${rotation}deg)`;
   elements.swipeCard.style.opacity = "0";
 
@@ -1504,10 +1511,15 @@ function onPointerMove(event) {
   const rotation = Math.max(-12, Math.min(12, deltaX / 18));
   const isNice = deltaX > 70;
   const isPass = deltaX < -70;
+  const progress = Math.min(1, Math.abs(deltaX) / 140);
 
   elements.swipeCard.style.transform = `translateX(${deltaX}px) rotate(${rotation}deg)`;
+  elements.swipeCard.style.setProperty("--drag-progress", `${progress}`);
   elements.swipeCard.classList.toggle("swipe-nice", isNice);
   elements.swipeCard.classList.toggle("swipe-pass", isPass);
+  elements.acceptButton.classList.toggle("is-hot", isNice);
+  elements.rejectButton.classList.toggle("is-hot", isPass);
+  document.body.dataset.swipeIntent = isNice ? "nice" : isPass ? "pass" : "";
   elements.swipeBadge.textContent = isNice ? "Nice" : isPass ? "Nope" : "";
 }
 
@@ -1519,6 +1531,7 @@ function onPointerUp(event) {
   const deltaX = dragState.currentX - dragState.startX;
   dragState = null;
   elements.swipeCard.classList.remove("is-dragging", "swipe-nice", "swipe-pass");
+  clearSwipeIntent();
 
   if (deltaX > 120) {
     decide("nice");
@@ -1532,6 +1545,19 @@ function onPointerUp(event) {
 
   elements.swipeBadge.textContent = "";
   elements.swipeCard.style.transform = "";
+  elements.swipeCard.style.removeProperty("--drag-progress");
+}
+
+function clearSwipeIntent() {
+  elements.acceptButton.classList.remove("is-hot");
+  elements.rejectButton.classList.remove("is-hot");
+  document.body.dataset.swipeIntent = "";
+}
+
+function pulseDevice() {
+  if (navigator.vibrate) {
+    navigator.vibrate(12);
+  }
 }
 
 function registerServiceWorker() {

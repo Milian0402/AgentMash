@@ -65,6 +65,10 @@
                 <p class="eyebrow" id="stageEyebrow">Swipe judgement</p>
                 <h2 id="stageTitle">Trust your first reaction</h2>
               </div>
+              <div class="stage-status" aria-label="Review progress">
+                <strong id="stageProgress">1 / 4</strong>
+                <span>Drag or tap</span>
+              </div>
               <div class="keyboard-hints" aria-label="Keyboard controls">
                 <span>Left: nope</span>
                 <span>Right: nice</span>
@@ -98,34 +102,43 @@
             <div class="review-controls swipe-actions">
               <button class="decision-button reject" id="rejectButton" type="button">
                 <span class="decision-key">Left</span>
-                Nope
+                <strong>Nope</strong>
               </button>
-              <button class="decision-button neutral" id="undoButton" type="button" disabled>Undo</button>
+              <button class="decision-button neutral" id="undoButton" type="button" disabled>
+                <strong>Undo</strong>
+              </button>
               <button class="decision-button accept" id="acceptButton" type="button">
-                Nice
+                <strong>Nice</strong>
                 <span class="decision-key">Right</span>
               </button>
             </div>
 
-            <div class="score-preview">
-              <div>
-                <span class="metric-label">First reaction</span>
-                <strong id="liveGrade">Promising</strong>
+            <div class="signal-panel">
+              <div class="signal-panel-header">
+                <span>Signal tuning</span>
+                <span>Optional detail</span>
               </div>
-              <div>
-                <span class="metric-label">Confidence</span>
-                <strong id="liveScore">60</strong>
+
+              <div class="score-preview">
+                <div>
+                  <span class="metric-label">First reaction</span>
+                  <strong id="liveGrade">Promising</strong>
+                </div>
+                <div>
+                  <span class="metric-label">Confidence</span>
+                  <strong id="liveScore">60</strong>
+                </div>
               </div>
+
+              <div id="scoreControls" class="score-grid" aria-label="Judgement rubric"></div>
+
+              <div class="tag-row" id="tagRow" aria-label="Quick tags"></div>
+
+              <label class="note-field">
+                <span>Decision note</span>
+                <textarea id="reviewNote" rows="3" placeholder="What made the decision happen"></textarea>
+              </label>
             </div>
-
-            <div id="scoreControls" class="score-grid" aria-label="Judgement rubric"></div>
-
-            <div class="tag-row" id="tagRow" aria-label="Quick tags"></div>
-
-            <label class="note-field">
-              <span>Decision note</span>
-              <textarea id="reviewNote" rows="3" placeholder="What your intuition noticed"></textarea>
-            </label>
           </section>
 
           <aside class="panel human-panel">

@@ -12,6 +12,9 @@ Design principles used in the current build:
 - One gesture meaning per card: right means Nice, left means Pass.
 - Visible buttons mirror the gesture so the app still works when the swipe is missed.
 - Large controls and clear labels, not color alone.
+- Immediate drag feedback: the card moves, the stamp appears, and the matching action button changes state before release.
+- Sticky thumb controls on the human review screen so the main choice stays reachable on phones.
+- A compact signal panel below the card so scoring, tags, and notes do not compete with the first-glance decision.
 - A restrained palette with green for keep, red for pass, blue for neutral focus, and warm paper backgrounds.
 - Dense side panels on desktop, stacked task flow on mobile.
 - Uploads render in the card directly so real generated websites, logos, copy, and product images can be judged.
@@ -19,13 +22,25 @@ Design principles used in the current build:
 Research notes:
 
 - Apple says good interfaces need clear hierarchy, harmony, and consistency. Source: https://developer.apple.com/design/human-interface-guidelines/
-- Apple gesture guidance treats swipe and drag as standard gestures, but they should directly affect the object being manipulated. Source: https://developer.apple.com/design/human-interface-guidelines/gestures
-- Apple button guidance says controls need at least a 44 by 44 point hit region. Source: https://developer.apple.com/design/human-interface-guidelines/buttons
+- Apple gesture guidance treats swipe and drag as standard gestures, but they should directly affect the object being manipulated and provide immediate feedback. Source: https://developer.apple.com/design/human-interface-guidelines/gestures
+- Apple button guidance says controls need at least a 44 by 44 point hit region and should include a visible press state. Source: https://developer.apple.com/design/human-interface-guidelines/buttons
 - Apple color guidance says color should be consistent and not be the only way to communicate state. Source: https://developer.apple.com/design/human-interface-guidelines/color
 - Apple accessibility guidance says interfaces should be intuitive, perceivable, and adaptable, with enough contrast and readable text. Source: https://developer.apple.com/design/human-interface-guidelines/accessibility
 - Apple typography guidance favors legible sizes, clear hierarchy, and avoiding too many typefaces. Source: https://developer.apple.com/design/human-interface-guidelines/typography
+- Apple motion guidance says motion should support the experience, follow the gesture, and not be the only way to communicate important information. Source: https://developer.apple.com/design/human-interface-guidelines/motion
 - Material card guidance supports per-card swipe gestures, but warns against overlapping swipe interactions inside the same card. Source: https://m1.material.io/components/cards.html
 - Baymard's mobile app UX research emphasizes that small mobile usability issues compound quickly in real app use. Source: https://baymard.com/research/mobile-app
+
+## Current Human UI Direction
+
+The human review screen should feel like a consumer phone app, while avoiding language that suggests this is about romance or partner matching. The design direction is:
+
+- Card first: one artifact gets nearly all visual attention.
+- Thumb first: the three decision buttons stay reachable near the bottom of the first viewport.
+- Gesture plus buttons: swiping is fast, buttons are explicit, and undo remains available.
+- First glance before explanation: the image or mock preview comes before rubrics and notes.
+- Optional detail after the swipe: scoring controls stay below the card so lazy human judgement is not slowed down.
+- Stronger feedback: drag tilt, badge state, button state, and light vibration where the device supports it.
 
 ## Things That Could Cost Money
 
