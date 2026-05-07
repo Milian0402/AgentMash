@@ -72,8 +72,8 @@
                 <span>Drag or tap</span>
               </div>
               <div class="keyboard-hints" aria-label="Keyboard controls">
-                <span>Left: nope</span>
-                <span>Right: nice</span>
+                <span id="keyboardLeftHint">Left: nope</span>
+                <span id="keyboardRightHint">Right: nice</span>
               </div>
               <button class="mini-button refine-toggle" id="refineButton" type="button" aria-controls="signalPanel" aria-expanded="false">Refine</button>
             </div>
@@ -100,6 +100,31 @@
                   <h3 id="artifactTitleLabel">Loading</h3>
                   <p id="artifactPromptLabel"></p>
                   <p id="agentMetaLabel" class="agent-line"></p>
+                </div>
+              </div>
+
+              <div id="pairwiseStage" class="pairwise-stage" hidden>
+                <article class="pair-card">
+                  <div id="pairLeftPreview" class="pair-preview"></div>
+                  <div class="pair-body">
+                    <span class="pair-key">A</span>
+                    <strong id="pairLeftTitle">Left artifact</strong>
+                    <button class="primary-button full" id="pickLeftButton" type="button">Pick left</button>
+                  </div>
+                </article>
+
+                <article class="pair-card">
+                  <div id="pairRightPreview" class="pair-preview"></div>
+                  <div class="pair-body">
+                    <span class="pair-key">L</span>
+                    <strong id="pairRightTitle">Right artifact</strong>
+                    <button class="primary-button full" id="pickRightButton" type="button">Pick right</button>
+                  </div>
+                </article>
+
+                <div class="pair-footer">
+                  <span id="pairwiseStatus" class="count-pill">0 captured</span>
+                  <button class="mini-button" id="pairUndoButton" type="button">Undo comparison</button>
                 </div>
               </div>
 
@@ -168,6 +193,10 @@
               <div class="section-title-row">
                 <h2>Deck</h2>
                 <span id="queueCount" class="count-pill">0</span>
+              </div>
+              <div class="segment-group review-mode-tabs" id="reviewModeTabs" role="tablist" aria-label="Review mode">
+                <button type="button" data-review-mode="swipe" class="segment active">Swipe</button>
+                <button type="button" data-review-mode="pairwise" class="segment">Pairwise</button>
               </div>
               <div class="segment-group" id="filterTabs" role="tablist" aria-label="Review filters">
                 <button type="button" data-filter="all" class="segment active">All</button>

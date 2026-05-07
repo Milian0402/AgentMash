@@ -168,8 +168,14 @@ const defaultState = {
   reviewer: "Private reviewer",
   filter: "all",
   dashboard: "human",
+  reviewMode: "swipe",
+  pairwise: {
+    leftItemId: null,
+    rightItemId: null
+  },
   items: sampleItems,
   reviews: [],
+  pairwiseComparisons: [],
   currentItemId: sampleItems[0].id,
   activeTags: [],
   draftScores: defaultScores,
@@ -192,6 +198,7 @@ const elements = {
   humanDashboard: document.querySelector("#humanDashboard"),
   agentDashboard: document.querySelector("#agentDashboard"),
   reviewerName: document.querySelector("#reviewerName"),
+  reviewModeTabs: document.querySelector("#reviewModeTabs"),
   filterTabs: document.querySelector("#filterTabs"),
   humanAddButton: document.querySelector("#humanAddButton"),
   queueCount: document.querySelector("#queueCount"),
@@ -211,7 +218,10 @@ const elements = {
   stageEyebrow: document.querySelector("#stageEyebrow"),
   stageTitle: document.querySelector("#stageTitle"),
   stageProgress: document.querySelector("#stageProgress"),
+  keyboardLeftHint: document.querySelector("#keyboardLeftHint"),
+  keyboardRightHint: document.querySelector("#keyboardRightHint"),
   swipeCard: document.querySelector("#swipeCard"),
+  swipeActions: document.querySelector(".swipe-actions"),
   swipeBadge: document.querySelector("#swipeBadge"),
   cardPreview: document.querySelector("#cardPreview"),
   artifactTypeLabel: document.querySelector("#artifactTypeLabel"),
@@ -223,6 +233,15 @@ const elements = {
   detailsButton: document.querySelector("#detailsButton"),
   detailCloseButton: document.querySelector("#detailCloseButton"),
   detailSheet: document.querySelector("#detailSheet"),
+  pairwiseStage: document.querySelector("#pairwiseStage"),
+  pairLeftPreview: document.querySelector("#pairLeftPreview"),
+  pairRightPreview: document.querySelector("#pairRightPreview"),
+  pairLeftTitle: document.querySelector("#pairLeftTitle"),
+  pairRightTitle: document.querySelector("#pairRightTitle"),
+  pickLeftButton: document.querySelector("#pickLeftButton"),
+  pickRightButton: document.querySelector("#pickRightButton"),
+  pairwiseStatus: document.querySelector("#pairwiseStatus"),
+  pairUndoButton: document.querySelector("#pairUndoButton"),
   emptyState: document.querySelector("#emptyState"),
   emptyTitle: document.querySelector("#emptyTitle"),
   emptyCopy: document.querySelector("#emptyCopy"),
@@ -306,6 +325,9 @@ function normalizeState(candidate) {
           ? candidate.reviews.filter((review) => itemIds.has(review.itemId)).map(normalizeReview)
           : []
       );
+  const pairwiseComparisons = useLaunchSamples
+    ? []
+    : normalizeComparisons(candidate.pairwiseComparisons || candidate.comparisons, itemIds);
   const filter = ["all", ...artifactTypes].includes(candidate.filter) ? candidate.filter : "all";
   const currentItemId = itemIds.has(candidate.currentItemId) ? candidate.currentItemId : items[0]?.id || null;
 
@@ -314,8 +336,11 @@ function normalizeState(candidate) {
     reviewer: cleanText(candidate.reviewer) || defaultState.reviewer,
     filter,
     dashboard: ["human", "agent"].includes(candidate.dashboard) ? candidate.dashboard : "human",
+    reviewMode: normalizeReviewMode(candidate.reviewMode),
+    pairwise: normalizePairwise(candidate.pairwise, itemIds),
     items,
     reviews,
+    pairwiseComparisons,
     currentItemId,
     activeTags: normalizeTags(candidate.activeTags),
     draftScores: normalizeScores(candidate.draftScores || { sense: candidate.senseScore }),
@@ -410,6 +435,56 @@ function normalizeTags(tags) {
 
 function normalizeVariant(variant) {
   return artifactVariants.includes(variant) ? variant : "original";
+}
+
+function normalizeReviewMode(mode) {
+  return mode === "pairwise" ? "pairwise" : "swipe";
+}
+
+function normalizePairwise(pairwise = {}, itemIds = new Set()) {
+  const leftItemId = cleanText(pairwise.leftItemId);
+  const rightItemId = cleanText(pairwise.rightItemId);
+  return {
+    leftItemId: itemIds.has(leftItemId) ? leftItemId : null,
+    rightItemId: itemIds.has(rightItemId) && rightItemId !== leftItemId ? rightItemId : null
+  };
+}
+
+function normalizeComparisons(comparisons, itemIds) {
+  if (!Array.isArray(comparisons)) {
+    return [];
+  }
+  return comparisons
+    .map((comparison) => normalizeComparison(comparison, itemIds))
+    .filter(Boolean);
+}
+
+function normalizeComparison(comparison, itemIds) {
+  const leftItemId = cleanText(comparison.leftItemId);
+  const rightItemId = cleanText(comparison.rightItemId);
+  const winnerItemId = cleanText(comparison.winnerItemId);
+  const loserItemId = cleanText(comparison.loserItemId);
+  const validPair = itemIds.has(leftItemId) && itemIds.has(rightItemId) && leftItemId !== rightItemId;
+  const validChoice = [leftItemId, rightItemId].includes(winnerItemId)
+    && [leftItemId, rightItemId].includes(loserItemId)
+    && winnerItemId !== loserItemId;
+
+  if (!validPair || !validChoice) {
+    return null;
+  }
+
+  return {
+    id: cleanText(comparison.id) || createId(),
+    leftItemId,
+    rightItemId,
+    winnerItemId,
+    loserItemId,
+    reviewer: cleanText(comparison.reviewer) || defaultState.reviewer,
+    scoreDelta: 1,
+    reasonTags: normalizeTags(comparison.reasonTags),
+    note: cleanText(comparison.note),
+    createdAt: cleanText(comparison.createdAt) || new Date().toISOString()
+  };
 }
 
 function saveState() {
@@ -568,21 +643,61 @@ function setCurrentToNext() {
   state.currentItemId = pending.length ? pending[0].id : null;
 }
 
+function getPairwiseItems() {
+  const items = filteredItems();
+  if (items.length < 2) {
+    return null;
+  }
+
+  const left = items.find((item) => item.id === state.pairwise.leftItemId);
+  const right = items.find((item) => item.id === state.pairwise.rightItemId);
+  if (left && right && left.id !== right.id) {
+    return { left, right, total: items.length };
+  }
+
+  return { left: items[0], right: items[1], total: items.length };
+}
+
+function setNextPairwise(currentPair = null) {
+  const items = filteredItems();
+  if (items.length < 2) {
+    state.pairwise = { leftItemId: null, rightItemId: null };
+    return;
+  }
+
+  const anchorId = currentPair?.right.id || state.pairwise.rightItemId || items[0].id;
+  const leftIndex = Math.max(0, items.findIndex((item) => item.id === anchorId));
+  const rightIndex = (leftIndex + 1) % items.length;
+  state.pairwise = {
+    leftItemId: items[leftIndex].id,
+    rightItemId: items[rightIndex].id
+  };
+}
+
 function render() {
+  const isPairwise = state.reviewMode === "pairwise";
   const activeItem = getActiveItem();
   const pending = pendingItems();
   const filtered = filteredItems();
-  const activeType = activeItem ? activeItem.type : state.filter === "all" ? "website" : state.filter;
+  const pairwisePair = getPairwiseItems();
+  const activeType = isPairwise
+    ? pairwisePair?.left.type || (state.filter === "all" ? "website" : state.filter)
+    : activeItem ? activeItem.type : state.filter === "all" ? "website" : state.filter;
 
   renderDashboardShell();
   elements.reviewerName.value = state.reviewer;
-  elements.queueCount.textContent = `${pending.length}`;
-  elements.stageEyebrow.textContent = `${typeLabel(activeType)} judgement`;
-  elements.stageTitle.textContent = activeItem ? "Trust your first reaction" : "Nothing left in this view";
-  elements.stageProgress.textContent = activeItem ? "Ready" : "Done";
+  elements.queueCount.textContent = `${isPairwise ? filtered.length : pending.length}`;
+  elements.stageEyebrow.textContent = isPairwise ? `${typeLabel(activeType)} comparison` : `${typeLabel(activeType)} judgement`;
+  elements.stageTitle.textContent = isPairwise
+    ? pairwisePair ? "Pick the stronger first glance" : "Add two artifacts to compare"
+    : activeItem ? "Trust your first reaction" : "Nothing left in this view";
+  elements.stageProgress.textContent = isPairwise
+    ? `${state.pairwiseComparisons.length} captured`
+    : activeItem ? "Ready" : "Done";
   elements.standardType.textContent = typeLabel(activeType);
 
   renderTabs();
+  renderReviewModeTabs();
   renderRubric(activeType);
   renderScoreControls();
   renderTags();
@@ -590,8 +705,25 @@ function render() {
   renderHistory();
   renderAgentDashboard();
   renderLiveScore();
+  if (isPairwise) {
+    isRefineOpen = false;
+    isDetailSheetOpen = false;
+  }
   renderRefinePanel();
   renderDetailSheet();
+
+  if (isPairwise) {
+    renderPairwise(pairwisePair, filtered);
+    renderFeedbackPacket(packetItemForRender(null));
+    saveState();
+    return;
+  }
+
+  elements.pairwiseStage.hidden = true;
+  elements.swipeActions.hidden = false;
+  elements.refineButton.hidden = false;
+  elements.keyboardLeftHint.textContent = "Left: nope";
+  elements.keyboardRightHint.textContent = "Right: nice";
 
   elements.emptyState.hidden = Boolean(activeItem);
   elements.swipeCard.hidden = !activeItem;
@@ -643,6 +775,48 @@ function renderTabs() {
   elements.filterTabs.querySelectorAll(".segment").forEach((button) => {
     button.classList.toggle("active", button.dataset.filter === state.filter);
   });
+}
+
+function renderReviewModeTabs() {
+  elements.reviewModeTabs.querySelectorAll("[data-review-mode]").forEach((button) => {
+    const active = button.dataset.reviewMode === state.reviewMode;
+    button.classList.toggle("active", active);
+    button.setAttribute("aria-pressed", active ? "true" : "false");
+  });
+}
+
+function renderPairwise(pair) {
+  elements.swipeCard.hidden = true;
+  elements.swipeActions.hidden = true;
+  elements.refineButton.hidden = true;
+  elements.rejectButton.disabled = true;
+  elements.acceptButton.disabled = true;
+  elements.undoButton.disabled = true;
+  elements.keyboardLeftHint.textContent = "A: left";
+  elements.keyboardRightHint.textContent = "L: right";
+
+  if (!pair) {
+    elements.pairwiseStage.hidden = true;
+    elements.emptyState.hidden = false;
+    elements.emptyTitle.textContent = "Pairwise needs two cards";
+    elements.emptyCopy.textContent = "Add another artifact or switch filters to compare first impressions.";
+    elements.keeperList.replaceChildren();
+    elements.emptyRemixButton.hidden = true;
+    return;
+  }
+
+  state.pairwise = {
+    leftItemId: pair.left.id,
+    rightItemId: pair.right.id
+  };
+  elements.emptyState.hidden = true;
+  elements.pairwiseStage.hidden = false;
+  elements.pairLeftPreview.innerHTML = renderPreview(pair.left);
+  elements.pairRightPreview.innerHTML = renderPreview(pair.right);
+  elements.pairLeftTitle.textContent = pair.left.title;
+  elements.pairRightTitle.textContent = pair.right.title;
+  elements.pairwiseStatus.textContent = `${state.pairwiseComparisons.length} captured`;
+  elements.pairUndoButton.disabled = state.pairwiseComparisons.length === 0;
 }
 
 function renderRubric(type) {
@@ -829,6 +1003,7 @@ function renderAgentDashboard() {
   const readyCount = state.reviews.length;
   const pendingCount = state.items.filter((item) => !reviewByItem.has(item.id)).length;
   const evalRows = buildEvalRows();
+  const exportRows = [...evalRows, ...buildPairwiseRows()];
   const avgSignalStrength = evalRows.length
     ? Math.round(evalRows.reduce((sum, row) => sum + row.humanSignal.signalStrength, 0) / evalRows.length * 100)
     : null;
@@ -837,8 +1012,8 @@ function renderAgentDashboard() {
   elements.agentReadyPackets.textContent = `${readyCount}`;
   elements.agentPendingRequests.textContent = `${pendingCount}`;
   elements.agentAvgConfidence.textContent = avgSignalStrength === null ? "None" : `${avgSignalStrength}%`;
-  renderDatasetPreview(evalRows);
-  renderAgentUsePanel(evalRows);
+  renderDatasetPreview(exportRows);
+  renderAgentUsePanel(exportRows);
 
   elements.agentRequestList.replaceChildren();
   const requests = [...state.items].sort((a, b) => b.createdAt.localeCompare(a.createdAt));
@@ -967,6 +1142,69 @@ function buildEvalRows() {
       return item ? buildEvalRow(item, review) : null;
     })
     .filter(Boolean);
+}
+
+function buildPairwiseRows() {
+  return state.pairwiseComparisons
+    .map((comparison) => {
+      const left = state.items.find((item) => item.id === comparison.leftItemId);
+      const right = state.items.find((item) => item.id === comparison.rightItemId);
+      const winner = state.items.find((item) => item.id === comparison.winnerItemId);
+      const loser = state.items.find((item) => item.id === comparison.loserItemId);
+      if (!left || !right || !winner || !loser) {
+        return null;
+      }
+
+      const preferenceLabel = comparison.winnerItemId === comparison.leftItemId
+        ? "left_preferred"
+        : "right_preferred";
+      return {
+        schema: "agentmash.pairwise-row.v1",
+        rowId: `pairwise-${comparison.id}`,
+        createdAt: comparison.createdAt,
+        reviewer: comparison.reviewer,
+        comparison: {
+          left: artifactSummary(left),
+          right: artifactSummary(right),
+          winner: artifactSummary(winner),
+          loser: artifactSummary(loser),
+          preferenceLabel,
+          scoreDelta: comparison.scoreDelta,
+          reasonTags: comparison.reasonTags,
+          note: comparison.note
+        },
+        humanSignal: {
+          comparisonType: "pairwise_preference",
+          winnerArtifactId: winner.id,
+          loserArtifactId: loser.id,
+          preferenceLabel,
+          scoreDelta: comparison.scoreDelta,
+          judgedAt: comparison.createdAt
+        },
+        agentUse: {
+          trainingUse: ["pairwise_preference", "ranking_signal"],
+          preferenceLabel,
+          recommendedAction: "Use as a relative ranking signal between two generated artifacts.",
+          signalStrength: 1
+        }
+      };
+    })
+    .filter(Boolean);
+}
+
+function artifactSummary(item) {
+  return {
+    artifactId: item.id,
+    variant: normalizeVariant(item.variant),
+    type: item.type,
+    title: item.title,
+    runId: item.agent.runId,
+    requesterName: item.agent.requesterName
+  };
+}
+
+function buildExportRows() {
+  return [...buildEvalRows(), ...buildPairwiseRows()];
 }
 
 function signalCoverage(evalRows) {
@@ -1202,6 +1440,45 @@ function decide(verdict) {
   animateDecision(verdict);
 }
 
+function choosePairwise(side) {
+  const pair = getPairwiseItems();
+  if (!pair) {
+    return;
+  }
+
+  const winner = side === "left" ? pair.left : pair.right;
+  const loser = side === "left" ? pair.right : pair.left;
+  state.pairwiseComparisons.push({
+    id: createId(),
+    leftItemId: pair.left.id,
+    rightItemId: pair.right.id,
+    winnerItemId: winner.id,
+    loserItemId: loser.id,
+    reviewer: state.reviewer,
+    scoreDelta: 1,
+    reasonTags: [],
+    note: "",
+    createdAt: new Date().toISOString()
+  });
+  setNextPairwise(pair);
+  saveState();
+  pulseDevice();
+  render();
+}
+
+function undoLastComparison() {
+  const comparison = state.pairwiseComparisons.pop();
+  if (!comparison) {
+    return;
+  }
+  state.pairwise = {
+    leftItemId: comparison.leftItemId,
+    rightItemId: comparison.rightItemId
+  };
+  saveState();
+  render();
+}
+
 function undoLastReview() {
   const review = state.reviews.pop();
   if (!review) {
@@ -1431,7 +1708,7 @@ function downloadPacket() {
 }
 
 function datasetJsonl() {
-  return buildEvalRows().map((row) => JSON.stringify(row)).join("\n");
+  return buildExportRows().map((row) => JSON.stringify(row)).join("\n");
 }
 
 async function copyDataset() {
@@ -1526,7 +1803,7 @@ function confirmProfileImport() {
   }
 
   return window.confirm(
-    "Import this AgentMash profile? This replaces reviews, uploads, notes, and added artifacts in this browser. Export first if you want a backup."
+    "Import this AgentMash profile? This replaces reviews, comparisons, uploads, notes, and added artifacts in this browser. Export first if you want a backup."
   );
 }
 
@@ -1534,6 +1811,7 @@ function hasLocalProfileData() {
   const sampleIds = new Set(sampleItems.map((item) => item.id));
   return (
     state.reviews.length > 0
+    || state.pairwiseComparisons.length > 0
     || state.items.some((item) => !sampleIds.has(item.id) || item.imageData)
     || state.reviewer !== defaultState.reviewer
   );
@@ -1541,7 +1819,7 @@ function hasLocalProfileData() {
 
 function resetProfile() {
   const confirmed = window.confirm(
-    "Reset this local AgentMash profile? This clears reviews, uploads, notes, and added artifacts in this browser."
+    "Reset this local AgentMash profile? This clears reviews, comparisons, uploads, notes, and added artifacts in this browser."
   );
   if (!confirmed) {
     return;
@@ -1586,6 +1864,7 @@ function buildPendingPacket(item) {
 function buildFeedbackPacket(item, review) {
   const humanSignal = humanSignalFor(item, review);
   const agentUse = agentUseFor(item, review);
+  const pairwiseComparisons = pairwiseComparisonsFor(item);
   return {
     schema: "agentmash.feedback.v2",
     status: "ready",
@@ -1607,6 +1886,7 @@ function buildFeedbackPacket(item, review) {
       note: review.note,
       judgedAt: review.createdAt
     },
+    pairwiseComparisons,
     interpretation: {
       recommendation: review.recommendation || recommendationFor(review),
       likelyFailureModes: failureModesFor(review),
@@ -1646,6 +1926,7 @@ function buildEvalRow(item, review) {
 }
 
 function humanSignalFor(item, review) {
+  const pairwisePreference = pairwiseComparisonsFor(item);
   return {
     reviewer: review.reviewer,
     verdict: review.verdict,
@@ -1657,9 +1938,28 @@ function humanSignalFor(item, review) {
     scoreVector: scoreVectorFor(review),
     tags: review.tags,
     failureModes: failureModesFor(review),
+    ...(pairwisePreference.length ? { pairwisePreference } : {}),
     rationale: review.note || defaultRationaleFor(item, review),
     judgedAt: review.createdAt
   };
+}
+
+function pairwiseComparisonsFor(item) {
+  return state.pairwiseComparisons
+    .filter((comparison) => [comparison.leftItemId, comparison.rightItemId].includes(item.id))
+    .map((comparison) => {
+      const comparedItemId = comparison.leftItemId === item.id ? comparison.rightItemId : comparison.leftItemId;
+      const comparedItem = state.items.find((candidate) => candidate.id === comparedItemId);
+      return {
+        comparisonId: comparison.id,
+        role: comparison.winnerItemId === item.id ? "winner" : "loser",
+        comparedWith: comparedItem ? artifactSummary(comparedItem) : { artifactId: comparedItemId },
+        winnerItemId: comparison.winnerItemId,
+        loserItemId: comparison.loserItemId,
+        scoreDelta: comparison.scoreDelta,
+        judgedAt: comparison.createdAt
+      };
+    });
 }
 
 function agentUseFor(item, review) {
@@ -2028,6 +2328,21 @@ elements.reviewerName.addEventListener("input", () => {
   showReviewerSaveStatus(saved ? "Saved" : "Not saved", !saved);
 });
 
+elements.reviewModeTabs.addEventListener("click", (event) => {
+  const button = event.target.closest("button[data-review-mode]");
+  if (!button) {
+    return;
+  }
+  state.reviewMode = normalizeReviewMode(button.dataset.reviewMode);
+  if (state.reviewMode === "pairwise") {
+    setNextPairwise();
+  }
+  isRefineOpen = false;
+  isDetailSheetOpen = false;
+  saveState();
+  render();
+});
+
 elements.filterTabs.addEventListener("click", (event) => {
   const button = event.target.closest("button[data-filter]");
   if (!button) {
@@ -2035,6 +2350,7 @@ elements.filterTabs.addEventListener("click", (event) => {
   }
   state.filter = button.dataset.filter;
   setCurrentToNext();
+  setNextPairwise();
   state.lastPacketItemId = null;
   saveState();
   render();
@@ -2060,6 +2376,9 @@ elements.detailCloseButton.addEventListener("click", () => {
   isDetailSheetOpen = false;
   renderDetailSheet();
 });
+elements.pickLeftButton.addEventListener("click", () => choosePairwise("left"));
+elements.pickRightButton.addEventListener("click", () => choosePairwise("right"));
+elements.pairUndoButton.addEventListener("click", undoLastComparison);
 elements.rejectButton.addEventListener("click", () => decide("pass"));
 elements.acceptButton.addEventListener("click", () => decide("nice"));
 elements.undoButton.addEventListener("click", undoLastReview);
@@ -2085,6 +2404,27 @@ elements.swipeCard.addEventListener("pointercancel", onPointerUp);
 window.addEventListener("keydown", (event) => {
   if (event.target.matches("input, textarea, select")) {
     return;
+  }
+
+  if (state.reviewMode === "pairwise") {
+    const key = event.key.toLowerCase();
+    if (event.key === "ArrowLeft" || key === "a") {
+      event.preventDefault();
+      choosePairwise("left");
+      return;
+    }
+
+    if (event.key === "ArrowRight" || key === "l") {
+      event.preventDefault();
+      choosePairwise("right");
+      return;
+    }
+
+    if ((event.metaKey || event.ctrlKey) && key === "z") {
+      event.preventDefault();
+      undoLastComparison();
+      return;
+    }
   }
 
   if (event.key === "ArrowRight") {

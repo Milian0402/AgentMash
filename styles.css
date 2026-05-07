@@ -460,6 +460,10 @@ body[data-dashboard="human"] .workspace {
   gap: 7px;
 }
 
+.review-mode-tabs {
+  margin-bottom: 10px;
+}
+
 .segment {
   padding: 8px 9px;
   font-size: 0.82rem;
@@ -1331,6 +1335,73 @@ body[data-dashboard="human"] .workspace {
   line-height: 1.45;
 }
 
+.pairwise-stage {
+  width: min(100%, 980px);
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  gap: 14px;
+  align-items: stretch;
+}
+
+.pairwise-stage[hidden] {
+  display: none;
+}
+
+.pair-card {
+  min-width: 0;
+  border: 1px solid var(--line);
+  border-radius: 26px;
+  background: var(--surface);
+  overflow: hidden;
+  box-shadow: 0 24px 70px rgba(23, 25, 20, 0.14);
+  display: grid;
+  grid-template-rows: minmax(250px, 1fr) auto;
+}
+
+.pair-preview {
+  min-height: 250px;
+  background: #ecefe8;
+  overflow: hidden;
+}
+
+.pair-preview .preview-website,
+.pair-preview .preview-logo,
+.pair-preview .preview-copy,
+.pair-preview .preview-product,
+.pair-preview .preview-image {
+  min-height: 250px;
+}
+
+.pair-body {
+  display: grid;
+  gap: 10px;
+  padding: 14px;
+}
+
+.pair-body strong {
+  min-height: 2.4em;
+  font-size: 1rem;
+  line-height: 1.2;
+}
+
+.pair-key {
+  width: fit-content;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  padding: 3px 9px;
+  color: var(--muted);
+  font-size: 0.72rem;
+  font-weight: 900;
+}
+
+.pair-footer {
+  grid-column: 1 / -1;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+}
+
 .empty-state {
   width: min(100%, 520px);
   padding: 28px;
@@ -2071,6 +2142,39 @@ body[data-dashboard="human"] .workspace {
 
   .swipe-actions .decision-key {
     display: none;
+  }
+
+  .pairwise-stage {
+    grid-template-columns: 1fr;
+    gap: 10px;
+  }
+
+  .pair-card {
+    grid-template-rows: minmax(180px, 1fr) auto;
+    border-radius: 22px;
+  }
+
+  .pair-preview,
+  .pair-preview .preview-website,
+  .pair-preview .preview-logo,
+  .pair-preview .preview-copy,
+  .pair-preview .preview-product,
+  .pair-preview .preview-image {
+    min-height: 180px;
+  }
+
+  .pair-body {
+    grid-template-columns: auto 1fr;
+    align-items: center;
+  }
+
+  .pair-body .primary-button {
+    grid-column: 1 / -1;
+  }
+
+  .pair-footer {
+    display: grid;
+    justify-items: stretch;
   }
 
   .empty-actions {

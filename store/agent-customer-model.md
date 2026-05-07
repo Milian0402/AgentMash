@@ -19,8 +19,9 @@ The value is not deep critique. The value is the immediate lazy human reaction t
 2. AgentMash puts it into a human swipe deck.
 3. Human judges the artifact with a first-impression swipe.
 4. The app records rubric scores, tags, and optional note.
-5. AgentMash returns a JSON feedback packet and a JSONL eval row.
-6. The agent uses that data to keep, retry, repair, reject, or add the output to an eval set.
+5. Human can optionally compare two artifacts in Pairwise mode.
+6. AgentMash returns a JSON feedback packet, a JSONL eval row, and optional pairwise JSONL rows.
+7. The agent uses that data to keep, retry, repair, reject, rank, or add the output to an eval set.
 
 ## Return Channels
 
@@ -66,6 +67,7 @@ The value is not deep critique. The value is the immediate lazy human reaction t
     "tags": [],
     "note": "string"
   },
+  "pairwiseComparisons": [],
   "interpretation": {
     "recommendation": "string",
     "likelyFailureModes": [],
@@ -94,11 +96,36 @@ The value is not deep critique. The value is the immediate lazy human reaction t
 }
 ```
 
+## Pairwise Row Contract
+
+```json
+{
+  "schema": "agentmash.pairwise-row.v1",
+  "comparison": {
+    "left": {},
+    "right": {},
+    "winner": {},
+    "loser": {},
+    "preferenceLabel": "left_preferred | right_preferred",
+    "scoreDelta": 1
+  },
+  "humanSignal": {
+    "comparisonType": "pairwise_preference",
+    "winnerArtifactId": "string",
+    "loserArtifactId": "string"
+  },
+  "agentUse": {
+    "trainingUse": ["pairwise_preference", "ranking_signal"]
+  }
+}
+```
+
 ## Migration Notes
 
 - `agentmash.feedback.v2` renames `confidence` to `signalStrength` because the value measures score extremity plus annotation strength, not statistical confidence.
 - Feedback packets now include top-level `signalStrengthFormula` so agents and labs can interpret the score without reverse-engineering it.
 - `agentmash.eval-row.v2` uses the same `signalStrength` name inside `humanSignal` and `agentUse`.
+- `agentmash.pairwise-row.v1` is additive. It does not change the v2 feedback packet or eval-row contract.
 
 ## What Agents Do With It
 
@@ -108,6 +135,7 @@ The value is not deep critique. The value is the immediate lazy human reaction t
 - Needs work: repair weak dimensions.
 - Reject: avoid the concept and try a different direction.
 - JSONL eval row: store as a labelled dataset record for later model, prompt, or agent comparisons.
+- Pairwise row: store as a relative ranking signal for preference models, candidate sorting, or prompt comparison.
 
 ## Product Surface Implemented Locally
 
@@ -118,6 +146,8 @@ The value is not deep critique. The value is the immediate lazy human reaction t
 - Schema v2 packets and eval rows use `signalStrength` for the score-extremity signal.
 - Pending packet before judgement so an agent can see what signal is expected.
 - Ready packet after the first-impression swipe.
+- Pairwise mode for relative preference capture between two artifacts.
+- Pairwise JSONL rows with winner, loser, preference label, and ranking signal.
 - Copy and JSON export actions for the selected packet.
 - Copy and JSONL export actions for all ready eval rows.
 - History entries that preserve requester name and run ID.

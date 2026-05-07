@@ -177,6 +177,8 @@ check(index.includes("detailsButton") && index.includes('id="detailSheet" hidden
 check(index.includes("keeperList") && index.includes("Keepers"), "deck completion has keepers summary");
 check(index.includes("emptyRemixButton") && app.includes("remixCurrentDeck"), "deck completion can start a local remix session");
 check(app.includes("variantForRemix") && app.includes("first-line") && styles.includes("is-thumbnail"), "remix sessions create glance variants");
+check(index.includes("reviewModeTabs") && index.includes("pairwiseStage") && app.includes("choosePairwise"), "human review includes local pairwise mode");
+check(app.includes("agentmash.pairwise-row.v1") && app.includes("pairwiseComparisons"), "pairwise comparisons export as structured rows");
 check(app.includes("humanAddButton") && app.includes("openAddArtifactPanel"), "human add-artifact entry exists");
 check(app.includes('state.dashboard = "human";'), "added artifacts return to human deck");
 check(app.includes("window.confirm") && app.includes("Reset this local AgentMash profile"), "reset requires confirmation");

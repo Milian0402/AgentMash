@@ -154,6 +154,51 @@ test("Remix deck starts another local session without overwriting exports", asyn
   expect(packet.evalRow.artifact.variant).toBe("thumbnail");
 });
 
+test("Pairwise mode stores comparison rows without creating swipe reviews", async ({ page }) => {
+  await resetApp(page);
+
+  await page.getByRole("button", { name: "Pairwise" }).click();
+  await expect(page.locator("#pairwiseStage")).toBeVisible();
+  await page.getByRole("button", { name: "Pick left" }).click();
+  await expect.poll(() => reviewCount(page)).toBe(0);
+
+  let profile = await page.evaluate((key) => JSON.parse(localStorage.getItem(key)), storageKey);
+  expect(profile.pairwiseComparisons).toHaveLength(1);
+  expect(profile.pairwiseComparisons[0]).toMatchObject({
+    leftItemId: "site-landing-001",
+    rightItemId: "logo-bakery-001",
+    winnerItemId: "site-landing-001",
+    loserItemId: "logo-bakery-001",
+    scoreDelta: 1
+  });
+
+  await page.getByRole("button", { name: "Export workspace" }).click();
+  await expect(page.locator("#datasetStatus")).toHaveText("1 rows");
+  let rows = await page.locator("#datasetPreview").evaluate((node) => node.textContent.trim().split("\n").map(JSON.parse));
+  expect(rows[0].schema).toBe("agentmash.pairwise-row.v1");
+  expect(rows[0].comparison.preferenceLabel).toBe("left_preferred");
+
+  await page.getByRole("button", { name: "Human review", exact: true }).click();
+  await page.getByRole("button", { name: "Swipe" }).click();
+  await page.getByRole("button", { name: /Nice/ }).click();
+  await expect.poll(() => reviewCount(page)).toBe(1);
+
+  profile = await page.evaluate((key) => JSON.parse(localStorage.getItem(key)), storageKey);
+  expect(profile.pairwiseComparisons).toHaveLength(1);
+  await page.getByRole("button", { name: "Export workspace" }).click();
+  await expect(page.locator("#datasetStatus")).toHaveText("2 rows");
+
+  rows = await page.locator("#datasetPreview").evaluate((node) => node.textContent.trim().split("\n").map(JSON.parse));
+  expect(rows.map((row) => row.schema)).toEqual(["agentmash.eval-row.v2", "agentmash.pairwise-row.v1"]);
+
+  const packet = await page.locator("#packetPreview").evaluate((node) => JSON.parse(node.textContent));
+  expect(packet.schema).toBe("agentmash.feedback.v2");
+  expect(packet.evalRow.schema).toBe("agentmash.eval-row.v2");
+  expect(packet.humanJudgement.verdict).toBe("nice");
+  expect(packet.pairwiseComparisons).toHaveLength(1);
+  expect(packet.humanSignal.pairwisePreference).toHaveLength(1);
+});
+
 test("Uploaded images are stored in IndexedDB instead of localStorage", async ({ page }) => {
   await resetApp(page);
 
