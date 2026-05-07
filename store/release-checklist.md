@@ -64,6 +64,7 @@ Last local verification: May 7, 2026. No deployment, paid account, domain purcha
 - [x] Confirm no analytics, payment, contact, telemetry, socket, third-party API, or outbound fetch hooks exist in the public app surface.
 - [x] Confirm pending image uploads are written to IndexedDB only after submit.
 - [x] Confirm mobile Refine sheets clear the decision rail and Pairwise mode scrolls back to the review stage.
+- [x] Confirm mobile Human review keeps deck/profile controls behind the `Deck` sheet by default.
 
 ## Needs User Action Before Public Website Launch
 

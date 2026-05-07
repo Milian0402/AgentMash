@@ -57,6 +57,11 @@ let imageSelectionToken = 0;
 let isDecisionTransitioning = false;
 let decisionAnimationTimer = 0;
 
+function setMobilePanelOpen(isOpen) {
+  document.body.dataset.mobilePanelOpen = isOpen ? "true" : "false";
+  elements.mobilePanelToggle.setAttribute("aria-expanded", isOpen ? "true" : "false");
+}
+
 async function restoreStoredImages() {
   try {
     const movedImages = await persistInlineImages();
@@ -578,6 +583,7 @@ elements.dashboardSwitch.addEventListener("click", (event) => {
     return;
   }
   state.dashboard = button.dataset.dashboard;
+  setMobilePanelOpen(false);
   saveState();
   render();
   scrollReviewStageIntoView();
@@ -599,6 +605,7 @@ elements.reviewModeTabs.addEventListener("click", (event) => {
     setNextPairwise();
   }
   resetReviewPanels();
+  setMobilePanelOpen(false);
   saveState();
   render();
   scrollReviewStageIntoView();
@@ -609,6 +616,7 @@ elements.endlessToggle.addEventListener("click", () => {
   if (state.endlessMode) {
     state.reviewMode = "swipe";
   }
+  setMobilePanelOpen(false);
   saveState();
   render();
 });
@@ -626,10 +634,15 @@ elements.filterTabs.addEventListener("click", (event) => {
   setCurrentToNext();
   setNextPairwise();
   state.lastPacketItemId = null;
+  setMobilePanelOpen(false);
   saveState();
   render();
 });
 
+elements.mobilePanelToggle.addEventListener("click", () => {
+  setMobilePanelOpen(document.body.dataset.mobilePanelOpen !== "true");
+});
+elements.mobilePanelClose.addEventListener("click", () => setMobilePanelOpen(false));
 elements.humanAddButton.addEventListener("click", openAddArtifactPanel);
 elements.emptyRemixButton.addEventListener("click", remixCurrentDeck);
 elements.emptyAddButton.addEventListener("click", openAddArtifactPanel);

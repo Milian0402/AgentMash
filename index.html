@@ -78,6 +78,7 @@
                 <span id="keyboardLeftHint">Left: nope</span>
                 <span id="keyboardRightHint">Right: nice</span>
               </div>
+              <button class="mini-button mobile-panel-toggle" id="mobilePanelToggle" type="button" aria-controls="humanPanel" aria-expanded="false">Deck</button>
               <button class="mini-button refine-toggle" id="refineButton" type="button" aria-controls="signalPanel" aria-expanded="false">Refine</button>
             </div>
 
@@ -184,7 +185,12 @@
             </div>
           </section>
 
-          <aside class="panel human-panel">
+          <aside class="panel human-panel" id="humanPanel">
+            <div class="mobile-panel-header">
+              <strong>Review controls</strong>
+              <button class="mini-button" id="mobilePanelClose" type="button">Close</button>
+            </div>
+
             <section class="section-block">
               <label class="field-label" for="reviewerName">Reviewer</label>
               <input id="reviewerName" class="text-input" type="text" autocomplete="off" />

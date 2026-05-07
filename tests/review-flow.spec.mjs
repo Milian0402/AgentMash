@@ -260,6 +260,12 @@ test("Rapid decisions are locked and mobile filter labels stay readable", async 
     return brand.right <= switcher.left || brand.bottom <= switcher.top || switcher.bottom <= brand.top;
   });
   expect(headerHasClearance).toBe(true);
+  await expect(page.locator("#humanPanel")).toBeHidden();
+  await expect(page.locator(".site-footer")).toBeHidden();
+  await page.getByRole("button", { name: "Deck" }).click();
+  await expect(page.locator("#humanPanel")).toBeVisible();
+  await page.getByRole("button", { name: "Close" }).click();
+  await expect(page.locator("#humanPanel")).toBeHidden();
 
   await page.getByRole("button", { name: "Refine" }).click();
   await expect(page.locator("#signalPanel")).toBeVisible();
@@ -470,9 +476,9 @@ test("Pairwise mode stores comparison rows without creating swipe reviews", asyn
   await page.setViewportSize({ width: 390, height: 844 });
   await resetApp(page);
 
-  await page.locator("#reviewModeTabs").scrollIntoViewIfNeeded();
-  await page.evaluate(() => window.scrollBy(0, 240));
+  await page.getByRole("button", { name: "Deck" }).click();
   await page.getByRole("button", { name: "Pairwise" }).click();
+  await expect(page.locator("#humanPanel")).toBeHidden();
   await expect(page.locator("#pairwiseStage")).toBeVisible();
   const pairwiseStageIsInView = await page.locator("#pairwiseStage").evaluate((stage) => {
     const rect = stage.getBoundingClientRect();
@@ -499,6 +505,7 @@ test("Pairwise mode stores comparison rows without creating swipe reviews", asyn
   expect(rows[0].comparison.preferenceLabel).toBe("left_preferred");
 
   await page.getByRole("button", { name: "Human review", exact: true }).click();
+  await page.getByRole("button", { name: "Deck" }).click();
   await page.getByRole("button", { name: "Swipe" }).click();
   await page.getByRole("button", { name: /Nice/ }).click();
   await expect.poll(() => reviewCount(page)).toBe(1);
