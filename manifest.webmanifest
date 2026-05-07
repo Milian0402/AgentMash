@@ -1,0 +1,27 @@
+{
+  "name": "Nice or Not",
+  "short_name": "Nice",
+  "description": "A private swipe app for judging AI-generated websites, logos, copy, and product images.",
+  "start_url": "./index.html",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#f4f5ef",
+  "theme_color": "#171914",
+  "categories": ["productivity", "utilities", "design"],
+  "icons": [
+    {
+      "src": "assets/app-icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "Start judging",
+      "url": "./index.html",
+      "description": "Open the swipe deck"
+    }
+  ]
+}

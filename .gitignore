@@ -1,0 +1,5 @@
+.DS_Store
+nice-or-not-profile-*.json
+reviews-export*.json
+*.local.json
+*.log

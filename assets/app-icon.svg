@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" role="img" aria-labelledby="title desc">
+  <title id="title">Nice or Not app icon</title>
+  <desc id="desc">A dark rounded square with two judgement cards and a check mark.</desc>
+  <rect width="512" height="512" rx="112" fill="#171914"/>
+  <rect x="128" y="116" width="224" height="290" rx="36" fill="#f4f5ef" transform="rotate(-9 240 261)"/>
+  <rect x="164" y="96" width="224" height="300" rx="40" fill="#ffffff" transform="rotate(8 276 246)"/>
+  <path d="M184 268l58 58 110-146" fill="none" stroke="#287a55" stroke-width="42" stroke-linecap="round" stroke-linejoin="round"/>
+  <circle cx="168" cy="156" r="18" fill="#b9473a"/>
+  <circle cx="214" cy="148" r="18" fill="#bd8f1f"/>
+  <circle cx="260" cy="142" r="18" fill="#266d8a"/>
+</svg>

@@ -1,0 +1,11 @@
+{
+  "name": "nice-or-not",
+  "version": "0.2.0",
+  "private": true,
+  "description": "A private swipe app for judging AI-generated websites, logos, copy, and product images.",
+  "license": "UNLICENSED",
+  "scripts": {
+    "serve": "python3 -m http.server 5177",
+    "check": "node --check app.js && node --check sw.js"
+  }
+}
