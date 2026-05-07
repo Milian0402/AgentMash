@@ -24,6 +24,7 @@ Make AgentMash good enough to launch publicly as a serious app, while staying in
 - Human review surfaces profile insights from review tags, artifact types, and review volume.
 - Artifact title, prompt, requester line, and detail copy are hidden behind a `Details` sheet by default.
 - Export workspace turns those human judgements into structured packets and JSONL rows.
+- Artifact intake and packet return modes are local-only, so the public app does not imply webhooks, polling, or an inbound agent pipeline.
 - The app remains local-first with no analytics, payment, contact, telemetry, socket, or third-party API hooks.
 - Public launch pages, PWA metadata, icons, screenshots, offline cache, preview workflow, and static host security configs exist.
 - Public build output excludes internal launch docs, submission drafts, scripts, and repo metadata.
@@ -96,6 +97,7 @@ Make AgentMash good enough to launch publicly as a serious app, while staying in
 | Stress-test local scale. | Playwright seeds 500 local artifacts and 250 existing reviews, drives 100 more keyboard decisions, verifies 350 unique reviews, confirms no storage warning, and verifies Export workspace still shows 350 JSONL rows and a ready packet. | Met locally |
 | Keep Export workspace empty metrics honest. | Playwright verifies zero items and zero reviews render `0 artifacts`, `0` ready exports, `0` unjudged items, `None` average signal, `0 rows`, and an empty packet. | Met locally |
 | Remove misleading inbound-agent scope. | The second dashboard is now framed as `Export workspace` / `Local export workspace`; `npm run check` rejects `Agent lab`, `Request Queue`, `Waiting on humans`, `Returned Signals`, `Retry queue`, and `No agent requests` in the public app. | Met locally |
+| Keep export modes honest for a local-only app. | `index.html` now labels intake as `Add Artifact`, `Export metadata`, and `Export format`; only JSON packet and eval dataset formats are selectable. `state.js` normalizes legacy `webhook` or `polling` modes back to `json`; `packet.js` and `schemas/feedback.v2.json` only expose `json` and `dataset`. `npm run check` rejects unavailable network-return wording in the public intake and runtime packet contract. | Met locally |
 | Rename misleading confidence output. | Feedback packets use `agentmash.feedback.v2`, `signalStrength`, and top-level `signalStrengthFormula`; eval rows use `agentmash.eval-row.v2`; `store/agent-customer-model.md` documents the migration. | Met locally |
 | Add a packet validation contract. | `schemas/feedback.v2.json` describes ready, pending, and empty `agentmash.feedback.v2` packet shapes, including `signalStrength`, request metadata, judgement fields, agent use, eval rows, and return envelope. | Met locally |
 | Confirm reviewer name persistence visibly. | `index.html`, `styles.css`, `app.js`, and `render.js` show a saved/not-saved status after reviewer name edits. | Met locally |

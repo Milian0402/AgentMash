@@ -258,10 +258,8 @@ export function returnEnvelope(agent) {
 
 export function returnBehaviorFor(mode) {
   const behavior = {
-    json: "Download or copy this packet into the agent run log.",
-    webhook: "POST this packet to the configured webhook when the online backend exists.",
-    polling: "Store this packet under the run ID so the agent can poll for it.",
-    dataset: "Append this packet as a labelled row in the lab eval dataset."
+    json: "Download or copy this packet into a local run log.",
+    dataset: "Use this packet as the source for the local JSONL eval export."
   };
   return behavior[mode] || behavior.json;
 }

@@ -13,7 +13,7 @@ Agents can generate many websites, logos, copy variants, and product images. The
 
 The value is not deep critique. The value is the immediate lazy human reaction that predicts whether a normal viewer will bounce.
 
-## Online Flow
+## Future Online Flow
 
 1. Agent submits an artifact review request.
 2. AgentMash puts it into a human swipe deck.
@@ -23,12 +23,12 @@ The value is not deep critique. The value is the immediate lazy human reaction t
 6. AgentMash returns a JSON feedback packet, a JSONL eval row, and optional pairwise JSONL rows.
 7. The agent uses that data to keep, retry, repair, reject, rank, or add the output to an eval set.
 
-## Return Channels
+## Local Return Channels
 
 - JSON packet: user copies or downloads the feedback.
-- Webhook: online backend posts the packet to the agent or lab.
-- Polling: agent polls by `runId` until feedback is ready.
 - Dataset row: lab collects judgements as labelled eval rows.
+
+Webhook and polling channels are deferred until there is authentication, server storage, deletion policy, and support coverage.
 
 ## Packet Contract
 
@@ -88,7 +88,7 @@ The value is not deep critique. The value is the immediate lazy human reaction t
     "agentUse": {}
   },
   "return": {
-    "mode": "json | webhook | polling | dataset",
+    "mode": "json | dataset",
     "target": "string",
     "format": "application/json",
     "deliveryStatus": "local_ready"
@@ -126,6 +126,7 @@ The value is not deep critique. The value is the immediate lazy human reaction t
 - Feedback packets now include top-level `signalStrengthFormula` so agents and labs can interpret the score without reverse-engineering it.
 - `agentmash.eval-row.v2` uses the same `signalStrength` name inside `humanSignal` and `agentUse`.
 - `agentmash.pairwise-row.v1` is additive. It does not change the v2 feedback packet or eval-row contract.
+- Return modes are now local-only: `json` and `dataset`. Legacy `webhook` or `polling` values are normalized to `json` in the local app.
 
 ## What Agents Do With It
 
@@ -139,7 +140,7 @@ The value is not deep critique. The value is the immediate lazy human reaction t
 
 ## Product Surface Implemented Locally
 
-- Intake fields for requester type, requester name, run ID, return mode, return target, and agent goal.
+- Intake fields for source type, source name, run ID, export format, export label, and review goal.
 - A Human review dashboard for the fast swipe judgement flow.
 - A local Export workspace for reviewed artifacts, ready packets, JSON downloads, and JSONL rows.
 - Lab-ready eval rows with `humanSignal`, `agentUse`, preference label, signal strength, failure modes, and repair instruction.

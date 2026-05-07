@@ -201,7 +201,7 @@ function addArtifact(event) {
     question: defaultQuestion(type),
     agent: {
       requesterType: elements.agentRequesterType.value,
-      requesterName: elements.agentRequesterName.value.trim() || `${elements.agentRequesterType.value}-customer`,
+      requesterName: elements.agentRequesterName.value.trim() || `${elements.agentRequesterType.value}-source`,
       runId: elements.agentRunId.value.trim() || createShortId("run"),
       goal: elements.agentGoal.value.trim(),
       returnMode: elements.agentReturnMode.value,

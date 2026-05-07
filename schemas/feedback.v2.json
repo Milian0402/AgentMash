@@ -342,7 +342,7 @@
       "required": ["mode", "target", "format"],
       "properties": {
         "mode": {
-          "enum": ["json", "webhook", "polling", "dataset"]
+          "enum": ["json", "dataset"]
         },
         "target": {
           "type": "string"

@@ -195,6 +195,8 @@ check(index.includes('accept="image/png,image/jpeg,image/webp"') && !index.inclu
 check(hasAll(index, ["support.html", "privacy.html", "terms.html", "publishing.html"]), "footer links key pages");
 check(index.includes("Export workspace") && index.includes("Local export workspace"), "agent-facing surface is framed as local export workspace");
 check(!/Agent lab|Request Queue|Waiting on humans|Returned Signals|Retry queue|No agent requests/i.test(index), "export workspace avoids inbound-traffic wording");
+check(index.includes("Export metadata") && index.includes("Export format"), "add artifact form uses local export wording");
+check(!/Webhook when online|Polling endpoint|Return target|Add Artifact Request|Requester details/i.test(index), "public intake avoids unavailable network-return wording");
 check(index.includes('type="module" src="app.js"'), "index loads native ES module entry");
 check(
   hasAll(packageJson.scripts?.check || "", ["node --check state.js", "node --check packet.js", "node --check render.js", "node --check gestures.js"]),
@@ -230,6 +232,7 @@ check(appSurface.includes("indexedDB") && appSurface.includes("stateForLocalStor
 check(index.includes("storageHealthStatus") && renderModule.includes("estimateImageStoreBytes") && renderModule.includes("localStorageProfileBytes"), "human dashboard shows storage health");
 check(appSurface.includes("Local storage full") && appSurface.includes("setStorageStatus"), "localStorage quota failure surfaces in the UI");
 check(appSurface.includes("signalStrengthFormula") && appSurface.includes("agentmash.feedback.v2"), "feedback packets use schema v2 with signal strength formula");
+check(!/webhook|polling/i.test([appSurface, JSON.stringify(feedbackSchema)].join("\n")), "runtime packet contract is local-export only");
 check(
   feedbackSchema.title === "AgentMash Feedback Packet v2"
     && feedbackSchema.properties?.schema?.const === "agentmash.feedback.v2"

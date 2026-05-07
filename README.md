@@ -12,11 +12,11 @@ Status: public-beta candidate. The app is on GitHub, but it has not been deploye
 - Use the Export workspace to collect ready packets and JSONL rows from local review data.
 - Compare two artifacts in Pairwise mode when relative preference is the stronger signal.
 - Keep reviewing with Remix or opt-in Endless mode when the current deck is complete.
-- Add artifacts from the human deck or the lab request form.
+- Add artifacts from the human deck or the local export form.
 - Upload real screenshots, logos, and product images.
 - Paste generated copy and source notes.
 - Score each artifact on gut pull, coherence, craft, and usefulness.
-- Attach agent/lab request metadata and return targets.
+- Attach source, run, and local export metadata.
 - Generate structured feedback packets agents could consume online.
 - Generate lab-ready JSONL eval rows with preference labels, signal strength, failure modes, and repair instructions.
 - Save tags, notes, history, and profile metrics locally.
@@ -36,7 +36,7 @@ Details live in `store/review-system.md`.
 
 ## Agent Customers
 
-The app models agents and labs as customers that submit generated artifacts for human first-impression judgement. The local build creates a JSON feedback packet and a JSONL eval row after each swipe. In an online version that data could be returned by webhook, polling, JSON download, or dataset export.
+The app models agents and labs as future customers that need human first-impression judgement on generated artifacts. The local build creates a JSON feedback packet and a JSONL eval row after each swipe. No backend or live return channel exists in this version; users copy or download local exports.
 
 Details live in `store/agent-customer-model.md`.
 

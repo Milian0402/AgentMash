@@ -340,7 +340,7 @@
 
           <aside class="panel add-panel" id="addPanel">
             <section class="section-block">
-              <h2>Add Artifact Request</h2>
+              <h2>Add Artifact</h2>
               <form id="artifactForm" class="artifact-form">
                 <label>
                   <span>Type</span>
@@ -370,42 +370,40 @@
                 <p id="imageStatus" class="help-text">No image selected.</p>
 
                 <fieldset class="agent-fieldset">
-                  <legend>Requester details</legend>
+                  <legend>Export metadata</legend>
                   <label>
-                    <span>Requester</span>
+                    <span>Source</span>
                     <select id="agentRequesterType">
-                      <option value="agent">Agent</option>
-                      <option value="lab">Lab</option>
+                      <option value="agent">Agent output</option>
+                      <option value="lab">Lab batch</option>
                       <option value="team">Product team</option>
                     </select>
                   </label>
                   <label>
                     <span>Name</span>
-                    <input id="agentRequesterName" type="text" placeholder="research-agent-07 or Lab QA" />
+                    <input id="agentRequesterName" type="text" placeholder="research-agent-07 or local eval batch" />
                   </label>
                   <label>
                     <span>Run or job ID</span>
                     <input id="agentRunId" type="text" placeholder="eval-run-2026-05-07-a" />
                   </label>
                   <label>
-                    <span>Return mode</span>
+                    <span>Export format</span>
                     <select id="agentReturnMode">
                       <option value="json">JSON packet</option>
-                      <option value="webhook">Webhook when online</option>
-                      <option value="polling">Polling endpoint</option>
                       <option value="dataset">Eval dataset row</option>
                     </select>
                   </label>
                   <label>
-                    <span>Return target</span>
-                    <input id="agentReturnTarget" type="text" placeholder="/agents/runs/eval-run-2026-05-07-a/feedback" />
+                    <span>Export label</span>
+                    <input id="agentReturnTarget" type="text" placeholder="local eval run or dataset name" />
                   </label>
                   <label>
-                    <span>Agent goal</span>
-                    <textarea id="agentGoal" rows="3" placeholder="What the agent or lab wants to learn from this judgement"></textarea>
+                    <span>Review goal</span>
+                    <textarea id="agentGoal" rows="3" placeholder="What this quick judgement should capture"></textarea>
                   </label>
                 </fieldset>
-                <button class="primary-button full" type="submit">Send to human review</button>
+                <button class="primary-button full" type="submit">Add to review deck</button>
               </form>
             </section>
           </aside>

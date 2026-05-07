@@ -53,7 +53,7 @@ async function addTinyImageArtifact(page, title) {
     buffer: Buffer.from(tinyPngBase64, "base64")
   });
   await expect(page.locator("#imageStatus")).toContainText("ready for local review");
-  await page.getByRole("button", { name: "Send to human review" }).click();
+  await page.getByRole("button", { name: "Add to review deck" }).click();
 }
 
 async function seedStressProfile(page) {
@@ -136,6 +136,11 @@ test("Nice, Undo, and Nope produce a v2 feedback packet", async ({ page }) => {
   await expect(page.locator("#streakCounter")).toHaveText("0 in a row, 0 today, 0-day streak");
   await expect(page.locator("#localStorageUsage")).toContainText("of ~5.0 MB");
   await expect(page.locator("#imageStorageUsage")).toContainText("IndexedDB");
+  await page.getByRole("button", { name: "Add artifact" }).click();
+  await expect(page.locator("#agentReturnMode option")).toHaveCount(2);
+  await expect(page.locator("#agentReturnMode")).not.toContainText("Webhook");
+  await expect(page.locator("#agentReturnMode")).not.toContainText("Polling");
+  await page.getByRole("button", { name: "Human review", exact: true }).click();
   await expect(page.locator("#detailSheet")).toBeHidden();
   await page.getByRole("button", { name: "Details" }).click();
   await expect(page.locator("#detailSheet")).toBeVisible();

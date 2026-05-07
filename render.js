@@ -767,7 +767,7 @@ export function renderAgentDashboard() {
     const footer = document.createElement("div");
     footer.className = "agent-request-footer";
     const returnTarget = document.createElement("span");
-    returnTarget.textContent = `${item.agent.returnMode} -> ${item.agent.returnTarget || "local export"}`;
+    returnTarget.textContent = `Export: ${item.agent.returnMode} / ${item.agent.returnTarget || "local export"}`;
     const inspect = document.createElement("button");
     inspect.type = "button";
     inspect.className = "mini-button";

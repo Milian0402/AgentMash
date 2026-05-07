@@ -70,7 +70,7 @@ Last local verification: May 7, 2026. No deployment, paid account, domain purcha
 - [ ] Add authentication before accepting outside submissions.
 - [ ] Add storage and deletion rules for uploaded artifacts.
 - [ ] Add a review queue backed by a server.
-- [ ] Add one return channel first: JSON polling or webhook.
+- [ ] If a backend is built later, add one return channel first after auth and deletion rules exist.
 - [ ] Add usage limits before billing.
 - [ ] Add billing only after support and retention policies are clear.
 

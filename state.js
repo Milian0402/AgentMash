@@ -100,7 +100,7 @@ export const sampleItems = [
       runId: "launch-site-001",
       goal: "Learn whether a generated landing page earns human trust quickly.",
       returnMode: "json",
-      returnTarget: "local-demo/ops-site-feedback"
+      returnTarget: "ops-site-feedback"
     },
     createdAt: "2026-05-07T00:00:00.000Z"
   },
@@ -117,7 +117,7 @@ export const sampleItems = [
       runId: "launch-logo-001",
       goal: "Test whether logo candidates make semantic and visual sense.",
       returnMode: "json",
-      returnTarget: "local-demo/pantry-logo-feedback"
+      returnTarget: "pantry-logo-feedback"
     },
     createdAt: "2026-05-07T00:00:00.000Z"
   },
@@ -134,7 +134,7 @@ export const sampleItems = [
       runId: "launch-copy-001",
       goal: "Compare generated copy against human specificity and believability.",
       returnMode: "json",
-      returnTarget: "local-demo/notes-copy-feedback"
+      returnTarget: "notes-copy-feedback"
     },
     createdAt: "2026-05-07T00:00:00.000Z"
   },
@@ -151,7 +151,7 @@ export const sampleItems = [
       runId: "launch-product-001",
       goal: "Catch visual trust breaks before product image candidates are reused.",
       returnMode: "json",
-      returnTarget: "local-demo/tray-render-feedback"
+      returnTarget: "tray-render-feedback"
     },
     createdAt: "2026-05-07T00:00:00.000Z"
   }
@@ -323,7 +323,7 @@ export function normalizeAgent(agent = {}) {
     requesterName: cleanText(agent.requesterName || agent.name) || "unnamed-agent",
     runId: cleanText(agent.runId || agent.jobId) || createShortId("run"),
     goal: cleanText(agent.goal),
-    returnMode: ["json", "webhook", "polling", "dataset"].includes(agent.returnMode)
+    returnMode: ["json", "dataset"].includes(agent.returnMode)
       ? agent.returnMode
       : "json",
     returnTarget: cleanText(agent.returnTarget),
