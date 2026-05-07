@@ -158,6 +158,7 @@ const headers = await read("_headers");
 const netlify = await read("netlify.toml");
 const pagesWorkflow = await read(".github/workflows/pages.yml");
 const playwrightConfig = await read("playwright.config.mjs");
+const testSpec = await read("tests/review-flow.spec.mjs");
 const readme = await read("README.md");
 const completionAudit = await read("store/completion-audit.md");
 const audit = await read("store/public-launch-audit.md");
@@ -236,6 +237,10 @@ check(packageJson.scripts?.["serve:build"] === "python3 -m http.server 5178 --di
 check(packageJson.scripts?.check.includes("npm run test:e2e"), "package check runs Playwright e2e tests");
 check(packageJson.scripts?.["test:e2e"] === "playwright test", "package has Playwright e2e script");
 check(packageJson.devDependencies?.["@playwright/test"], "Playwright is a dev dependency only");
+check(
+  hasAll(testSpec, ["Profile export and import roundtrip restores uploaded images", "readFile", "#importFile", "storedImageForKey"]),
+  "Playwright covers image export import roundtrip"
+);
 check(pagesWorkflow.includes("npm run build"), "GitHub Pages workflow uses public build script");
 check(!pagesWorkflow.includes(" store"), "GitHub Pages workflow does not copy internal store docs directly");
 check(readme.includes("store/public-launch-audit.md"), "README links public launch audit");

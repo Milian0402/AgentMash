@@ -19,6 +19,7 @@ Last local verification: May 7, 2026. No deployment, paid account, domain purcha
 - [x] Confirm SVG upload is rejected.
 - [x] Confirm oversized image upload is rejected.
 - [x] Confirm a small PNG upload stores bytes in IndexedDB, not `localStorage`.
+- [x] Confirm profile export/import restores uploaded image bytes to IndexedDB without storing them in `localStorage`.
 - [x] Swipe Nice and Nope.
 - [x] Undo a decision.
 - [x] Open and close Details.

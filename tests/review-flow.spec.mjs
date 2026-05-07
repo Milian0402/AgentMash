@@ -1,6 +1,9 @@
 import { expect, test } from "@playwright/test";
+import { readFile } from "node:fs/promises";
+
 const storageKey = "agentmash.private-profile.v5";
 const appUrl = process.env.AGENTMASH_E2E_URL || "http://127.0.0.1:5177/";
+const tinyPngBase64 = "iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/x8AAwMCAO+/p9sAAAAASUVORK5CYII=";
 
 async function resetApp(page) {
   await page.goto(appUrl);
@@ -22,6 +25,35 @@ async function itemCount(page) {
     const profile = JSON.parse(localStorage.getItem(key));
     return profile.items.length;
   }, storageKey);
+}
+
+async function storedImageForKey(page, imageKey) {
+  return page.evaluate(async (key) => {
+    const db = await new Promise((resolve, reject) => {
+      const request = indexedDB.open("agentmash.image-store", 1);
+      request.addEventListener("success", () => resolve(request.result));
+      request.addEventListener("error", () => reject(request.error));
+    });
+
+    return new Promise((resolve, reject) => {
+      const transaction = db.transaction("images", "readonly");
+      const request = transaction.objectStore("images").get(key);
+      request.addEventListener("success", () => resolve(request.result?.data || ""));
+      request.addEventListener("error", () => reject(request.error));
+    });
+  }, imageKey);
+}
+
+async function addTinyImageArtifact(page, title) {
+  await page.getByRole("button", { name: "Add artifact" }).click();
+  await page.locator("#artifactTitle").fill(title);
+  await page.setInputFiles("#artifactImage", {
+    name: "tiny.png",
+    mimeType: "image/png",
+    buffer: Buffer.from(tinyPngBase64, "base64")
+  });
+  await expect(page.locator("#imageStatus")).toContainText("ready for local review");
+  await page.getByRole("button", { name: "Send to human review" }).click();
 }
 
 test("Nice, Undo, and Nope produce a v2 feedback packet", async ({ page }) => {
@@ -245,18 +277,7 @@ test("Endless mode auto-loops one local variant at a time", async ({ page }) => 
 test("Uploaded images are stored in IndexedDB instead of localStorage", async ({ page }) => {
   await resetApp(page);
 
-  await page.getByRole("button", { name: "Add artifact" }).click();
-  await page.locator("#artifactTitle").fill("Tiny upload smoke");
-  await page.setInputFiles("#artifactImage", {
-    name: "tiny.png",
-    mimeType: "image/png",
-    buffer: Buffer.from(
-      "iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/x8AAwMCAO+/p9sAAAAASUVORK5CYII=",
-      "base64"
-    )
-  });
-  await expect(page.locator("#imageStatus")).toContainText("ready for local review");
-  await page.getByRole("button", { name: "Send to human review" }).click();
+  await addTinyImageArtifact(page, "Tiny upload smoke");
 
   const storedProfile = await page.evaluate((key) => JSON.parse(localStorage.getItem(key)), storageKey);
   const uploadedItem = storedProfile.items[0];
@@ -264,20 +285,42 @@ test("Uploaded images are stored in IndexedDB instead of localStorage", async ({
   expect(uploadedItem.imageKey).toMatch(/^image-/);
   expect(uploadedItem.imageData).toBe("");
 
-  const storedImage = await page.evaluate(async (imageKey) => {
-    const db = await new Promise((resolve, reject) => {
-      const request = indexedDB.open("agentmash.image-store", 1);
-      request.addEventListener("success", () => resolve(request.result));
-      request.addEventListener("error", () => reject(request.error));
-    });
-
-    return new Promise((resolve, reject) => {
-      const transaction = db.transaction("images", "readonly");
-      const request = transaction.objectStore("images").get(imageKey);
-      request.addEventListener("success", () => resolve(request.result?.data || ""));
-      request.addEventListener("error", () => reject(request.error));
-    });
-  }, uploadedItem.imageKey);
+  const storedImage = await storedImageForKey(page, uploadedItem.imageKey);
 
   expect(storedImage).toContain("data:image/png;base64,");
+});
+
+test("Profile export and import roundtrip restores uploaded images", async ({ page }) => {
+  await resetApp(page);
+  await addTinyImageArtifact(page, "Roundtrip upload smoke");
+
+  await page.getByRole("button", { name: "Export workspace" }).click();
+  const downloadPromise = page.waitForEvent("download");
+  await page.locator("#exportButton").click();
+  const download = await downloadPromise;
+  const exportedPath = await download.path();
+  const exported = JSON.parse(await readFile(exportedPath, "utf8"));
+  const exportedItem = exported.profile.items[0];
+  expect(exportedItem.title).toBe("Roundtrip upload smoke");
+  expect(exportedItem.imageKey).toMatch(/^image-/);
+  expect(exportedItem.imageData).toContain("data:image/png;base64,");
+
+  page.once("dialog", (dialog) => dialog.accept());
+  await page.getByRole("button", { name: "Reset profile" }).click();
+  await expect(page.locator("#artifactTitleLabel")).toContainText("OpsPilot landing page");
+
+  await page.setInputFiles("#importFile", {
+    name: "agentmash-profile.json",
+    mimeType: "application/json",
+    buffer: Buffer.from(JSON.stringify(exported))
+  });
+
+  await expect(page.locator("#artifactTitleLabel")).toContainText("Roundtrip upload smoke");
+  const importedProfile = await page.evaluate((key) => JSON.parse(localStorage.getItem(key)), storageKey);
+  const importedItem = importedProfile.items[0];
+  expect(importedItem.imageKey).toBe(exportedItem.imageKey);
+  expect(importedItem.imageData).toBe("");
+
+  const restoredImage = await storedImageForKey(page, importedItem.imageKey);
+  expect(restoredImage).toBe(exportedItem.imageData);
 });
