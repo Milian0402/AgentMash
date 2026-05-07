@@ -26,6 +26,7 @@ Make AgentMash good enough to launch publicly as a serious app.
 - PWA manifest includes mobile and desktop screenshots.
 - Public build script packages `_site/` without internal launch docs, submission drafts, scripts, or repo metadata.
 - GitHub Pages, Netlify, and Vercel configs publish `_site/` instead of repo root.
+- Public status pages avoid naming unavailable backend return channels.
 - Dedicated Apple touch icon is present for iOS home-screen install polish.
 - Light and dark modes follow the user's operating system preference.
 - Top and bottom spacing use iOS safe-area insets to reduce notch and home-indicator collisions.
@@ -75,6 +76,7 @@ Make AgentMash good enough to launch publicly as a serious app.
 - Public manifest screenshots point to `assets/screenshots`.
 - `npm run check` builds `_site/` and verifies internal files are not packaged.
 - `_site/` includes all public app modules and `sw.js` caches those module files.
+- `sw.js` cache name was bumped to `agentmash-v16` after public app-shell copy changes.
 - Playwright e2e test passed: after service worker readiness, the app reloaded offline and rendered the AgentMash shell and swipe card.
 - Netlify and Vercel configs are checked for `npm run build` plus `_site/` output.
 - Apple touch icon is linked from `index.html`, cached by `sw.js`, and sized at 180 by 180.

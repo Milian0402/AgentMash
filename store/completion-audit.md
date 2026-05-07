@@ -32,6 +32,7 @@ Make AgentMash good enough to launch publicly as a serious app, while staying in
 - UI supports automatic light and dark color schemes from the operating system preference.
 - Mobile layout accounts for iOS safe-area insets around the top bar and sticky decision controls.
 - Public pages expose the package version for support and debugging.
+- Public pages avoid deferred backend-channel language that would imply a live webhook, polling, or hosted agent pipeline.
 - Destructive reset is clearly labelled and confirmed.
 - Destructive reset clears uploaded image bytes from IndexedDB, not only visible profile state.
 - Profile import confirms before replacing existing local data.
@@ -84,6 +85,7 @@ Make AgentMash good enough to launch publicly as a serious app, while staying in
 | Make it ready for public web launch where possible. | Privacy, terms, support, publishing, 404, manifest, service worker, icons, screenshots, preview workflow, and security header configs exist. | Met locally |
 | Verify offline PWA behavior. | Playwright waits for the service worker, switches the browser context offline, reloads, and verifies the AgentMash app shell and swipe card still render. | Met locally |
 | Avoid publishing internal launch docs and submission drafts. | `npm run build` writes `_site/` with only public app files. GitHub Pages, Netlify, and Vercel configs publish `_site/`. `npm run check` verifies `store/`, `scripts/`, `.github`, docs, package metadata, and host config files are not packaged. | Met locally |
+| Keep public status pages scoped to what exists. | `publishing.html` describes future hosted work without naming unavailable backend channels, and `npm run check` rejects webhook or polling wording across public HTML pages. | Met locally |
 | Make the PWA feel install-ready on iOS. | `assets/icons/apple-touch-icon.png` is 180 by 180, linked in `index.html`, cached by `sw.js`, and verified by `npm run check`. | Met locally |
 | Support OS dark mode. | `index.html` advertises `light dark` color schemes, and `styles.css` uses `@media (prefers-color-scheme: dark)` to switch core variables, panels, controls, preview surfaces, and swipe chrome. `npm run check` verifies the hook exists. | Met locally |
 | Avoid notch and home-indicator collisions. | `index.html` uses `viewport-fit=cover`; `styles.css` applies safe-area inset variables to the top bar, workspace bottom padding, sticky decision controls, and Refine sheet. | Met locally |

@@ -318,9 +318,11 @@ const combinedText = (await Promise.all(textFiles.map(read))).join("\n");
 const launchSurfaceText = (
   await Promise.all(textFiles.filter((file) => file !== "scripts/launch-check.mjs").map(read))
 ).join("\n");
+const publicHtmlText = (await Promise.all(htmlPages.map(read))).join("\n");
 check(!/[^\x00-\x7F]/.test(combinedText), "text files are ASCII");
 check(!/Nice or Not|is-it-nice/.test(combinedText), "old product/repo names are absent");
 check(!/\b(dating|tinder|hinge|mate|mates)\b/i.test(launchSurfaceText), "no relationship-app wording");
+check(!/\b(webhook|polling)\b/i.test(publicHtmlText), "public pages avoid deferred backend channel wording");
 check(!/mailto:|tel:|XMLHttpRequest|sendBeacon|WebSocket|stripe|paypal|posthog|sentry/i.test(launchSurfaceText), "no contact, payment, analytics, or socket hooks");
 
 for (const file of textFiles.filter((file) => file !== "sw.js")) {
