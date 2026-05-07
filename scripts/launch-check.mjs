@@ -141,6 +141,7 @@ for (const file of requiredFiles) {
 }
 
 const packageJson = JSON.parse(await read("package.json"));
+const packageLock = JSON.parse(await read("package-lock.json"));
 const manifest = JSON.parse(await read("manifest.webmanifest"));
 const vercel = JSON.parse(await read("vercel.json"));
 const index = await read("index.html");
@@ -164,6 +165,7 @@ const listing = await read("store/app-store-listing.md");
 
 check(packageJson.name === "agentmash", "package name is agentmash");
 check(packageJson.type === "module", "package uses native ES modules");
+check(packageLock.packages?.[""]?.type === packageJson.type, "package lock matches module type");
 check(packageJson.repository?.url === "https://github.com/Milian0402/AgentMash.git", "package repo points to AgentMash");
 check(manifest.name === "AgentMash" && manifest.short_name === "AgentMash", "manifest uses AgentMash");
 check(manifest.id === "./", "manifest has a stable app id");
