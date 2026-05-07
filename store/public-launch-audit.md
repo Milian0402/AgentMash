@@ -30,6 +30,7 @@ Make AgentMash good enough to launch publicly as a serious app.
 - Top and bottom spacing use iOS safe-area insets to reduce notch and home-indicator collisions.
 - Public footer and support page expose the current release version for support/debugging.
 - Reset uses profile wording and requires confirmation before clearing local data.
+- Reset clears uploaded image bytes from IndexedDB as well as local profile state.
 - Profile import requires confirmation when local data exists, with export-first backup guidance.
 - Copy actions handle browser clipboard denial without throwing or falsely reporting success.
 - User image uploads are restricted to PNG, JPG, or WebP files under 2.5 MB and stored in IndexedDB instead of `localStorage`.
@@ -85,7 +86,7 @@ Make AgentMash good enough to launch publicly as a serious app.
 - SVG uploads are excluded from the public artifact form; imported image data is sanitized to PNG, JPG, or WebP data URLs.
 - Playwright upload smoke test passed: SVG rejected, over-2.5 MB PNG rejected, small PNG accepted, and console errors stayed at zero.
 - Playwright e2e test passed: a tiny PNG upload stored an `imageKey` in `localStorage`, left `imageData` empty in `localStorage`, and stored the data URL in IndexedDB.
-- Playwright e2e test passed: profile export bundled uploaded image data, reset cleared the profile, import restored the artifact, `localStorage` kept only the `imageKey`, and IndexedDB contained the restored data URL.
+- Playwright e2e test passed: profile export bundled uploaded image data, reset cleared the profile and removed the old IndexedDB image bytes, import restored the artifact, `localStorage` kept only the `imageKey`, and IndexedDB contained the restored data URL.
 - Playwright e2e test passed: Nice, Undo, and Nope produced a ready `agentmash.feedback.v2` packet with `signalStrength`, no `confidence` field, and `agentmash.eval-row.v2`.
 - Playwright e2e test passed: the always-visible momentum counter updated through Nice, Undo, and Nope.
 - Playwright e2e test passed: profile insights generated a type-rate insight after a review.

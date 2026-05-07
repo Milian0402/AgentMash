@@ -389,6 +389,7 @@ test("Profile export and import roundtrip restores uploaded images", async ({ pa
   page.once("dialog", (dialog) => dialog.accept());
   await page.getByRole("button", { name: "Reset profile" }).click();
   await expect(page.locator("#artifactTitleLabel")).toContainText("OpsPilot landing page");
+  await expect.poll(() => storedImageForKey(page, exportedItem.imageKey)).toBe("");
 
   await page.setInputFiles("#importFile", {
     name: "agentmash-profile.json",

@@ -32,6 +32,7 @@ Make AgentMash good enough to launch publicly as a serious app, while staying in
 - Mobile layout accounts for iOS safe-area insets around the top bar and sticky decision controls.
 - Public pages expose the package version for support and debugging.
 - Destructive reset is clearly labelled and confirmed.
+- Destructive reset clears uploaded image bytes from IndexedDB, not only visible profile state.
 - Profile import confirms before replacing existing local data.
 - Copy actions have a graceful browser-denial path.
 - User-uploaded image artifacts are constrained to safe raster formats and a local-storage-friendly size.
@@ -85,11 +86,11 @@ Make AgentMash good enough to launch publicly as a serious app, while staying in
 | Support OS dark mode. | `index.html` advertises `light dark` color schemes, and `styles.css` uses `@media (prefers-color-scheme: dark)` to switch core variables, panels, controls, preview surfaces, and swipe chrome. `npm run check` verifies the hook exists. | Met locally |
 | Avoid notch and home-indicator collisions. | `index.html` uses `viewport-fit=cover`; `styles.css` applies safe-area inset variables to the top bar, workspace bottom padding, sticky decision controls, and Refine sheet. | Met locally |
 | Make public support reports actionable. | `index.html` and `support.html` show the package version, and `npm run check` verifies it matches `package.json`. | Met locally |
-| Avoid accidental local data loss. | Reset is labelled `Reset profile`, requires browser confirmation, and is verified by `npm run check`. | Met locally |
+| Avoid accidental local data loss. | Reset is labelled `Reset profile`, requires browser confirmation, clears IndexedDB image bytes, and is verified by `npm run check`. | Met locally |
 | Avoid accidental profile overwrite. | Profile import prompts when local reviews, uploads, notes, added artifacts, or reviewer name exist. The support page tells users to export before importing. | Met locally |
 | Avoid misleading copy status. | Packet and dataset copy use a shared helper with Clipboard API, fallback copy, and `Copy unavailable` status when blocked. | Met locally |
 | Keep user uploads safe for a public local-first app. | The artifact form accepts only PNG, JPG, and WebP. `app.js` rejects other image types, `state.js` caps images at 2.5 MB and sanitizes imported image data. | Met locally |
-| Avoid localStorage quota crashes from image uploads. | `state.js` stores uploaded image data in IndexedDB, writes only `imageKey` plus text state to `localStorage`, wraps `saveState()` in `try/catch`, and uses `render.js` to show `Local storage full` in the UI when saving fails. Playwright verifies image data is absent from `localStorage`, present in IndexedDB, exported in the profile bundle, and restored to IndexedDB on import. | Met locally |
+| Avoid localStorage quota crashes from image uploads. | `state.js` stores uploaded image data in IndexedDB, writes only `imageKey` plus text state to `localStorage`, wraps `saveState()` in `try/catch`, and uses `render.js` to show `Local storage full` in the UI when saving fails. Playwright verifies image data is absent from `localStorage`, present in IndexedDB, exported in the profile bundle, cleared on reset, and restored to IndexedDB on import. | Met locally |
 | Surface storage health before it fails. | `state.js` estimates local profile bytes and IndexedDB image bytes; `render.js` shows local profile usage against an approximate 5 MB localStorage budget and image-store usage in the Human review panel. | Met locally |
 | Stress-test local scale. | Playwright seeds 500 local artifacts and 250 existing reviews, drives 100 more keyboard decisions, verifies 350 unique reviews, confirms no storage warning, and verifies Export workspace still shows 350 JSONL rows and a ready packet. | Met locally |
 | Keep Export workspace empty metrics honest. | Playwright verifies zero items and zero reviews render `0 artifacts`, `0` ready exports, `0` unjudged items, `None` average signal, `0 rows`, and an empty packet. | Met locally |

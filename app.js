@@ -3,6 +3,7 @@ import {
   APP_VERSION,
   MAX_IMAGE_BYTES,
   calculateScore,
+  clearImageStore,
   cloneDefaultState,
   configureStorageStatus,
   createId,
@@ -429,6 +430,12 @@ function importProfile(file) {
       if (!confirmProfileImport()) {
         return;
       }
+      let importWarning = "";
+      try {
+        await clearImageStore();
+      } catch {
+        importWarning = "Profile imported, but previous image storage could not be fully cleared.";
+      }
       replaceState(normalizeState(profile));
       try {
         await persistInlineImages();
@@ -437,11 +444,12 @@ function importProfile(file) {
           ...item,
           imageData: ""
         }));
+        importWarning = "Profile imported, but image storage is full or unavailable. Text, reviews, and packet data were saved without embedded images.";
       }
       setCurrentToNext();
       saveState();
-      if (state.items.some((item) => item.imageKey && !item.imageData)) {
-        setStorageStatus("Profile imported, but image storage is full or unavailable. Text, reviews, and packet data were saved without embedded images.");
+      if (importWarning || state.items.some((item) => item.imageKey && !item.imageData)) {
+        setStorageStatus(importWarning || "Profile imported, but image storage is full or unavailable. Text, reviews, and packet data were saved without embedded images.");
       }
       render();
     } catch {
@@ -471,7 +479,7 @@ function hasLocalProfileData() {
   );
 }
 
-function resetProfile() {
+async function resetProfile() {
   const confirmed = window.confirm(
     "Reset this local AgentMash profile? This clears reviews, comparisons, uploads, notes, and added artifacts in this browser."
   );
@@ -479,6 +487,12 @@ function resetProfile() {
     return;
   }
 
+  let clearFailed = false;
+  try {
+    await clearImageStore();
+  } catch {
+    clearFailed = true;
+  }
   replaceState(cloneDefaultState());
   pendingImageData = "";
   pendingImageKey = "";
@@ -486,6 +500,9 @@ function resetProfile() {
   elements.imageStatus.textContent = "No image selected.";
   saveState();
   render();
+  if (clearFailed) {
+    setStorageStatus("Profile reset, but image storage could not be cleared. Clear browser storage or reinstall before sharing this device.");
+  }
 }
 
 function registerServiceWorker() {

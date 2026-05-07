@@ -223,6 +223,7 @@ check(appSurface.includes("agentmash.pairwise-row.v1") && appSurface.includes("p
 check(app.includes("humanAddButton") && app.includes("openAddArtifactPanel"), "human add-artifact entry exists");
 check(app.includes('state.dashboard = "human";'), "added artifacts return to human deck");
 check(app.includes("window.confirm") && app.includes("Reset this local AgentMash profile"), "reset requires confirmation");
+check(appSurface.includes("clearImageStore") && app.includes("await clearImageStore()"), "reset and import clear IndexedDB image store");
 check(app.includes("confirmProfileImport") && app.includes("Import this AgentMash profile"), "profile import requires confirmation when local data exists");
 check(app.includes("async function copyText") && app.includes("Copy unavailable"), "copy actions handle clipboard failure");
 check(appSurface.includes("indexedDB") && appSurface.includes("stateForLocalStorage") && appSurface.includes('imageData: ""'), "uploaded image data is kept out of localStorage");

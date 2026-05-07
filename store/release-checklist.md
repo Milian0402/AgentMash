@@ -20,6 +20,7 @@ Last local verification: May 7, 2026. No deployment, paid account, domain purcha
 - [x] Confirm oversized image upload is rejected.
 - [x] Confirm a small PNG upload stores bytes in IndexedDB, not `localStorage`.
 - [x] Confirm profile export/import restores uploaded image bytes to IndexedDB without storing them in `localStorage`.
+- [x] Confirm reset removes uploaded image bytes from IndexedDB.
 - [x] Confirm storage health reports local profile usage and IndexedDB image usage.
 - [x] Stress-test 500 local artifacts, 250 existing reviews, and 100 more swipes.
 - [x] Swipe Nice and Nope.

@@ -499,6 +499,17 @@ export async function estimateImageStoreBytes() {
   });
 }
 
+export async function clearImageStore() {
+  const db = await openImageDb();
+  return new Promise((resolve, reject) => {
+    const transaction = db.transaction(IMAGE_STORE_NAME, "readwrite");
+    transaction.addEventListener("complete", resolve);
+    transaction.addEventListener("error", () => reject(transaction.error || new Error("Image store clear failed")));
+    transaction.addEventListener("abort", () => reject(transaction.error || new Error("Image store clear aborted")));
+    transaction.objectStore(IMAGE_STORE_NAME).clear();
+  });
+}
+
 export async function persistInlineImages() {
   let movedImages = false;
 
