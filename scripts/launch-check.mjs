@@ -188,6 +188,7 @@ check(index.includes("<title>AgentMash</title>") && index.includes("<h1>AgentMas
 check(index.includes(`v${packageJson.version}`) && support.includes(`AgentMash v${packageJson.version}`), "public pages expose package version");
 check(index.includes('rel="apple-touch-icon"') && index.includes("assets/icons/apple-touch-icon.png"), "index links Apple touch icon");
 check(index.includes("Reset profile") && !index.includes("Reset demo"), "reset action uses profile wording");
+check(index.includes('name="color-scheme" content="light dark"') && styles.includes("@media (prefers-color-scheme: dark)") && styles.includes("color-scheme: dark"), "app follows OS light and dark color scheme");
 check(index.includes('accept="image/png,image/jpeg,image/webp"') && !index.includes("image/svg+xml"), "user uploads exclude SVG");
 check(hasAll(index, ["support.html", "privacy.html", "terms.html", "publishing.html"]), "footer links key pages");
 check(index.includes("Export workspace") && index.includes("Local export workspace"), "agent-facing surface is framed as local export workspace");

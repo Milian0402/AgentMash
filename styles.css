@@ -50,6 +50,123 @@ body[data-dashboard="human"] {
   background-size: auto;
 }
 
+@media (prefers-color-scheme: dark) {
+  :root {
+    color-scheme: dark;
+    --bg: #11130f;
+    --surface: #1c211b;
+    --surface-strong: #242a22;
+    --ink: #f3f5ed;
+    --muted: #aeb8a9;
+    --line: #384233;
+    --green: #74c79c;
+    --green-soft: #20382c;
+    --red: #ef8275;
+    --red-soft: #3a211e;
+    --blue: #78b8d1;
+    --pink: #f090a2;
+    --pink-soft: #3d252d;
+    --yellow: #e0bc5b;
+    --shadow: 0 22px 60px rgba(0, 0, 0, 0.34);
+  }
+
+  body {
+    background:
+      linear-gradient(90deg, rgba(116, 199, 156, 0.07) 0 1px, transparent 1px),
+      linear-gradient(0deg, rgba(120, 184, 209, 0.07) 0 1px, transparent 1px),
+      var(--bg);
+  }
+
+  body[data-dashboard="human"] {
+    background:
+      linear-gradient(135deg, rgba(240, 144, 162, 0.18), transparent 42%),
+      linear-gradient(225deg, rgba(116, 199, 156, 0.17), transparent 46%),
+      linear-gradient(180deg, #171914 0%, #11130f 56%, #172119 100%);
+  }
+
+  .topbar {
+    background: rgba(28, 33, 27, 0.9);
+  }
+
+  body[data-dashboard="human"] .dashboard-switch,
+  body[data-dashboard="human"] .keyboard-hints span,
+  .refine-toggle,
+  .stage-status strong,
+  .streak-counter,
+  .human-panel,
+  .signal-panel,
+  .first-look-stage .signal-panel,
+  .first-look-stage .swipe-actions {
+    background: rgba(28, 33, 27, 0.78);
+    box-shadow: 0 18px 44px rgba(0, 0, 0, 0.28);
+  }
+
+  .dashboard-tab.active,
+  .icon-button,
+  .primary-button,
+  .secondary-button,
+  .decision-button,
+  .segment,
+  .tag-chip,
+  .text-input,
+  .artifact-form input,
+  .artifact-form select,
+  .artifact-form textarea,
+  .note-field textarea,
+  .score-preview > div,
+  .score-control,
+  .metric,
+  .keeper-item,
+  .agent-request,
+  .signal-item,
+  .history-item {
+    background: var(--surface);
+    color: var(--ink);
+  }
+
+  .swipe-actions .decision-button {
+    background: #232821;
+    box-shadow: 0 16px 34px rgba(0, 0, 0, 0.32);
+  }
+
+  .swipe-actions .decision-button.neutral {
+    background: #1c211b;
+  }
+
+  .preview-image,
+  .preview-website,
+  .preview-product {
+    background: #20261f;
+  }
+
+  .first-look-stage .preview-website,
+  .preview-product.is-cutout {
+    background:
+      linear-gradient(180deg, #20261f 0%, #182018 58%, #10120f 100%);
+  }
+
+  .browser-bar,
+  .logo-board,
+  .product-scene {
+    border-color: #45513f;
+    background: #242a22;
+  }
+
+  .site-line {
+    background: #e4eadf;
+  }
+
+  .site-line.muted,
+  .product-divider,
+  .product-handle {
+    background: #56634f;
+  }
+
+  .product-object {
+    background: #f4f5ef;
+  }
+}
+
 button,
 input,
 select,

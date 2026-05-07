@@ -29,6 +29,7 @@ Last local verification: May 7, 2026. No deployment, paid account, domain purcha
 - [x] Confirm Refine opens as a bottom sheet above the decision controls.
 - [x] Confirm the momentum counter updates after Nice, Undo, and Nope.
 - [x] Confirm decisions use supported haptic patterns and a quiet local WebAudio tick.
+- [x] Confirm light and dark color schemes follow OS preference.
 - [x] Confirm the mobile layout uses iOS safe-area inset spacing.
 - [x] Complete a deck and show Keepers.
 - [x] Start a Remix session.

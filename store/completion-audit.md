@@ -27,6 +27,7 @@ Make AgentMash good enough to launch publicly as a serious app, while staying in
 - Public launch pages, PWA metadata, icons, screenshots, offline cache, preview workflow, and static host security configs exist.
 - Public build output excludes internal launch docs, submission drafts, scripts, and repo metadata.
 - Mobile install polish includes a dedicated Apple touch icon.
+- UI supports automatic light and dark color schemes from the operating system preference.
 - Mobile layout accounts for iOS safe-area insets around the top bar and sticky decision controls.
 - Public pages expose the package version for support and debugging.
 - Destructive reset is clearly labelled and confirmed.
@@ -78,6 +79,7 @@ Make AgentMash good enough to launch publicly as a serious app, while staying in
 | Make it ready for public web launch where possible. | Privacy, terms, support, publishing, 404, manifest, service worker, icons, screenshots, preview workflow, and security header configs exist. | Met locally |
 | Avoid publishing internal launch docs and submission drafts. | `npm run build` writes `_site/` with only public app files. GitHub Pages, Netlify, and Vercel configs publish `_site/`. `npm run check` verifies `store/`, `scripts/`, `.github`, docs, package metadata, and host config files are not packaged. | Met locally |
 | Make the PWA feel install-ready on iOS. | `assets/icons/apple-touch-icon.png` is 180 by 180, linked in `index.html`, cached by `sw.js`, and verified by `npm run check`. | Met locally |
+| Support OS dark mode. | `index.html` advertises `light dark` color schemes, and `styles.css` uses `@media (prefers-color-scheme: dark)` to switch core variables, panels, controls, preview surfaces, and swipe chrome. `npm run check` verifies the hook exists. | Met locally |
 | Avoid notch and home-indicator collisions. | `index.html` uses `viewport-fit=cover`; `styles.css` applies safe-area inset variables to the top bar, workspace bottom padding, sticky decision controls, and Refine sheet. | Met locally |
 | Make public support reports actionable. | `index.html` and `support.html` show the package version, and `npm run check` verifies it matches `package.json`. | Met locally |
 | Avoid accidental local data loss. | Reset is labelled `Reset profile`, requires browser confirmation, and is verified by `npm run check`. | Met locally |

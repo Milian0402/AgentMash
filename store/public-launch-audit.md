@@ -25,6 +25,7 @@ Make AgentMash good enough to launch publicly as a serious app.
 - Public build script packages `_site/` without internal launch docs, submission drafts, scripts, or repo metadata.
 - GitHub Pages, Netlify, and Vercel configs publish `_site/` instead of repo root.
 - Dedicated Apple touch icon is present for iOS home-screen install polish.
+- Light and dark modes follow the user's operating system preference.
 - Top and bottom spacing use iOS safe-area insets to reduce notch and home-indicator collisions.
 - Public footer and support page expose the current release version for support/debugging.
 - Reset uses profile wording and requires confirmation before clearing local data.
@@ -70,6 +71,7 @@ Make AgentMash good enough to launch publicly as a serious app.
 - `_site/` includes all public app modules and `sw.js` caches those module files.
 - Netlify and Vercel configs are checked for `npm run build` plus `_site/` output.
 - Apple touch icon is linked from `index.html`, cached by `sw.js`, and sized at 180 by 180.
+- `index.html` declares `light dark` color schemes, and `styles.css` includes a dark-mode `prefers-color-scheme` branch.
 - `index.html` and `support.html` show the package version.
 - `index.html` avoids demo reset wording and `app.js` confirms before reset.
 - Playwright reset smoke test passed: cancel kept one review, confirm cleared it, and console errors stayed at zero.
