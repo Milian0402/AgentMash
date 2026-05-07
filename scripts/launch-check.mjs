@@ -195,6 +195,11 @@ check(
 );
 check(index.includes("<title>AgentMash</title>") && index.includes("<h1>AgentMash</h1>"), "index brands AgentMash");
 check(
+  hasAll(index, ["structured feedback packets", "structured local feedback packets"]) &&
+    !/agent-ready feedback/i.test(index),
+  "public preview metadata uses local feedback-packet wording"
+);
+check(
   [index, support, privacy, terms].every((source) => source.includes(`v${packageJson.version}`)),
   "public app and legal pages expose package version"
 );
