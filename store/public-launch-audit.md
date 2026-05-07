@@ -14,6 +14,7 @@ Make AgentMash good enough to launch publicly as a serious app.
 - Human review dashboard is phone-first and supports swipe, buttons, keyboard shortcuts, undo, scoring, tags, and notes.
 - Default Human review flow keeps scoring, tags, and notes behind a `Refine` tap so the first-pass loop stays card-first.
 - `Refine` opens as a bottom sheet above the decision controls so users do not scroll below the swipe buttons to adjust scores.
+- The Refine sheet keeps tags and the note visible first, with score sliders tucked behind a `Scores` toggle.
 - Human review shows a compact momentum counter for current run count, today's reviews, and day streak, with subtle 10/25/50 milestone animation.
 - Human review shows profile insights summarizing rejection rates, nice rates, and review volume from local data.
 - Decisions use supported vibration patterns and a quiet local WebAudio tick for tactile feedback.
@@ -48,6 +49,7 @@ Make AgentMash good enough to launch publicly as a serious app.
 - Dataset-mode return envelopes report `application/x-ndjson` for local JSONL exports.
 - `schemas/feedback.v2.json` documents the local packet contract for future validation.
 - Refine panel is hidden by default and closes after a decision, keeping the next card in the fast swipe loop.
+- Refine score sliders are hidden behind `Scores` until explicitly opened.
 - Details sheet is hidden by default and closes after a decision, keeping the next artifact card clean.
 - Undo preserves the deck filter that produced the decision, so undoing from `All` restores the full deck instead of narrowing to one artifact type.
 - Rapid duplicate decision input is locked while the outgoing card animates, then controls unlock when the next card is ready.
@@ -71,7 +73,7 @@ Make AgentMash good enough to launch publicly as a serious app.
 - `npm run check:launch` passes.
 - `npm run check` syntax-checks `app.js`, `state.js`, `packet.js`, `render.js`, and `gestures.js`.
 - Playwright runs the module app through `npm run serve` at `http://127.0.0.1:5177/`, not a blocked `file://` module load.
-- `npm run check` now includes Playwright e2e coverage for Nice, Undo, Nope, rapid duplicate decision locking, mobile filter readability, Undo preserving the active deck, v2 packet shape, normalized export verdicts, dataset return format, Keepers completion state, Remix repeat sessions with variant metadata, Endless auto-looping, Pairwise comparison export, human-screen install prompt, empty Export workspace state, IndexedDB image storage, pending upload submit-only storage, profile image export/import, offline app-shell loading, and a 500-item local stress path.
+- `npm run check` now includes Playwright e2e coverage for Nice, Undo, Nope, rapid duplicate decision locking, mobile filter readability, compact Refine score toggle, Undo preserving the active deck, v2 packet shape, normalized export verdicts, dataset return format, Keepers completion state, Remix repeat sessions with variant metadata, Endless auto-looping, Pairwise comparison export, human-screen install prompt, empty Export workspace state, IndexedDB image storage, pending upload submit-only storage, profile image export/import, offline app-shell loading, and a 500-item local stress path.
 - `manifest.webmanifest`, `package.json`, and `vercel.json` parse as JSON.
 - `schemas/feedback.v2.json` parses as JSON and is checked for the `agentmash.feedback.v2` contract.
 - The runtime packet schema and app code are checked to keep return modes local-only: `json` and `dataset`.
@@ -85,7 +87,7 @@ Make AgentMash good enough to launch publicly as a serious app.
 - Public manifest screenshots point to `assets/screenshots`.
 - `npm run check` builds `_site/` and verifies internal files are not packaged.
 - `_site/` includes all public app modules and `sw.js` caches those module files.
-- `sw.js` cache name was bumped to `agentmash-v22` after public app-shell metadata, packet-contract, and swipe-loop polish changes.
+- `sw.js` cache name was bumped to `agentmash-v23` after public app-shell metadata, packet-contract, and swipe-loop polish changes.
 - Playwright e2e test passed: after service worker readiness, the app reloaded offline and rendered the AgentMash shell and swipe card.
 - Netlify and Vercel configs are checked for `npm run build` plus `_site/` output.
 - Apple touch icon is linked from `index.html`, cached by `sw.js`, and sized at 180 by 180.
@@ -113,6 +115,7 @@ Make AgentMash good enough to launch publicly as a serious app.
 - Playwright e2e test passed: profile insights generated a type-rate insight after a review.
 - Playwright e2e test passed: the storage health indicator rendered local profile usage and IndexedDB image status.
 - Playwright e2e test passed: Refine opens the hidden scoring/note panel and the panel closes again after a decision.
+- Playwright e2e test passed: Refine shows tags and the note immediately, keeps score controls hidden by default, then reveals them after `Scores`.
 - Playwright e2e test passed: Details opens the hidden artifact detail sheet and closes it again.
 - Playwright e2e test passed: completing the deck after a Nice judgement renders a Keepers summary with the surviving artifact.
 - Playwright e2e test passed: Remix deck doubles local items from 4 to 8, creates tagline, mark-only, first-line, and cutout variants, keeps the original 4 reviews, adds a fifth review on the next swipe, preserves unique reviewed item IDs, exports variant metadata, and shows 5 JSONL rows.

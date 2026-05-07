@@ -31,6 +31,7 @@ Last local verification: May 7, 2026. No deployment, paid account, domain purcha
 - [x] Open and close Details.
 - [x] Open Refine and verify it closes after a decision.
 - [x] Confirm Refine opens as a bottom sheet above the decision controls.
+- [x] Confirm Refine keeps score sliders behind the `Scores` toggle.
 - [x] Confirm the momentum counter updates after Nice, Undo, and Nope.
 - [x] Confirm profile insights update after a review.
 - [x] Confirm decisions use supported haptic patterns and a quiet local WebAudio tick.

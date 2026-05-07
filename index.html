@@ -157,8 +157,15 @@
             <div class="signal-panel" id="signalPanel" hidden>
               <div class="signal-panel-header">
                 <span>Signal tuning</span>
-                <span>Optional detail</span>
+                <button class="mini-button advanced-toggle" id="advancedScoresButton" type="button" aria-controls="scoreControls" aria-expanded="false">Scores</button>
               </div>
+
+              <div class="tag-row" id="tagRow" aria-label="Quick tags"></div>
+
+              <label class="note-field">
+                <span>Decision note</span>
+                <textarea id="reviewNote" rows="3" placeholder="What made the decision happen"></textarea>
+              </label>
 
               <div class="score-preview">
                 <div>
@@ -171,14 +178,7 @@
                 </div>
               </div>
 
-              <div id="scoreControls" class="score-grid" aria-label="Judgement rubric"></div>
-
-              <div class="tag-row" id="tagRow" aria-label="Quick tags"></div>
-
-              <label class="note-field">
-                <span>Decision note</span>
-                <textarea id="reviewNote" rows="3" placeholder="What made the decision happen"></textarea>
-              </label>
+              <div id="scoreControls" class="score-grid" aria-label="Judgement rubric" hidden></div>
             </div>
           </section>
 

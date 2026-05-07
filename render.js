@@ -94,6 +94,7 @@ export const elements = {
   undoButton: document.querySelector("#undoButton"),
   scoreControls: document.querySelector("#scoreControls"),
   refineButton: document.querySelector("#refineButton"),
+  advancedScoresButton: document.querySelector("#advancedScoresButton"),
   signalPanel: document.querySelector("#signalPanel"),
   liveScore: document.querySelector("#liveScore"),
   liveGrade: document.querySelector("#liveGrade"),
@@ -139,6 +140,7 @@ let reviewerStatusTimer = null;
 let lastMomentumMilestone = 0;
 let storageHealthRequest = 0;
 let isRefineOpen = false;
+let isScoreControlsOpen = false;
 let isDetailSheetOpen = false;
 let renderActions = {
   toggleTag: () => {}
@@ -166,11 +168,20 @@ export function showReviewerSaveStatus(message, isError = false) {
 
 export function resetReviewPanels() {
   isRefineOpen = false;
+  isScoreControlsOpen = false;
   isDetailSheetOpen = false;
 }
 
 export function toggleRefinePanel() {
   isRefineOpen = !isRefineOpen;
+  if (!isRefineOpen) {
+    isScoreControlsOpen = false;
+  }
+  renderRefinePanel();
+}
+
+export function toggleScoreControls() {
+  isScoreControlsOpen = !isScoreControlsOpen;
   renderRefinePanel();
 }
 
@@ -458,6 +469,9 @@ export function renderRefinePanel() {
   elements.signalPanel.hidden = !isRefineOpen;
   elements.refineButton.classList.toggle("active", isRefineOpen);
   elements.refineButton.setAttribute("aria-expanded", isRefineOpen ? "true" : "false");
+  elements.scoreControls.hidden = !isRefineOpen || !isScoreControlsOpen;
+  elements.advancedScoresButton.classList.toggle("active", isScoreControlsOpen);
+  elements.advancedScoresButton.setAttribute("aria-expanded", isScoreControlsOpen ? "true" : "false");
 }
 
 export function renderDetailSheet() {

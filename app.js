@@ -45,6 +45,7 @@ import {
   resetReviewPanels,
   setStorageStatus,
   showReviewerSaveStatus,
+  toggleScoreControls,
   toggleRefinePanel
 } from "./render.js";
 import { buildExportRows } from "./packet.js";
@@ -213,7 +214,8 @@ function setDecisionTransitioning(isLocked) {
     elements.acceptButton,
     elements.undoButton,
     elements.refineButton,
-    elements.detailsButton
+    elements.detailsButton,
+    elements.advancedScoresButton
   ].forEach((button) => {
     button.disabled = isLocked;
   });
@@ -626,6 +628,7 @@ elements.artifactType.addEventListener("change", () => {
 elements.artifactImage.addEventListener("change", handleImageSelection);
 elements.artifactForm.addEventListener("submit", addArtifact);
 elements.refineButton.addEventListener("click", toggleRefinePanel);
+elements.advancedScoresButton.addEventListener("click", toggleScoreControls);
 elements.detailsButton.addEventListener("click", openDetailSheet);
 elements.detailCloseButton.addEventListener("click", closeDetailSheet);
 elements.pickLeftButton.addEventListener("click", () => choosePairwise("left"));
