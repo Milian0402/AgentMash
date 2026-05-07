@@ -97,7 +97,11 @@ const securityHeaders = [
   "Content-Security-Policy"
 ];
 const submissionPngSizes = {
+  "assets/icons/app-icon-192.png": "192x192",
+  "assets/icons/app-icon-512.png": "512x512",
+  "assets/icons/app-icon-1024.png": "1024x1024",
   "assets/icons/apple-touch-icon.png": "180x180",
+  "store/app-icon-1024.png": "1024x1024",
   "assets/screenshots/mobile-review.png": "390x844",
   "assets/screenshots/desktop-review.png": "1440x1000",
   "store/screenshots/mobile-review.png": "390x844",

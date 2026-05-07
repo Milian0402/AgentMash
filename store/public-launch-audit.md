@@ -27,6 +27,7 @@ Make AgentMash good enough to launch publicly as a serious app.
 - Privacy, terms, support, 404, manifest, icons, service worker, and static host config are present for the public build.
 - PWA manifest includes mobile and desktop screenshots.
 - PWA manifest, package metadata, and README one-line description use consistent structured feedback-packet wording.
+- PWA icon PNGs are verified at 192 by 192, 512 by 512, and 1024 by 1024, with the Apple touch icon verified at 180 by 180.
 - Public build script packages `_site/` without internal launch docs, submission drafts, scripts, or repo metadata.
 - Internal publishing notes are not linked from the app footer, packaged into `_site/`, or cached by the service worker.
 - GitHub Pages, Netlify, and Vercel configs publish `_site/` instead of repo root.
@@ -95,6 +96,7 @@ Make AgentMash good enough to launch publicly as a serious app.
 - `npm run check` now includes Playwright e2e coverage for Nice, Undo, Nope, rapid duplicate decision locking, mobile header clearance, mobile Refine sheet clearance, mobile Pairwise scroll, export contract badges, legacy import normalization, v2 packet shape, visual image payloads, normalized export verdicts, dataset return format, Keepers completion state, Remix repeat sessions with variant metadata, Endless auto-looping, Pairwise comparison export, human-screen install prompt, empty Export workspace state, IndexedDB image storage, pending upload submit-only storage, profile image export/import, offline app-shell loading, and a 500-item local stress path.
 - `manifest.webmanifest`, `package.json`, and `vercel.json` parse as JSON.
 - `npm run check` verifies manifest and package descriptions use structured feedback-packet wording.
+- `npm run check` verifies PWA icon PNG dimensions match manifest-declared install sizes.
 - `npm run check` verifies public PWA screenshot PNG dimensions match the manifest-declared 390 by 844 and 1440 by 1000 sizes.
 - `schemas/feedback.v2.json` parses as JSON and is checked for the `agentmash.feedback.v2` contract.
 - The runtime packet schema and app code are checked to keep return modes local-only: `json` and `dataset`.
