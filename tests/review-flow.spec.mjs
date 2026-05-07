@@ -87,6 +87,8 @@ async function imageStoreKeys(page) {
 
 async function addTinyImageArtifact(page, title) {
   await page.getByRole("button", { name: "Add artifact" }).click();
+  await expect(page.locator("#imageStatus")).toHaveAttribute("role", "status");
+  await expect(page.locator("#imageStatus")).toHaveAttribute("aria-live", "polite");
   await page.locator("#artifactTitle").fill(title);
   await page.setInputFiles("#artifactImage", {
     name: "tiny.png",

@@ -265,6 +265,7 @@ check(app.includes("confirmProfileImport") && app.includes("Import this AgentMas
 check(app.includes("async function copyText") && app.includes("Copy unavailable"), "copy actions handle clipboard failure");
 check(appSurface.includes("indexedDB") && appSurface.includes("stateForLocalStorage") && appSurface.includes('imageData: ""'), "uploaded image data is kept out of localStorage");
 check(app.includes("await writeImageData(imageKey, pendingImageData)") && app.includes("imageSelectionToken"), "pending images are written to IndexedDB only on submit");
+check(index.includes('id="imageStatus" class="help-text" role="status" aria-live="polite"'), "image upload status is announced accessibly");
 check(index.includes("storageHealthStatus") && renderModule.includes("estimateImageStoreBytes") && renderModule.includes("localStorageProfileBytes"), "human dashboard shows storage health");
 check(appSurface.includes("Local storage full") && appSurface.includes("setStorageStatus"), "localStorage quota failure surfaces in the UI");
 check(appSurface.includes("signalStrengthFormula") && appSurface.includes("agentmash.feedback.v2"), "feedback packets use schema v2 with signal strength formula");
