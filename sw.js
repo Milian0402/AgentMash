@@ -1,4 +1,4 @@
-const CACHE_NAME = "nice-or-not-v4";
+const CACHE_NAME = "nice-or-not-v5";
 const APP_SHELL = [
   "./",
   "./index.html",
@@ -6,8 +6,13 @@ const APP_SHELL = [
   "./app.js",
   "./manifest.webmanifest",
   "./assets/app-icon.svg",
+  "./assets/icons/app-icon-192.png",
+  "./assets/icons/app-icon-512.png",
+  "./assets/icons/app-icon-1024.png",
   "./privacy.html",
-  "./terms.html"
+  "./terms.html",
+  "./publishing.html",
+  "./404.html"
 ];
 
 self.addEventListener("install", (event) => {

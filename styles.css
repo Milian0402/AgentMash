@@ -58,7 +58,7 @@ button:disabled {
 .app-shell {
   min-height: 100vh;
   display: grid;
-  grid-template-rows: auto 1fr;
+  grid-template-rows: auto 1fr auto;
 }
 
 .topbar {
@@ -964,6 +964,27 @@ button:disabled {
   font-weight: 850;
 }
 
+.site-footer {
+  padding: 18px clamp(16px, 3vw, 34px) 28px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 14px;
+  flex-wrap: wrap;
+  color: var(--muted);
+  font-size: 0.82rem;
+  font-weight: 800;
+}
+
+.site-footer a {
+  color: var(--blue);
+  text-decoration: none;
+}
+
+.site-footer a:hover {
+  text-decoration: underline;
+}
+
 @media (max-width: 1180px) {
   .workspace {
     grid-template-columns: minmax(360px, 1fr) minmax(260px, 330px);
@@ -984,6 +1005,10 @@ button:disabled {
   .topbar-actions {
     width: 100%;
     justify-content: flex-start;
+  }
+
+  .icon-button {
+    flex: 1 1 92px;
   }
 
   .workspace {

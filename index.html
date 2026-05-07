@@ -3,17 +3,33 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <meta name="application-name" content="Nice or Not" />
+    <meta name="color-scheme" content="light" />
     <meta name="theme-color" content="#171914" />
     <meta
       name="description"
-      content="A private swipe app for judging AI-generated websites, logos, copy, and product images."
+      content="A private first-impression review app for judging AI-generated websites, logos, copy, and product images."
     />
+    <meta property="og:title" content="Nice or Not" />
+    <meta
+      property="og:description"
+      content="Capture fast human judgement on AI-generated artifacts and turn it into structured feedback."
+    />
+    <meta property="og:type" content="website" />
+    <meta property="og:image" content="assets/icons/app-icon-1024.png" />
+    <meta name="twitter:card" content="summary" />
+    <meta name="twitter:title" content="Nice or Not" />
+    <meta
+      name="twitter:description"
+      content="Swipe through AI-generated work and record whether it survives a first glance."
+    />
+    <meta name="twitter:image" content="assets/icons/app-icon-1024.png" />
     <meta name="apple-mobile-web-app-capable" content="yes" />
     <meta name="apple-mobile-web-app-title" content="Nice or Not" />
     <title>Nice or Not</title>
     <link rel="manifest" href="manifest.webmanifest" />
     <link rel="icon" href="assets/app-icon.svg" />
-    <link rel="apple-touch-icon" href="assets/app-icon.svg" />
+    <link rel="apple-touch-icon" href="assets/icons/app-icon-192.png" />
     <link rel="stylesheet" href="styles.css" />
   </head>
   <body>
@@ -29,8 +45,8 @@
 
         <div class="topbar-actions">
           <button class="icon-button" id="installButton" type="button" hidden>Install</button>
-          <button class="icon-button" id="importButton" type="button" aria-label="Import profile" title="Import profile">In</button>
-          <button class="icon-button" id="exportButton" type="button" aria-label="Export profile" title="Export profile">Out</button>
+          <button class="icon-button" id="importButton" type="button" aria-label="Import profile" title="Import profile">Import</button>
+          <button class="icon-button" id="exportButton" type="button" aria-label="Export profile" title="Export profile">Export</button>
           <button class="icon-button danger" id="resetButton" type="button" aria-label="Reset demo" title="Reset demo">Reset</button>
           <input id="importFile" type="file" accept="application/json" hidden />
         </div>
@@ -248,6 +264,13 @@
           </section>
         </aside>
       </main>
+
+      <footer class="site-footer">
+        <span>Local-only prerelease</span>
+        <a href="privacy.html">Privacy</a>
+        <a href="terms.html">Terms</a>
+        <a href="publishing.html">Publishing notes</a>
+      </footer>
     </div>
 
     <script src="app.js" defer></script>

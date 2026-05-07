@@ -3,6 +3,10 @@
   "version": "0.2.0",
   "private": true,
   "description": "A private swipe app for judging AI-generated websites, logos, copy, and product images.",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Milian0402/is-it-nice.git"
+  },
   "license": "UNLICENSED",
   "scripts": {
     "serve": "python3 -m http.server 5177",

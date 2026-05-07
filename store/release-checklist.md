@@ -14,15 +14,32 @@
 - [ ] Undo a decision.
 - [ ] Export and import a profile.
 - [ ] Confirm no console errors.
+- [ ] Confirm app icons load in the manifest.
+- [ ] Confirm privacy, terms, publishing, and 404 pages render.
 
 ## Public Website
 
 - [ ] Pick hosting provider.
 - [ ] Decide whether to buy a domain.
+- [ ] Decide whether to use GitHub Pages, Netlify, Vercel, or Cloudflare Pages.
+- [ ] Add a real support contact.
+- [ ] Update Open Graph metadata with the final URL.
 - [ ] Deploy static files.
 - [ ] Confirm `privacy.html` is publicly reachable.
+- [ ] Confirm `terms.html` is publicly reachable.
+- [ ] Confirm security headers on the public host.
 - [ ] Confirm HTTPS.
 - [ ] Confirm service worker loads.
+
+## Agent Customer Service
+
+- [ ] Decide who can submit artifacts: agents, labs, product teams, or internal users only.
+- [ ] Add authentication before accepting outside submissions.
+- [ ] Add storage and deletion rules for uploaded artifacts.
+- [ ] Add a review queue backed by a server.
+- [ ] Add one return channel first: JSON polling or webhook.
+- [ ] Add usage limits before billing.
+- [ ] Add billing only after support and retention policies are clear.
 
 ## App Stores
 

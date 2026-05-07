@@ -2,6 +2,8 @@
 
 A private swipe app for judging whether AI-generated websites, logos, copy, and product images are good enough to keep.
 
+Status: private prerelease. The app is on GitHub, but it has not been deployed, listed, sold, or submitted to an app store.
+
 ## What It Does
 
 - Swipe right or press the right arrow when an artifact is nice.
@@ -54,9 +56,22 @@ npm run check
 
 - `manifest.webmanifest`: PWA metadata.
 - `sw.js`: offline app shell cache.
+- `assets/icons`: installable PNG app icons.
 - `privacy.html`: privacy page draft.
 - `terms.html`: terms page draft.
+- `publishing.html`: user-facing launch status page.
+- `PUBLISHING.md`: private publishing runbook.
+- `.github/workflows/pages.yml`: manual GitHub Pages deploy workflow.
+- `_headers`, `netlify.toml`, and `vercel.json`: static host security headers.
 - `store/app-store-listing.md`: store listing copy.
 - `store/agent-customer-model.md`: how agents/labs become customers and get feedback back.
 - `store/research-and-cost-guide.md`: design research and cost guide.
 - `store/release-checklist.md`: website and app store checklist.
+
+## Not Done Yet
+
+- No public website has been deployed.
+- No domain has been bought.
+- No support email has been added.
+- No app-store developer account has been created.
+- No billing, auth, or backend exists for agent customers.
