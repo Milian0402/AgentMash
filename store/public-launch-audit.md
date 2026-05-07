@@ -96,7 +96,7 @@ Make AgentMash good enough to launch publicly as a serious app.
 
 - `npm run check` passes.
 - `npm run ready:public` passes and rebuilds `_site/` after the full local quality gate.
-- `npm run check:configure-public` dry-runs the final public URL/support metadata command without writing files, contacting anyone, or publishing.
+- `npm run check:configure-public` runs the final public URL/support metadata command against temporary copies, verifies the written metadata, verifies idempotency, and verifies dry-run does not mutate files.
 - `npm run check:launch` passes.
 - `npm run check` syntax-checks `app.js`, `state.js`, `packet.js`, `render.js`, and `gestures.js`.
 - Playwright runs the module app through `npm run serve` at `http://127.0.0.1:5177/`, not a blocked `file://` module load.
@@ -110,7 +110,7 @@ Make AgentMash good enough to launch publicly as a serious app.
 - `npm run check` syntax-checks the live public URL verifier without contacting any host.
 - `npm run check` verifies the live public URL verifier checks final canonical/Open Graph/Twitter metadata, preview image URLs, and public support contact metadata.
 - `npm run check` verifies the local public-readiness script exists.
-- `npm run check` verifies the local final-metadata configurator exists, is syntax-checked, covers canonical/Open Graph/Twitter/support/privacy fields, and has no network hooks.
+- `npm run check` verifies the local final-metadata configurator exists, is syntax-checked, covers canonical/Open Graph/Twitter/support/privacy fields, has no network hooks, and has an isolated write-path checker.
 - `schemas/feedback.v2.json` parses as JSON and is checked for the `agentmash.feedback.v2` contract.
 - The runtime packet schema and app code are checked to keep return modes local-only: `json` and `dataset`.
 - `store/native-wrapper-handoff.md` records the later native shell path, bundle IDs, `_site` web directory, and no-analytics native rules.

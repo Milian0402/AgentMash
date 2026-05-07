@@ -51,7 +51,7 @@ This keeps the app launchable without paying for a domain, app-store accounts, h
 - Public `_site/` build that excludes internal launch docs and submission drafts.
 - Store listing copy and privacy/data safety drafts.
 - Draft store submission screenshots and feature graphic in `store/submission`.
-- Launch verifier through `npm run check` and final metadata dry-run through `npm run check:configure-public`.
+- Launch verifier through `npm run check` and isolated final metadata write-path coverage through `npm run check:configure-public`.
 
 ## Minimum Public Website Launch
 

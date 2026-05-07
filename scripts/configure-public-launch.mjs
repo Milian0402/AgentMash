@@ -1,8 +1,12 @@
 import { readFile, writeFile } from "node:fs/promises";
+import { join } from "node:path";
+import { fileURLToPath } from "node:url";
 
-const indexPath = "index.html";
-const supportPath = "support.html";
-const privacyPath = "privacy.html";
+const pageNames = {
+  index: "index.html",
+  privacy: "privacy.html",
+  support: "support.html"
+};
 
 function usage() {
   return [
@@ -11,6 +15,7 @@ function usage() {
     "Options:",
     "  --url <https-url>       Final public app URL.",
     "  --support <text>        Public support route to show on support/privacy pages.",
+    "  --root <path>           Directory containing index/support/privacy HTML files.",
     "  --dry-run              Validate and print planned changes without writing files."
   ].join("\n");
 }
@@ -18,6 +23,7 @@ function usage() {
 function parseArgs(argv) {
   const parsed = {
     dryRun: false,
+    root: ".",
     support: "",
     url: ""
   };
@@ -35,6 +41,11 @@ function parseArgs(argv) {
     }
     if (arg === "--support") {
       parsed.support = argv[index + 1] || "";
+      index += 1;
+      continue;
+    }
+    if (arg === "--root") {
+      parsed.root = argv[index + 1] || "";
       index += 1;
       continue;
     }
@@ -157,36 +168,51 @@ function configurePrivacy(source, contact) {
   );
 }
 
-async function main() {
-  const args = parseArgs(process.argv.slice(2));
-  const publicUrl = normalizePublicUrl(args.url);
-  const support = args.support.trim();
+export async function configurePublicLaunch({ dryRun = false, root = ".", support = "", url }) {
+  const publicUrl = normalizePublicUrl(url);
+  const trimmedSupport = support.trim();
 
   const files = {
-    [indexPath]: configureIndex(await readFile(indexPath, "utf8"), publicUrl),
-    [supportPath]: configureSupport(await readFile(supportPath, "utf8"), support),
-    [privacyPath]: configurePrivacy(await readFile(privacyPath, "utf8"), support)
+    [pageNames.index]: configureIndex(await readFile(join(root, pageNames.index), "utf8"), publicUrl),
+    [pageNames.support]: configureSupport(await readFile(join(root, pageNames.support), "utf8"), trimmedSupport),
+    [pageNames.privacy]: configurePrivacy(await readFile(join(root, pageNames.privacy), "utf8"), trimmedSupport)
   };
 
   const changedFiles = [];
   for (const [path, next] of Object.entries(files)) {
-    const current = await readFile(path, "utf8");
+    const fullPath = join(root, path);
+    const current = await readFile(fullPath, "utf8");
     if (current !== next) {
       changedFiles.push(path);
-      if (!args.dryRun) {
-        await writeFile(path, next);
+      if (!dryRun) {
+        await writeFile(fullPath, next);
       }
     }
   }
 
-  console.log(`${args.dryRun ? "Checked" : "Configured"} public launch metadata for ${publicUrl.toString()}`);
-  if (support) {
-    console.log(`Support route: ${support}`);
-  }
-  console.log(`Files ${args.dryRun ? "that would change" : "changed"}: ${changedFiles.length ? changedFiles.join(", ") : "none"}`);
+  return {
+    changedFiles,
+    publicUrl,
+    support: trimmedSupport
+  };
 }
 
-main().catch((error) => {
-  console.error(error.message);
-  process.exit(1);
-});
+async function main() {
+  const args = parseArgs(process.argv.slice(2));
+  const result = await configurePublicLaunch(args);
+
+  console.log(`${args.dryRun ? "Checked" : "Configured"} public launch metadata for ${result.publicUrl.toString()}`);
+  if (result.support) {
+    console.log(`Support route: ${result.support}`);
+  }
+  console.log(`Files ${args.dryRun ? "that would change" : "changed"}: ${result.changedFiles.length ? result.changedFiles.join(", ") : "none"}`);
+}
+
+const isMain = process.argv[1] && fileURLToPath(import.meta.url) === process.argv[1];
+
+if (isMain) {
+  main().catch((error) => {
+    console.error(error.message);
+    process.exit(1);
+  });
+}

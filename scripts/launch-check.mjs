@@ -25,6 +25,7 @@ const requiredFiles = [
   "scripts/build-site.mjs",
   "scripts/verify-public-url.mjs",
   "scripts/configure-public-launch.mjs",
+  "scripts/check-configure-public.mjs",
   "schemas/feedback.v2.json",
   "store/completion-audit.md",
   "store/public-launch-audit.md",
@@ -181,6 +182,7 @@ const playwrightConfig = await read("playwright.config.mjs");
 const testSpec = await read("tests/review-flow.spec.mjs");
 const verifyPublicScript = await read("scripts/verify-public-url.mjs");
 const configurePublicScript = await read("scripts/configure-public-launch.mjs");
+const configurePublicCheck = await read("scripts/check-configure-public.mjs");
 const readme = await read("README.md");
 const completionAudit = await read("store/completion-audit.md");
 const audit = await read("store/public-launch-audit.md");
@@ -356,19 +358,24 @@ check(packageJson.scripts?.["ready:public"] === "npm run check && npm run build"
 check(packageJson.scripts?.["verify:public"] === "node scripts/verify-public-url.mjs", "package has public URL verifier script");
 check(packageJson.scripts?.["configure:public"] === "node scripts/configure-public-launch.mjs", "package has public launch metadata configurator script");
 check(
-  packageJson.scripts?.["check:configure-public"] === "node scripts/configure-public-launch.mjs --dry-run --url https://agentmash.example --support support@example.com",
-  "package has public metadata dry-run check"
+  packageJson.scripts?.["check:configure-public"] === "node scripts/check-configure-public.mjs",
+  "package has public metadata write-path check"
 );
 check(packageJson.scripts?.check.includes("npm run test:e2e"), "package check runs Playwright e2e tests");
 check(packageJson.scripts?.check.includes("node --check scripts/verify-public-url.mjs"), "package check syntax-checks public URL verifier");
 check(packageJson.scripts?.check.includes("node --check scripts/configure-public-launch.mjs"), "package check syntax-checks public metadata configurator");
-check(packageJson.scripts?.check.includes("npm run check:configure-public"), "package check dry-runs public metadata configurator");
+check(packageJson.scripts?.check.includes("node --check scripts/check-configure-public.mjs"), "package check syntax-checks public metadata checker");
+check(packageJson.scripts?.check.includes("npm run check:configure-public"), "package check verifies public metadata configurator");
 check(packageJson.scripts?.["test:e2e"] === "playwright test", "package has Playwright e2e script");
 check(packageJson.devDependencies?.["@playwright/test"], "Playwright is a dev dependency only");
 check(
-  hasAll(configurePublicScript, ["og:url", "twitter:url", "canonical", "data-public-support-contact", "--dry-run"]) &&
+  hasAll(configurePublicScript, ["og:url", "twitter:url", "canonical", "data-public-support-contact", "--dry-run", "--root", "configurePublicLaunch"]) &&
     !/\b(fetch|XMLHttpRequest|sendBeacon|WebSocket)\b/i.test(configurePublicScript),
   "public metadata configurator is local-only and covers URL/support launch fields"
+);
+check(
+  hasAll(configurePublicCheck, ["mkdtemp", "configurePublicLaunch", "idempotent", "dry-run does not mutate files", "app/assets/icons/app-icon-1024.png"]),
+  "public metadata checker exercises real write, idempotency, and dry-run paths"
 );
 check(
   hasAll(verifyPublicScript, ["canonical URL", "Open Graph URL", "Twitter URL", "Open Graph image", "Twitter image", "data-public-support-contact"]),
