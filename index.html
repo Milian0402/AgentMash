@@ -207,6 +207,10 @@
                 <span class="metric-label">Avg confidence</span>
                 <strong id="agentAvgConfidence">0</strong>
               </div>
+              <div class="metric">
+                <span class="metric-label">Retry queue</span>
+                <strong id="agentRetryQueue">0</strong>
+              </div>
             </div>
 
             <div class="section-block">
@@ -215,6 +219,18 @@
                 <span class="count-pill">Live local data</span>
               </div>
               <div id="agentRequestList" class="agent-list"></div>
+            </div>
+
+            <div class="section-block dataset-block">
+              <div class="section-title-row">
+                <h2>Eval Dataset</h2>
+                <span id="datasetStatus" class="count-pill">0 rows</span>
+              </div>
+              <pre id="datasetPreview" class="dataset-preview" aria-label="Lab-ready eval dataset preview"></pre>
+              <div class="packet-actions">
+                <button class="icon-button" id="copyDatasetButton" type="button">Copy JSONL</button>
+                <button class="icon-button" id="downloadDatasetButton" type="button">JSONL</button>
+              </div>
             </div>
           </section>
 
@@ -229,6 +245,11 @@
                 <button class="icon-button" id="copyPacketButton" type="button">Copy</button>
                 <button class="icon-button" id="downloadPacketButton" type="button">JSON</button>
               </div>
+            </section>
+
+            <section class="section-block">
+              <h2>Agent Use</h2>
+              <div id="agentUseList" class="agent-use-list"></div>
             </section>
 
             <section class="section-block">

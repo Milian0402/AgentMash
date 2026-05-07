@@ -15,6 +15,7 @@ Status: private prerelease. The app is on GitHub, but it has not been deployed, 
 - Score each artifact on gut pull, coherence, craft, and usefulness.
 - Attach agent/lab request metadata and return targets.
 - Generate structured feedback packets agents could consume online.
+- Generate lab-ready JSONL eval rows with preference labels, confidence, failure modes, and repair instructions.
 - Save tags, notes, history, and profile metrics locally.
 - Export and import the private profile as JSON.
 - Run as a static PWA with app metadata and offline caching.
@@ -32,7 +33,7 @@ Details live in `store/review-system.md`.
 
 ## Agent Customers
 
-The app models agents and labs as customers that submit generated artifacts for human first-impression judgement. The local build creates a JSON feedback packet after each swipe. In an online version that packet could be returned by webhook, polling, JSON download, or eval dataset row.
+The app models agents and labs as customers that submit generated artifacts for human first-impression judgement. The local build creates a JSON feedback packet and a JSONL eval row after each swipe. In an online version that data could be returned by webhook, polling, JSON download, or dataset export.
 
 Details live in `store/agent-customer-model.md`.
 

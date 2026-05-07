@@ -1223,11 +1223,13 @@ body[data-dashboard="human"] .workspace {
   color: var(--red);
 }
 
-.packet-block {
+.packet-block,
+.dataset-block {
   min-width: 0;
 }
 
-.packet-preview {
+.packet-preview,
+.dataset-preview {
   max-height: 300px;
   margin: 0;
   overflow: auto;
@@ -1241,6 +1243,10 @@ body[data-dashboard="human"] .workspace {
     "Liberation Mono", monospace;
   white-space: pre-wrap;
   word-break: break-word;
+}
+
+.dataset-preview {
+  max-height: 210px;
 }
 
 .packet-actions {
@@ -1281,7 +1287,7 @@ body[data-dashboard="human"] .workspace {
 
 .agent-metrics {
   display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
+  grid-template-columns: repeat(4, minmax(0, 1fr));
   gap: 10px;
 }
 
@@ -1291,7 +1297,8 @@ body[data-dashboard="human"] .workspace {
 }
 
 .agent-request,
-.signal-item {
+.signal-item,
+.agent-use-item {
   border: 1px solid var(--line);
   border-radius: var(--radius);
   background: var(--surface);
@@ -1316,7 +1323,9 @@ body[data-dashboard="human"] .workspace {
 .agent-request-top strong,
 .agent-request-top span,
 .agent-request-footer span,
-.signal-item p {
+.signal-item p,
+.agent-use-item span,
+.agent-use-item strong {
   display: block;
 }
 
@@ -1327,11 +1336,45 @@ body[data-dashboard="human"] .workspace {
 .agent-request-top span,
 .agent-request-footer span,
 .agent-request p,
-.signal-item p {
+.signal-item p,
+.agent-use-item span {
   margin: 0;
   color: var(--muted);
   line-height: 1.4;
   font-size: 0.82rem;
+}
+
+.agent-use-list {
+  display: grid;
+  gap: 9px;
+}
+
+.agent-use-item {
+  gap: 5px;
+}
+
+.agent-use-item strong {
+  font-size: 0.9rem;
+  line-height: 1.35;
+}
+
+.signal-chip-row {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+
+.signal-chip {
+  min-height: 24px;
+  display: inline-flex;
+  align-items: center;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  background: var(--surface-strong);
+  color: var(--muted);
+  padding: 0 8px;
+  font-size: 0.72rem;
+  font-weight: 850;
 }
 
 .ready-pill {

@@ -225,7 +225,13 @@ const elements = {
   agentReadyPackets: document.querySelector("#agentReadyPackets"),
   agentPendingRequests: document.querySelector("#agentPendingRequests"),
   agentAvgConfidence: document.querySelector("#agentAvgConfidence"),
+  agentRetryQueue: document.querySelector("#agentRetryQueue"),
   agentRequestList: document.querySelector("#agentRequestList"),
+  datasetStatus: document.querySelector("#datasetStatus"),
+  datasetPreview: document.querySelector("#datasetPreview"),
+  copyDatasetButton: document.querySelector("#copyDatasetButton"),
+  downloadDatasetButton: document.querySelector("#downloadDatasetButton"),
+  agentUseList: document.querySelector("#agentUseList"),
   agentSignalList: document.querySelector("#agentSignalList"),
   historyList: document.querySelector("#historyList"),
   packetStatus: document.querySelector("#packetStatus"),
@@ -582,14 +588,19 @@ function renderAgentDashboard() {
   const reviewByItem = new Map(state.reviews.map((review) => [review.itemId, review]));
   const readyCount = state.reviews.length;
   const pendingCount = state.items.filter((item) => !reviewByItem.has(item.id)).length;
-  const avgScore = readyCount
-    ? Math.round(state.reviews.reduce((sum, review) => sum + review.score, 0) / readyCount)
+  const evalRows = buildEvalRows();
+  const retryCount = evalRows.filter((row) => row.agentUse.recommendedAction !== "ship_or_keep").length;
+  const avgConfidence = evalRows.length
+    ? Math.round(evalRows.reduce((sum, row) => sum + row.humanSignal.confidence, 0) / evalRows.length * 100)
     : 0;
 
   elements.agentTotalRequests.textContent = `${state.items.length} requests`;
   elements.agentReadyPackets.textContent = `${readyCount}`;
   elements.agentPendingRequests.textContent = `${pendingCount}`;
-  elements.agentAvgConfidence.textContent = `${avgScore}`;
+  elements.agentAvgConfidence.textContent = `${avgConfidence}%`;
+  elements.agentRetryQueue.textContent = `${retryCount}`;
+  renderDatasetPreview(evalRows);
+  renderAgentUsePanel(evalRows);
 
   elements.agentRequestList.replaceChildren();
   const requests = [...state.items].sort((a, b) => b.createdAt.localeCompare(a.createdAt));
@@ -622,8 +633,26 @@ function renderAgentDashboard() {
 
     const signal = document.createElement("p");
     signal.textContent = review
-      ? `${review.verdict === "nice" ? "Nice" : "Nope"} at ${review.score}. ${review.recommendation}`
+      ? `${review.verdict === "nice" ? "Nice" : "Nope"} at ${review.score}. ${repairInstructionFor(item, review)}`
       : item.agent.goal || "Waiting for a human first-impression swipe.";
+
+    if (review) {
+      const chips = document.createElement("div");
+      chips.className = "signal-chip-row";
+      [
+        `label: ${preferenceLabelFor(review)}`,
+        `confidence: ${Math.round(confidenceFor(review) * 100)}%`,
+        `use: ${recommendedActionFor(review)}`
+      ].forEach((value) => {
+        const chip = document.createElement("span");
+        chip.className = "signal-chip";
+        chip.textContent = value;
+        chips.append(chip);
+      });
+      row.append(top, signal, chips);
+    } else {
+      row.append(top, signal);
+    }
 
     const footer = document.createElement("div");
     footer.className = "agent-request-footer";
@@ -641,11 +670,69 @@ function renderAgentDashboard() {
     });
     footer.append(returnTarget, inspect);
 
-    row.append(top, signal, footer);
+    row.append(footer);
     elements.agentRequestList.append(row);
   });
 
   renderAgentSignals(reviewByItem);
+}
+
+function renderDatasetPreview(evalRows) {
+  elements.datasetStatus.textContent = `${evalRows.length} rows`;
+  elements.copyDatasetButton.disabled = evalRows.length === 0;
+  elements.downloadDatasetButton.disabled = evalRows.length === 0;
+
+  if (!evalRows.length) {
+    elements.datasetPreview.textContent = "No lab-ready rows yet. Swipe at least one request to create JSONL eval data.";
+    return;
+  }
+
+  elements.datasetPreview.textContent = evalRows
+    .slice(0, 3)
+    .map((row) => JSON.stringify(row))
+    .join("\n");
+}
+
+function renderAgentUsePanel(evalRows) {
+  elements.agentUseList.replaceChildren();
+  const packet = activePacket();
+  const selectedUse = packet?.agentUse;
+  const rows = selectedUse
+    ? [
+        ["Preference label", selectedUse.preferenceLabel],
+        ["Confidence", `${Math.round(selectedUse.confidence * 100)}%`],
+        ["Recommended action", selectedUse.recommendedAction],
+        ["Repair instruction", selectedUse.repairInstruction]
+      ]
+    : [
+        ["Eval rows", `${evalRows.length}`],
+        ["Training signals", evalRows.length ? signalCoverage(evalRows).join(", ") : "None yet"],
+        ["Next useful action", evalRows.length ? "Export JSONL or inspect ready packets." : "Collect a human swipe."]
+      ];
+
+  rows.forEach(([label, value]) => {
+    const item = document.createElement("div");
+    item.className = "agent-use-item";
+    const key = document.createElement("span");
+    key.textContent = label;
+    const text = document.createElement("strong");
+    text.textContent = value || "None";
+    item.append(key, text);
+    elements.agentUseList.append(item);
+  });
+}
+
+function buildEvalRows() {
+  return state.reviews
+    .map((review) => {
+      const item = state.items.find((candidate) => candidate.id === review.itemId);
+      return item ? buildEvalRow(item, review) : null;
+    })
+    .filter(Boolean);
+}
+
+function signalCoverage(evalRows) {
+  return [...new Set(evalRows.flatMap((row) => row.agentUse.trainingUse))];
 }
 
 function renderAgentSignals(reviewByItem) {
@@ -694,8 +781,7 @@ function renderFeedbackPacket(activeItem) {
 function packetItemForRender(activeItem) {
   if (state.lastPacketItemId) {
     const lastPacketItem = state.items.find((item) => item.id === state.lastPacketItemId);
-    const hasReview = state.reviews.some((review) => review.itemId === state.lastPacketItemId);
-    if (lastPacketItem && hasReview) {
+    if (lastPacketItem) {
       return lastPacketItem;
     }
   }
@@ -980,6 +1066,37 @@ function downloadPacket() {
   URL.revokeObjectURL(url);
 }
 
+function datasetJsonl() {
+  return buildEvalRows().map((row) => JSON.stringify(row)).join("\n");
+}
+
+async function copyDataset() {
+  const text = datasetJsonl();
+  if (!text) {
+    return;
+  }
+  if (navigator.clipboard && window.isSecureContext) {
+    await navigator.clipboard.writeText(text);
+  }
+  elements.datasetStatus.textContent = "Copied";
+}
+
+function downloadDataset() {
+  const text = datasetJsonl();
+  if (!text) {
+    return;
+  }
+  const blob = new Blob([`${text}\n`], { type: "application/x-ndjson" });
+  const url = URL.createObjectURL(blob);
+  const link = document.createElement("a");
+  link.href = url;
+  link.download = `nice-or-not-eval-rows-${new Date().toISOString().slice(0, 10)}.jsonl`;
+  document.body.append(link);
+  link.click();
+  link.remove();
+  URL.revokeObjectURL(url);
+}
+
 function importProfile(file) {
   const reader = new FileReader();
   reader.addEventListener("load", () => {
@@ -1032,16 +1149,21 @@ function buildPendingPacket(item) {
 }
 
 function buildFeedbackPacket(item, review) {
+  const humanSignal = humanSignalFor(item, review);
+  const agentUse = agentUseFor(item, review);
   return {
     schema: "nice-or-not.feedback.v1",
     status: "ready",
     packetId: `feedback-${review.id}`,
     generatedAt: new Date().toISOString(),
     request: requestEnvelope(item),
+    humanSignal,
     humanJudgement: {
       reviewer: review.reviewer,
       verdict: review.verdict,
-      firstImpression: review.verdict === "nice" ? "accepted_on_first_glance" : "rejected_on_first_glance",
+      firstImpression: humanSignal.firstImpression,
+      preferenceLabel: humanSignal.preferenceLabel,
+      confidence: humanSignal.confidence,
       score: review.score,
       grade: review.grade,
       scores: review.scores,
@@ -1052,13 +1174,65 @@ function buildFeedbackPacket(item, review) {
     interpretation: {
       recommendation: review.recommendation || recommendationFor(review),
       likelyFailureModes: failureModesFor(review),
+      repairInstruction: agentUse.repairInstruction,
       criteriaUsed: typeRubrics[item.type]
     },
+    agentUse,
+    evalRow: buildEvalRow(item, review),
     return: {
       ...returnEnvelope(item.agent),
       deliveryStatus: "local_ready",
       onlineBehavior: returnBehaviorFor(item.agent.returnMode)
     }
+  };
+}
+
+function buildEvalRow(item, review) {
+  return {
+    schema: "nice-or-not.eval-row.v1",
+    rowId: `eval-${review.id}`,
+    createdAt: review.createdAt,
+    artifact: {
+      artifactId: item.id,
+      type: item.type,
+      title: item.title,
+      prompt: item.prompt,
+      body: item.body,
+      requesterName: item.agent.requesterName,
+      requesterType: item.agent.requesterType,
+      runId: item.agent.runId,
+      goal: item.agent.goal
+    },
+    humanSignal: humanSignalFor(item, review),
+    agentUse: agentUseFor(item, review)
+  };
+}
+
+function humanSignalFor(item, review) {
+  return {
+    reviewer: review.reviewer,
+    verdict: review.verdict,
+    preferenceLabel: preferenceLabelFor(review),
+    firstImpression: review.verdict === "nice" ? "accepted_on_first_glance" : "rejected_on_first_glance",
+    score: review.score,
+    grade: review.grade,
+    confidence: confidenceFor(review),
+    scoreVector: scoreVectorFor(review),
+    tags: review.tags,
+    failureModes: failureModesFor(review),
+    rationale: review.note || defaultRationaleFor(item, review),
+    judgedAt: review.createdAt
+  };
+}
+
+function agentUseFor(item, review) {
+  return {
+    trainingUse: trainingUseFor(review),
+    preferenceLabel: preferenceLabelFor(review),
+    recommendedAction: recommendedActionFor(review),
+    repairInstruction: repairInstructionFor(item, review),
+    confidence: confidenceFor(review),
+    returnTarget: item.agent.returnTarget || "local export"
   };
 }
 
@@ -1113,10 +1287,101 @@ function recommendationFor(review) {
 
 function failureModesFor(review) {
   const lowScores = Object.entries(review.scores)
-    .filter(([, value]) => value <= 4)
+    .filter(([, value]) => value <= 5)
     .map(([key]) => key);
   const tagModes = review.tags.filter((tag) => ["generic", "uncanny", "confusing", "off-brand"].includes(tag));
-  return [...new Set([...lowScores, ...tagModes])];
+  const verdictModes = review.verdict === "pass" ? ["first_glance_rejection"] : [];
+  return [...new Set([...verdictModes, ...lowScores, ...tagModes])];
+}
+
+function scoreVectorFor(review) {
+  return scoreDimensions.reduce((vector, dimension) => {
+    vector[dimension.key] = {
+      label: dimension.label,
+      value: review.scores[dimension.key],
+      weight: dimension.weight
+    };
+    return vector;
+  }, {});
+}
+
+function preferenceLabelFor(review) {
+  return review.verdict === "nice" ? "chosen" : "rejected";
+}
+
+function confidenceFor(review) {
+  const distanceFromMaybe = Math.min(1, Math.abs(review.score - 60) / 40);
+  const tagBoost = Math.min(0.1, review.tags.length * 0.025);
+  const noteBoost = review.note ? 0.08 : 0;
+  return roundTo(0.55 + distanceFromMaybe * 0.27 + tagBoost + noteBoost, 2);
+}
+
+function trainingUseFor(review) {
+  const uses = ["preference_label", "score_vector", "eval_dataset_row"];
+  if (review.tags.length || failureModesFor(review).length) {
+    uses.push("failure_taxonomy");
+  }
+  if (review.note || review.verdict === "pass" || review.score < 78) {
+    uses.push("prompt_repair");
+  }
+  return uses;
+}
+
+function recommendedActionFor(review) {
+  if (review.verdict === "nice" && review.score >= 78) {
+    return "ship_or_keep";
+  }
+  if (review.verdict === "nice") {
+    return "iterate_from_positive";
+  }
+  if (review.score >= 68) {
+    return "mine_traits_then_retry";
+  }
+  if (review.score >= 45) {
+    return "repair";
+  }
+  return "reject_and_regenerate";
+}
+
+function repairInstructionFor(item, review) {
+  const weak = weakestDimensions(review)
+    .map((dimension) => dimension.label.toLowerCase())
+    .join(", ");
+  const typeHints = {
+    website: "Make the purpose, trust signal, and visual hierarchy obvious within two seconds.",
+    logo: "Simplify the mark so the category association and tiny-size recognition are immediate.",
+    copy: "Rewrite the first line so it sounds specific, human, and understandable without rereading.",
+    product: "Repair plausibility, materials, shadows, and desire cues before reusing this render."
+  };
+  const focus = weak ? ` Focus on ${weak}.` : "";
+
+  if (review.verdict === "nice" && review.score >= 78) {
+    return `Keep this direction for ${item.type}; preserve the prompt pattern and add it to positive examples.`;
+  }
+  if (review.verdict === "nice") {
+    return `Generate one sharper variant from this direction.${focus}`;
+  }
+  if (review.score >= 68) {
+    return `Do not ship yet. Mine the useful traits, then retry with tighter constraints.${focus}`;
+  }
+  return `${typeHints[item.type] || "Regenerate with a clearer concept and fewer trust breaks."}${focus}`;
+}
+
+function weakestDimensions(review) {
+  const sorted = scoreDimensions
+    .map((dimension) => ({
+      key: dimension.key,
+      label: dimension.label,
+      value: review.scores[dimension.key]
+    }))
+    .sort((a, b) => a.value - b.value);
+  const threshold = sorted[0]?.value <= 6 ? sorted[0].value : 5;
+  return sorted.filter((dimension) => dimension.value <= threshold).slice(0, 2);
+}
+
+function defaultRationaleFor(item, review) {
+  const tagText = review.tags.length ? ` Tags: ${review.tags.join(", ")}.` : "";
+  return `${review.verdict === "nice" ? "Human accepted" : "Human rejected"} this ${item.type} on first glance at score ${review.score}.${tagText}`;
 }
 
 function calculateScore(scores) {
@@ -1184,6 +1449,11 @@ function shortTitle(value, maxLength) {
 
 function cleanText(value) {
   return typeof value === "string" ? value.trim() : "";
+}
+
+function roundTo(value, places) {
+  const factor = 10 ** places;
+  return Math.round(value * factor) / factor;
 }
 
 function escapeHtml(value) {
@@ -1308,6 +1578,8 @@ elements.acceptButton.addEventListener("click", () => decide("nice"));
 elements.undoButton.addEventListener("click", undoLastReview);
 elements.copyPacketButton.addEventListener("click", copyPacket);
 elements.downloadPacketButton.addEventListener("click", downloadPacket);
+elements.copyDatasetButton.addEventListener("click", copyDataset);
+elements.downloadDatasetButton.addEventListener("click", downloadDataset);
 elements.importButton.addEventListener("click", () => elements.importFile.click());
 elements.importFile.addEventListener("change", () => {
   const [file] = elements.importFile.files;
