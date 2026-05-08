@@ -243,7 +243,7 @@ export function render() {
     ? pairwisePair ? "Pick the stronger first glance" : "Add two artifacts to compare"
     : activeItem ? "Trust your first reaction" : "Nothing left in this view";
   elements.stageProgress.textContent = isPairwise
-    ? `${state.pairwiseComparisons.length} captured`
+    ? `${state.pairwiseComparisons.length} picks`
     : activeItem ? "Ready" : "Done";
   elements.standardType.textContent = typeLabel(activeType);
 
@@ -439,7 +439,7 @@ export function renderPairwise(pair) {
   elements.pairRightPreview.innerHTML = renderPreview(pair.right);
   elements.pairLeftTitle.textContent = pair.left.title;
   elements.pairRightTitle.textContent = pair.right.title;
-  elements.pairwiseStatus.textContent = `${state.pairwiseComparisons.length} captured`;
+  elements.pairwiseStatus.textContent = `${state.pairwiseComparisons.length} picks`;
   elements.pairUndoButton.disabled = state.pairwiseComparisons.length === 0;
 }
 

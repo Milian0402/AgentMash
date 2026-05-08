@@ -16,7 +16,8 @@ AgentMash uses this file as a private release history for local launch-prep buil
 - Updated the default website review card with realistic status cards, action chips, approval rows, and a mini dashboard instead of anonymous wireframe bars.
 - Updated the starter logo, copy, and product cards with more realistic brand, post, and product-render details.
 - Replaced the swipe rail's text glyphs with CSS-drawn decision icons for a more polished first impression.
-- Updated the offline service worker cache to `agentmash-v46` after the richer swipe-card visual treatment, realistic starter previews, CSS-drawn decision icons, and quick-reason comment path.
+- Tightened mobile Pairwise mode so both choices fit in one compact comparison view.
+- Updated the offline service worker cache to `agentmash-v47` after the richer swipe-card visual treatment, realistic starter previews, mobile Pairwise polish, CSS-drawn decision icons, and quick-reason comment path.
 
 Constraints kept in this build:
 
