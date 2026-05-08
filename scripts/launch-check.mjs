@@ -361,6 +361,8 @@ check(
   apiContract.openapi === "3.1.0"
     && apiContract["x-agentmash-status"] === "contract-only"
     && apiContract["x-agentmash-no-live-server"] === true
+    && apiContract["x-agentmash-live-server-url"] === null
+    && !apiContract.servers?.length
     && hasAll(JSON.stringify(apiContract["x-agentmash-example-files"]), [
       "/schemas/examples/intake.v1.json",
       "/schemas/examples/intake-ack.v1.json",
@@ -370,7 +372,8 @@ check(
     && Boolean(apiContract.paths?.["/v1/feedback/{runId}"]?.get)
     && Boolean(apiContract.paths?.["/v1/artifacts/{artifactId}"]?.delete)
     && JSON.stringify(apiContract).includes("./intake.v1.json")
-    && JSON.stringify(apiContract).includes("./feedback.v2.json"),
+    && JSON.stringify(apiContract).includes("./feedback.v2.json")
+    && !JSON.stringify(apiContract).includes("api.agentmash.example"),
   "future backend OpenAPI contract is explicit and contract-only"
 );
 check(

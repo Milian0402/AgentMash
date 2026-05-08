@@ -6,14 +6,9 @@
     "version": "1.0.0",
     "description": "Contract-only handoff for a future AgentMash backend. The current app does not deploy these routes or send data to any server."
   },
-  "servers": [
-    {
-      "url": "https://api.agentmash.example",
-      "description": "Placeholder only. No live AgentMash backend is deployed by this repository."
-    }
-  ],
   "x-agentmash-status": "contract-only",
   "x-agentmash-no-live-server": true,
+  "x-agentmash-live-server-url": null,
   "x-agentmash-user-action": "Needs user action before deployment: choose hosting, auth, retention, deletion, support coverage, and public terms.",
   "x-agentmash-example-files": [
     "/schemas/examples/intake.v1.json",

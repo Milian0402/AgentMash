@@ -56,6 +56,7 @@ Last local verification: May 8, 2026. No deployment, paid account, domain purcha
 - [x] Confirm `schemas/feedback.v2.json` documents the v2 feedback packet contract.
 - [x] Confirm `schemas/intake.v1.json` documents the future backend/API/MCP intake contract.
 - [x] Confirm `schemas/api.v1.openapi.json` documents contract-only future backend routes.
+- [x] Confirm `schemas/api.v1.openapi.json` does not expose a fake live server URL.
 - [x] Confirm `schemas/mcp-tools.v1.json` documents contract-only future MCP tools.
 - [x] Confirm `schemas/examples` documents sample intake, acknowledgement, and feedback bundle payloads.
 - [x] Confirm v2 packet validation requires `submittedAt` and image envelope metadata is exported when available.

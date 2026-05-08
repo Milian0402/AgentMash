@@ -72,6 +72,7 @@ Make AgentMash good enough to launch publicly as a serious app.
 - `schemas/feedback.v2.json` documents the local packet contract for future validation.
 - `schemas/intake.v1.json` documents the local agent-drop contract for future backend, API, or MCP intake.
 - `schemas/api.v1.openapi.json` documents contract-only future backend routes for intake, feedback bundle retrieval, and deletion.
+- `schemas/api.v1.openapi.json` exposes no fake live server URL; it sets `x-agentmash-live-server-url` to `null` until the user creates a real backend.
 - `schemas/mcp-tools.v1.json` documents contract-only future MCP tools for artifact submission, feedback bundle retrieval, and deletion requests.
 - `schemas/examples/` provides sample intake, acknowledgement, and feedback bundle payloads.
 - The public URL verifier fetches the schema, contract, and example URLs and confirms their contract metadata.

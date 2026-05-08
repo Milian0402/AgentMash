@@ -178,6 +178,9 @@ async function checkOpenApiContract(base) {
       parsed.openapi === "3.1.0" &&
       parsed["x-agentmash-status"] === "contract-only" &&
       parsed["x-agentmash-no-live-server"] === true &&
+      parsed["x-agentmash-live-server-url"] === null &&
+      !parsed.servers?.length &&
+      !response.body.includes("api.agentmash.example") &&
       parsed.paths?.["/v1/intake"]?.post &&
       parsed.paths?.["/v1/feedback/{runId}"]?.get
     ) {

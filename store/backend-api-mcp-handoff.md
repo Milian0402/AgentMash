@@ -12,7 +12,7 @@ This is a contract handoff for the future online version. The current AgentMash 
 - `schemas/examples/intake-ack.v1.json`: sample future intake acknowledgement.
 - `schemas/examples/feedback-bundle.v1.json`: sample future feedback bundle response.
 
-The public static build packages these files so a future integrator can inspect the contract before a real server exists.
+The public static build packages these files so a future integrator can inspect the contract before a real server exists. The OpenAPI file intentionally has no `servers` entry and sets `x-agentmash-live-server-url` to `null` so it cannot be mistaken for a deployed endpoint.
 
 ## Future Backend Shape
 
