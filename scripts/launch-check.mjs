@@ -1,5 +1,5 @@
 import { access, readFile } from "node:fs/promises";
-import { buildDir, blockedBuildEntries, buildSite, publicBuildEntries } from "./build-site.mjs";
+import { buildDir, blockedBuildEntries, buildSite, optionalPublicBuildEntries, publicBuildEntries } from "./build-site.mjs";
 
 const requiredFiles = [
   ".github/workflows/pages.yml",
@@ -383,7 +383,9 @@ check(
     "--root",
     "configurePublicLaunch",
     "Missing --support",
-    "YOUR-SUPPORT-ROUTE"
+    "YOUR-SUPPORT-ROUTE",
+    "sitemap.xml",
+    "robots.txt"
   ]) &&
     !/\b(fetch|XMLHttpRequest|sendBeacon|WebSocket)\b/i.test(configurePublicScript),
   "public metadata configurator is local-only and covers URL/support launch fields"
@@ -396,16 +398,18 @@ check(
     "dry-run does not mutate files",
     "app/assets/icons/app-icon-1024.png",
     "rejects missing support route",
-    "rejects placeholder support route"
+    "rejects placeholder support route",
+    "writes public sitemap URLs",
+    "stamps sitemap URL in robots"
   ]),
   "public metadata checker exercises real write, idempotency, and dry-run paths"
 );
 check(
-  hasAll(verifyPublicScript, ["canonical URL", "Open Graph URL", "Twitter URL", "Open Graph image", "Twitter image", "data-public-support-contact"]),
-  "public URL verifier checks final URL, preview image, and support metadata"
+  hasAll(verifyPublicScript, ["canonical URL", "Open Graph URL", "Twitter URL", "Open Graph image", "Twitter image", "data-public-support-contact", "robots file", "sitemap includes"]),
+  "public URL verifier checks final URL, preview image, support metadata, robots, and sitemap"
 );
 check(
-  hasAll(publicVerifierCheck, ["createServer", "configurePublicLaunch", "verify-public-url.mjs", "127.0.0.1", "publicBuildEntries"]) &&
+  hasAll(publicVerifierCheck, ["createServer", "configurePublicLaunch", "verify-public-url.mjs", "127.0.0.1", "publicBuildEntries", "application/xml"]) &&
     !/\b(stripe|paypal|posthog|sendBeacon|WebSocket)\b/i.test(publicVerifierCheck),
   "public URL verifier smoke check serves a configured local public build"
 );
@@ -462,6 +466,7 @@ await buildSite({ silent: true });
 for (const entry of publicBuildEntries) {
   check(await exists(`${buildDir}/${entry}`), `${buildDir}/${entry} is packaged`);
 }
+check(optionalPublicBuildEntries.includes("sitemap.xml"), "public build can package configured sitemap");
 
 for (const entry of blockedBuildEntries) {
   check(!(await exists(`${buildDir}/${entry}`)), `${buildDir}/${entry} is not packaged`);

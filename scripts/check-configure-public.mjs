@@ -4,6 +4,8 @@ import { join } from "node:path";
 import { configurePublicLaunch } from "./configure-public-launch.mjs";
 
 const pages = ["index.html", "support.html", "privacy.html"];
+const generatedFiles = ["robots.txt", "sitemap.xml"];
+const configuredFiles = [...pages, ...generatedFiles];
 const publicUrl = "https://agentmash.example/app/";
 const supportRoute = "support@example.com & launch <ready>";
 const escapedSupport = "support@example.com &amp; launch &lt;ready&gt;";
@@ -46,18 +48,23 @@ async function readPages(root) {
   return Object.fromEntries(entries);
 }
 
+async function readLaunchFiles(root) {
+  const entries = await Promise.all(configuredFiles.map(async (file) => [file, await readFile(join(root, file), "utf8")]));
+  return Object.fromEntries(entries);
+}
+
 async function main() {
   const root = await mkdtemp(join(tmpdir(), "agentmash-configure-public-"));
 
   try {
-    await Promise.all(pages.map((page) => cp(page, join(root, page))));
+    await Promise.all([...pages, "robots.txt"].map((page) => cp(page, join(root, page))));
 
     const first = await configurePublicLaunch({
       root,
       support: supportRoute,
       url: publicUrl
     });
-    check(hasSameMembers(first.changedFiles, pages), "configure public writes all launch metadata pages");
+    check(hasSameMembers(first.changedFiles, configuredFiles), "configure public writes launch metadata pages and search files");
 
     const configured = await readPages(root);
     check(
@@ -75,6 +82,18 @@ async function main() {
         hasAll(configured["privacy.html"], ["data-public-support-contact", escapedSupport]),
       "configure public stamps escaped support metadata"
     );
+    const robots = await readFile(join(root, "robots.txt"), "utf8");
+    const sitemap = await readFile(join(root, "sitemap.xml"), "utf8");
+    check(robots.includes("Sitemap: https://agentmash.example/app/sitemap.xml"), "configure public stamps sitemap URL in robots");
+    check(
+      hasAll(sitemap, [
+        "<loc>https://agentmash.example/app/</loc>",
+        "<loc>https://agentmash.example/app/support.html</loc>",
+        "<loc>https://agentmash.example/app/privacy.html</loc>",
+        "<loc>https://agentmash.example/app/terms.html</loc>"
+      ]),
+      "configure public writes public sitemap URLs"
+    );
 
     const second = await configurePublicLaunch({
       root,
@@ -83,15 +102,15 @@ async function main() {
     });
     check(second.changedFiles.length === 0, "configure public is idempotent");
 
-    const beforeDryRun = JSON.stringify(await readPages(root));
+    const beforeDryRun = JSON.stringify(await readLaunchFiles(root));
     const dryRun = await configurePublicLaunch({
       dryRun: true,
       root,
       support: "changed@example.com",
       url: "https://changed.example/"
     });
-    const afterDryRun = JSON.stringify(await readPages(root));
-    check(hasSameMembers(dryRun.changedFiles, pages), "configure public dry-run reports pending changes");
+    const afterDryRun = JSON.stringify(await readLaunchFiles(root));
+    check(hasSameMembers(dryRun.changedFiles, configuredFiles), "configure public dry-run reports pending changes");
     check(beforeDryRun === afterDryRun, "configure public dry-run does not mutate files");
     check(await rejectsSupport(root, " ", /Missing --support/), "configure public rejects missing support route");
     check(

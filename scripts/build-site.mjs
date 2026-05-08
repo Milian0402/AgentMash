@@ -24,6 +24,8 @@ export const publicBuildEntries = [
   "assets"
 ];
 
+export const optionalPublicBuildEntries = ["sitemap.xml"];
+
 export const blockedBuildEntries = [
   ".git",
   ".github",
@@ -50,6 +52,16 @@ export async function buildSite({ silent = false } = {}) {
 
   for (const entry of publicBuildEntries) {
     await cp(entry, join(buildDir, entry), { recursive: true });
+  }
+
+  for (const entry of optionalPublicBuildEntries) {
+    try {
+      await cp(entry, join(buildDir, entry), { recursive: true });
+    } catch (error) {
+      if (error.code !== "ENOENT") {
+        throw error;
+      }
+    }
   }
 
   if (!silent) {

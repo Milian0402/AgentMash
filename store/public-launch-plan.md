@@ -46,6 +46,7 @@ This keeps the app launchable without paying for a domain, app-store accounts, h
 - JSON feedback packets.
 - JSONL eval rows.
 - Privacy, terms, support, publishing, and 404 pages.
+- Configured `robots.txt` and `sitemap.xml` generated from the final public URL.
 - Manual GitHub Pages preview workflow.
 - Security header configs for Netlify, Vercel, and Cloudflare Pages style hosting.
 - Public `_site/` build that excludes internal launch docs and submission drafts.

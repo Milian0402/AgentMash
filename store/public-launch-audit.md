@@ -32,6 +32,7 @@ Make AgentMash good enough to launch publicly as a serious app.
 - Public build script packages `_site/` without internal launch docs, submission drafts, scripts, or repo metadata.
 - `npm run ready:public` runs the full local quality gate and rebuilds `_site/` before the user connects hosting.
 - `npm run configure:public -- --url https://YOUR-PUBLIC-URL --support YOUR-SUPPORT-ROUTE` is ready to stamp final public URL and support metadata locally once the user chooses them.
+- The same final metadata command writes `robots.txt` with the public sitemap URL and writes `sitemap.xml` with public app, support, privacy, and terms URLs.
 - `npm run verify:public -- https://YOUR-PUBLIC-URL` is ready for the first live host/domain check after user-owned deployment.
 - Internal publishing notes are not linked from the app footer, packaged into `_site/`, or cached by the service worker.
 - GitHub Pages, Netlify, and Vercel configs publish `_site/` instead of repo root.
@@ -96,7 +97,7 @@ Make AgentMash good enough to launch publicly as a serious app.
 
 - `npm run check` passes.
 - `npm run ready:public` passes and rebuilds `_site/` after the full local quality gate.
-- `npm run check:configure-public` runs the final public URL/support metadata command against temporary copies, verifies the written metadata, verifies idempotency, verifies dry-run does not mutate files, and verifies blank or placeholder support routes are rejected.
+- `npm run check:configure-public` runs the final public URL/support metadata command against temporary copies, verifies the written metadata, verifies sitemap and robots output, verifies idempotency, verifies dry-run does not mutate files, and verifies blank or placeholder support routes are rejected.
 - `npm run check:verify-public` serves a configured temporary public build on localhost and runs the same public URL verifier that will be used after hosting exists.
 - `npm run check:launch` passes.
 - `npm run check` syntax-checks `app.js`, `state.js`, `packet.js`, `render.js`, and `gestures.js`.
@@ -109,7 +110,7 @@ Make AgentMash good enough to launch publicly as a serious app.
 - `npm run check` verifies public PWA screenshot PNG dimensions match the manifest-declared 390 by 844 and 1440 by 1000 sizes.
 - `npm run check` verifies `_headers`, Netlify, and Vercel keep the service worker and manifest update-friendly with `Cache-Control: no-cache`.
 - `npm run check` syntax-checks the live public URL verifier without contacting any host.
-- `npm run check` verifies the live public URL verifier checks final canonical/Open Graph/Twitter metadata, preview image URLs, and public support contact metadata.
+- `npm run check` verifies the live public URL verifier checks final canonical/Open Graph/Twitter metadata, preview image URLs, public support contact metadata, robots, and sitemap.
 - `npm run check` verifies the local public-readiness script exists.
 - `npm run check` verifies the local final-metadata configurator exists, is syntax-checked, covers canonical/Open Graph/Twitter/support/privacy fields, has no network hooks, and has an isolated write-path checker.
 - `npm run check` verifies the public URL verifier smoke check serves a configured local public build and calls `scripts/verify-public-url.mjs`.

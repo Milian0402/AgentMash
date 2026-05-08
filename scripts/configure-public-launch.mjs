@@ -5,6 +5,8 @@ import { fileURLToPath } from "node:url";
 const pageNames = {
   index: "index.html",
   privacy: "privacy.html",
+  robots: "robots.txt",
+  sitemap: "sitemap.xml",
   support: "support.html"
 };
 
@@ -180,6 +182,41 @@ function configurePrivacy(source, contact) {
   );
 }
 
+function sitemapUrl(publicUrl, path = "") {
+  return new URL(path, publicUrl).toString();
+}
+
+function configureRobots(publicUrl) {
+  return [
+    "User-agent: *",
+    "Allow: /",
+    `Sitemap: ${sitemapUrl(publicUrl, "sitemap.xml")}`,
+    ""
+  ].join("\n");
+}
+
+function configureSitemap(publicUrl) {
+  const urls = ["", "support.html", "privacy.html", "terms.html"].map((path) => sitemapUrl(publicUrl, path));
+  return [
+    '<?xml version="1.0" encoding="UTF-8"?>',
+    '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">',
+    ...urls.map((url) => `  <url><loc>${escapeHtml(url)}</loc></url>`),
+    "</urlset>",
+    ""
+  ].join("\n");
+}
+
+async function readOptional(path) {
+  try {
+    return await readFile(path, "utf8");
+  } catch (error) {
+    if (error.code === "ENOENT") {
+      return "";
+    }
+    throw error;
+  }
+}
+
 export async function configurePublicLaunch({ dryRun = false, root = ".", support = "", url }) {
   const publicUrl = normalizePublicUrl(url);
   const trimmedSupport = normalizeSupport(support);
@@ -187,13 +224,15 @@ export async function configurePublicLaunch({ dryRun = false, root = ".", suppor
   const files = {
     [pageNames.index]: configureIndex(await readFile(join(root, pageNames.index), "utf8"), publicUrl),
     [pageNames.support]: configureSupport(await readFile(join(root, pageNames.support), "utf8"), trimmedSupport),
-    [pageNames.privacy]: configurePrivacy(await readFile(join(root, pageNames.privacy), "utf8"), trimmedSupport)
+    [pageNames.privacy]: configurePrivacy(await readFile(join(root, pageNames.privacy), "utf8"), trimmedSupport),
+    [pageNames.robots]: configureRobots(publicUrl),
+    [pageNames.sitemap]: configureSitemap(publicUrl)
   };
 
   const changedFiles = [];
   for (const [path, next] of Object.entries(files)) {
     const fullPath = join(root, path);
-    const current = await readFile(fullPath, "utf8");
+    const current = await readOptional(fullPath);
     if (current !== next) {
       changedFiles.push(path);
       if (!dryRun) {

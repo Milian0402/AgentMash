@@ -88,7 +88,7 @@ After you choose the public URL and support route, run:
 npm run configure:public -- --url https://YOUR-PUBLIC-URL --support YOUR-SUPPORT-ROUTE
 ```
 
-This updates canonical, Open Graph, Twitter preview, support, and privacy-page metadata in local files only. It does not contact the support route, create accounts, publish, or spend money. Run `npm run ready:public` after it so `_site/` contains the final metadata.
+This updates canonical, Open Graph, Twitter preview, support, privacy-page, `robots.txt`, and `sitemap.xml` metadata in local files only. It does not contact the support route, create accounts, publish, or spend money. Run `npm run ready:public` after it so `_site/` contains the final metadata.
 
 `YOUR-SUPPORT-ROUTE` must be replaced with a real public support route before this command will run.
 

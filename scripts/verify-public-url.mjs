@@ -205,6 +205,29 @@ async function main() {
   hasPublicSupportContact(publicPages.get("/support.html")?.body || "", "support page");
   hasPublicSupportContact(publicPages.get("/privacy.html")?.body || "", "privacy page");
 
+  const robots = await checkOk(base, "/robots.txt", "robots file");
+  const sitemapUrl = urlFor(base, "/sitemap.xml");
+  if (robots.body.includes(`Sitemap: ${sitemapUrl}`)) {
+    pass("robots file links public sitemap");
+  } else {
+    fail("robots file is missing the public sitemap URL; run npm run configure:public first");
+  }
+
+  const sitemap = await checkOk(base, "/sitemap.xml", "sitemap");
+  for (const path of ["/", "/support.html", "/privacy.html", "/terms.html"]) {
+    const url = urlFor(base, path);
+    if (sitemap.body.includes(`<loc>${url}</loc>`)) {
+      pass(`sitemap includes ${path}`);
+    } else {
+      fail(`sitemap is missing ${url}`);
+    }
+  }
+  if (sitemap.body.includes("store/") || sitemap.body.includes("package.json") || sitemap.body.includes("PUBLISHING.md")) {
+    fail("sitemap should not expose internal repo paths");
+  } else {
+    pass("sitemap excludes internal repo paths");
+  }
+
   const manifest = await checkOk(base, "/manifest.webmanifest", "web manifest");
   try {
     const parsed = JSON.parse(manifest.body);
