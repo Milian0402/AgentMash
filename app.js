@@ -242,13 +242,6 @@ function setDecisionTransitioning(isLocked) {
 
 function openCommentSheet() {
   openRefinePanel();
-  window.setTimeout(() => {
-    try {
-      elements.reviewNote.focus({ preventScroll: true });
-    } catch {
-      elements.reviewNote.focus();
-    }
-  }, 0);
 }
 
 function applyQuickCommentReason() {

@@ -18,7 +18,7 @@ AgentMash uses this file as a private release history for local launch-prep buil
 - Replaced the swipe rail's text glyphs with CSS-drawn decision icons for a more polished first impression.
 - Tightened mobile Pairwise mode so both choices fit in one compact comparison view.
 - Added a Done control to the Comment/Refine sheet so users can back out without making a decision.
-- Updated the offline service worker cache to `agentmash-v51` after the mobile swipe rail, momentum pill, Comment sheet polish, short-phone launch screenshot fix, and desktop launch screenshot fit.
+- Updated the offline service worker cache to `agentmash-v52` after the mobile swipe rail, momentum pill, Comment sheet polish, short-phone launch screenshot fix, desktop launch screenshot fit, and keyboard-free Comment opening.
 
 Constraints kept in this build:
 
