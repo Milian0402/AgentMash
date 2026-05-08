@@ -1108,22 +1108,32 @@ export function renderPreview(item) {
           <span class="site-nav">Live runs / approvals / handoff</span>
           <strong>${escapeHtml(item.body || item.title)}</strong>
           <p>${escapeHtml(shortTitle(item.prompt || "Generated landing page candidate", 92))}</p>
-          <div class="site-line"></div>
-          <div class="site-line short"></div>
-          <div class="site-line muted"></div>
+          <div class="site-proof-row" aria-hidden="true">
+            <span><b>12</b> live runs</span>
+            <span><b>4</b> blockers</span>
+            <span><b>82%</b> ready</span>
+          </div>
           <div class="site-cta-row">
-            <span class="site-cta"></span>
-            <span class="site-cta secondary"></span>
+            <span class="site-cta">Start cleanup</span>
+            <span class="site-cta secondary">View handoff</span>
           </div>
         </div>
         <div class="site-visual">
-          <div class="site-metric">
-            <b>82</b>
-            <span>ready</span>
+          <div class="site-dashboard-top">
+            <span>Approval map</span>
+            <b>82%</b>
           </div>
-          <span class="site-tile big"></span>
-          <span class="site-tile"></span>
-          <span class="site-tile"></span>
+          <div class="approval-list" aria-hidden="true">
+            <span class="approval-row"><i></i><b>Legal</b><em>blocked</em></span>
+            <span class="approval-row ok"><i></i><b>Brand</b><em>ready</em></span>
+            <span class="approval-row warm"><i></i><b>Ops</b><em>reviewing</em></span>
+          </div>
+          <div class="site-chart" aria-hidden="true">
+            <i></i>
+            <i></i>
+            <i></i>
+            <i></i>
+          </div>
         </div>
       </div>
     </div>

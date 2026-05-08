@@ -148,9 +148,22 @@ body[data-dashboard="human"] {
 
   .browser-bar,
   .logo-board,
-  .product-scene {
+  .product-scene,
+  .site-proof-row span,
+  .site-dashboard-top,
+  .approval-row {
     border-color: #45513f;
     background: #242a22;
+  }
+
+  .site-proof-row span,
+  .approval-row {
+    color: #aeb8a9;
+  }
+
+  .site-proof-row b,
+  .approval-row b {
+    color: #f3f5ed;
   }
 
   .site-line {
@@ -1016,9 +1029,11 @@ body[data-decision-transition="true"] .decision-button {
 
 .preview-website.is-tagline .browser-bar,
 .preview-website.is-tagline .site-nav,
-.preview-website.is-tagline .site-line,
+.preview-website.is-tagline .site-proof-row,
 .preview-website.is-tagline .site-cta-row,
-.preview-website.is-tagline .site-visual {
+.preview-website.is-tagline .site-visual,
+.preview-website.is-tagline .approval-list,
+.preview-website.is-tagline .site-chart {
   display: none;
 }
 
@@ -1146,6 +1161,43 @@ body[data-decision-transition="true"] .decision-button {
   min-height: 0;
 }
 
+.site-proof-row {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 8px;
+}
+
+.site-proof-row span {
+  min-width: 0;
+  padding: 9px 10px;
+  border: 1px solid rgba(47, 109, 242, 0.13);
+  border-radius: 14px;
+  background: rgba(255, 255, 255, 0.66);
+  color: #596273;
+  font-size: 0.68rem;
+  font-weight: 850;
+  line-height: 1.05;
+  box-shadow: 0 10px 24px rgba(23, 25, 20, 0.06);
+}
+
+.site-proof-row b {
+  display: block;
+  margin-bottom: 3px;
+  color: #151720;
+  font-size: 1rem;
+  line-height: 1;
+}
+
+.first-look-stage .site-proof-row {
+  max-width: 23rem;
+}
+
+.first-look-stage .site-proof-row span {
+  padding: 8px 9px;
+  background: rgba(255, 255, 255, 0.72);
+  font-size: 0.65rem;
+}
+
 .first-look-stage .site-line {
   height: 20px;
 }
@@ -1190,14 +1242,23 @@ body[data-decision-transition="true"] .decision-button {
 }
 
 .site-cta {
-  width: 88px;
-  height: 34px;
+  min-width: 0;
+  min-height: 34px;
+  padding: 0 14px;
   border-radius: 999px;
   background: var(--blue);
+  color: #ffffff;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.72rem;
+  font-weight: 900;
+  white-space: nowrap;
 }
 
 .site-cta.secondary {
   background: #e2e8f0;
+  color: #596273;
 }
 
 .site-visual {
@@ -1209,36 +1270,106 @@ body[data-decision-transition="true"] .decision-button {
   background: #eff5fb;
 }
 
-.site-metric {
+.site-dashboard-top {
   min-height: 58px;
   border-radius: 10px;
   background: var(--surface);
   padding: 10px;
-  display: grid;
-  align-content: center;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
   box-shadow: 0 12px 26px rgba(23, 25, 20, 0.08);
 }
 
-.site-metric b {
+.site-dashboard-top b {
   font-size: 1.45rem;
   line-height: 1;
 }
 
-.site-metric span {
+.site-dashboard-top span {
   color: var(--muted);
   font-size: 0.72rem;
   font-weight: 850;
   text-transform: uppercase;
 }
 
-.site-tile {
-  border-radius: 6px;
-  background: var(--surface);
+.approval-list {
+  display: grid;
+  gap: 8px;
 }
 
-.site-tile.big {
-  min-height: 82px;
-  background: linear-gradient(135deg, #287a55, #266d8a);
+.approval-row {
+  min-height: 34px;
+  padding: 7px 8px;
+  border-radius: 10px;
+  background: rgba(255, 255, 255, 0.78);
+  color: #596273;
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.7rem;
+  box-shadow: 0 8px 18px rgba(23, 25, 20, 0.06);
+}
+
+.approval-row i {
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+  background: var(--red);
+}
+
+.approval-row.ok i {
+  background: var(--green);
+}
+
+.approval-row.warm i {
+  background: var(--yellow);
+}
+
+.approval-row b {
+  color: #151720;
+}
+
+.approval-row em {
+  color: inherit;
+  font-style: normal;
+  font-weight: 850;
+}
+
+.site-chart {
+  min-height: 86px;
+  padding: 12px 12px 10px;
+  border-radius: 12px;
+  background: linear-gradient(160deg, rgba(16, 150, 109, 0.95), rgba(47, 109, 242, 0.94));
+  display: flex;
+  align-items: end;
+  gap: 7px;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.26);
+}
+
+.site-chart i {
+  flex: 1;
+  min-width: 0;
+  border-radius: 999px 999px 4px 4px;
+  background: rgba(255, 255, 255, 0.72);
+}
+
+.site-chart i:nth-child(1) {
+  height: 42%;
+}
+
+.site-chart i:nth-child(2) {
+  height: 68%;
+}
+
+.site-chart i:nth-child(3) {
+  height: 54%;
+}
+
+.site-chart i:nth-child(4) {
+  height: 86%;
 }
 
 .preview-logo {

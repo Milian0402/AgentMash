@@ -13,7 +13,8 @@ AgentMash uses this file as a private release history for local launch-prep buil
 - Added local agent-drop import support against `schemas/intake.v1.json`, plus contract-only future OpenAPI and MCP handoff files.
 - Added public launch prep assets: PWA manifest, app icons, Apple startup images, public screenshots, draft store screenshots, static-host security headers, privacy, terms, support, 404, and manual GitHub Pages workflow.
 - Added `npm run refresh:assets`, `npm run configure:public`, `npm run ready:public`, and `npm run verify:public` for repeatable local preparation.
-- Updated the offline service worker cache to `agentmash-v43` after the richer swipe-card visual treatment and quick-reason comment path.
+- Updated the default website review card with realistic status cards, action chips, approval rows, and a mini dashboard instead of anonymous wireframe bars.
+- Updated the offline service worker cache to `agentmash-v44` after the richer swipe-card visual treatment, realistic default website preview, and quick-reason comment path.
 
 Constraints kept in this build:
 

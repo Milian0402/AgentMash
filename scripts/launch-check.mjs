@@ -316,6 +316,11 @@ check(index.includes("detailsButton") && index.includes('id="detailSheet" hidden
 check(index.includes('id="streakCounter"') && renderModule.includes("renderMomentum") && styles.includes("streak-pop"), "human review includes visible momentum counter");
 check(index.includes("profileInsights") && renderModule.includes("renderProfileInsights") && renderModule.includes("tagInsightRows"), "human review includes profile insights");
 check(index.includes("keeperList") && index.includes("Keepers"), "deck completion has keepers summary");
+check(
+  hasAll(renderModule, ["site-proof-row", "approval-list", "site-chart", "Start cleanup", "View handoff"]) &&
+    !renderModule.includes('class="site-line"'),
+  "default website preview uses realistic review content instead of wireframe bars"
+);
 check(index.includes("emptyRemixButton") && app.includes("remixCurrentDeck"), "deck completion can start a local remix session");
 check(
   appSurface.includes("variantForRemix")
@@ -453,7 +458,7 @@ check(
   hasAll(appSurface, ["ALLOWED_IMAGE_TYPES", "MAX_IMAGE_BYTES", "safeImageData", "Choose a PNG, JPG, or WebP image"]),
   "image uploads are type and size constrained"
 );
-check(serviceWorker.includes('const CACHE_NAME = "agentmash-v43"'), "service worker cache is AgentMash scoped and current");
+check(serviceWorker.includes('const CACHE_NAME = "agentmash-v44"'), "service worker cache is AgentMash scoped and current");
 check(hasAll(serviceWorker, appShellFiles), "service worker app shell includes launch pages and icons");
 check(hasAll(headers, securityHeaders), "_headers defines security headers");
 check(hasAll(netlify, securityHeaders), "netlify config defines security headers");
@@ -591,7 +596,7 @@ check(
     "quick-reason dropdown",
     "agentmash.feedback.v2",
     "signalStrength",
-    "agentmash-v43",
+    "agentmash-v44",
     "No public deployment was performed",
     "No domain was bought",
     "No paid service",
