@@ -3261,20 +3261,22 @@ body[data-decision-transition="true"] .decision-button {
   }
 
   .first-look-stage .signal-panel .tag-row {
-    min-height: 36px;
-    flex-wrap: nowrap;
-    overflow-x: auto;
-    padding-bottom: 2px;
-    scrollbar-width: none;
-  }
-
-  .first-look-stage .signal-panel .tag-row::-webkit-scrollbar {
-    display: none;
+    min-height: 76px;
+    max-height: 76px;
+    align-content: start;
+    flex-wrap: wrap;
+    gap: 6px;
+    overflow-y: auto;
+    overflow-x: hidden;
+    padding-right: 2px;
+    scrollbar-width: thin;
   }
 
   .first-look-stage .signal-panel .tag-chip {
     flex: 0 0 auto;
-    min-height: 34px;
+    min-height: 32px;
+    padding: 0 8px;
+    font-size: 0.74rem;
   }
 
   .site-mock,

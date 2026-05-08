@@ -359,6 +359,16 @@ test("Rapid decisions are locked and mobile filter labels stay readable", async 
 
   await page.getByRole("button", { name: "Refine" }).click();
   await expect(page.locator("#signalPanel")).toBeVisible();
+  const tagRowLayout = await page.locator("#tagRow").evaluate((row) => {
+    return {
+      noHorizontalOverflow: row.scrollWidth <= row.clientWidth + 1,
+      noVerticalOverflow: row.scrollHeight <= row.clientHeight + 1
+    };
+  });
+  expect(tagRowLayout).toEqual({
+    noHorizontalOverflow: true,
+    noVerticalOverflow: true
+  });
   const refineClearsActions = await page.evaluate(() => {
     const sheet = document.querySelector("#signalPanel").getBoundingClientRect();
     const actions = document.querySelector(".swipe-actions").getBoundingClientRect();
