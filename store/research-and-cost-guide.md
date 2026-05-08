@@ -9,13 +9,13 @@ The app should feel like a fast judgement tool, not a dashboard. The center of g
 Design principles used in the current build:
 
 - One primary object on screen: the swipe card.
-- One gesture meaning per card: right means Nice, left means Pass.
+- One gesture meaning per card: right means Nice, left means Nope.
 - Visible buttons mirror the gesture so the app still works when the swipe is missed.
 - Large controls and clear labels, not color alone.
 - Immediate drag feedback: the card moves, the stamp appears, and the matching action button changes state before release.
 - Sticky thumb controls on the human review screen so the main choice stays reachable on phones.
 - A compact signal panel below the card so scoring, tags, and notes do not compete with the first-glance decision.
-- A restrained palette with green for keep, red for pass, blue for neutral focus, and warm paper backgrounds.
+- A restrained palette with green for keep, red for reject, blue for neutral focus, and warm paper backgrounds.
 - Dense side panels on desktop, stacked task flow on mobile.
 - Uploads render in the card directly so real generated websites, logos, copy, and product images can be judged.
 

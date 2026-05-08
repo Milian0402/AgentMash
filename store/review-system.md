@@ -17,7 +17,7 @@ Worth another look    18%
 
 - Keeper: swiped Nice and scored 78 or above.
 - Promising: swiped Nice and scored 60 to 77.
-- Interesting: swiped Pass but scored 68 or above.
+- Interesting: swiped Nope but scored 68 or above.
 - Needs work: scored 45 to 67.
 - Reject: scored below 45.
 
