@@ -321,6 +321,16 @@ check(
     !renderModule.includes('class="site-line"'),
   "default website preview uses realistic review content instead of wireframe bars"
 );
+check(
+  hasAll(styles, [
+    ".decision-icon::before",
+    ".decision-icon::after",
+    ".decision-button.reject .decision-icon::before",
+    ".decision-button.accept .decision-icon::before",
+    ".decision-button.comment .decision-icon::after"
+  ]),
+  "decision rail uses CSS-drawn icons instead of raw text glyphs"
+);
 check(index.includes("emptyRemixButton") && app.includes("remixCurrentDeck"), "deck completion can start a local remix session");
 check(
   appSurface.includes("variantForRemix")
@@ -458,7 +468,7 @@ check(
   hasAll(appSurface, ["ALLOWED_IMAGE_TYPES", "MAX_IMAGE_BYTES", "safeImageData", "Choose a PNG, JPG, or WebP image"]),
   "image uploads are type and size constrained"
 );
-check(serviceWorker.includes('const CACHE_NAME = "agentmash-v44"'), "service worker cache is AgentMash scoped and current");
+check(serviceWorker.includes('const CACHE_NAME = "agentmash-v45"'), "service worker cache is AgentMash scoped and current");
 check(hasAll(serviceWorker, appShellFiles), "service worker app shell includes launch pages and icons");
 check(hasAll(headers, securityHeaders), "_headers defines security headers");
 check(hasAll(netlify, securityHeaders), "netlify config defines security headers");
@@ -596,7 +606,7 @@ check(
     "quick-reason dropdown",
     "agentmash.feedback.v2",
     "signalStrength",
-    "agentmash-v44",
+    "agentmash-v45",
     "No public deployment was performed",
     "No domain was bought",
     "No paid service",

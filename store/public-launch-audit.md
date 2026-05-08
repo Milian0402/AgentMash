@@ -13,6 +13,7 @@ Make AgentMash good enough to launch publicly as a serious app.
 - App code is split into native ES modules: thin entry, state/storage, packets/exports, rendering, and gestures.
 - Human review dashboard is phone-first and supports swipe, buttons, keyboard shortcuts, undo, comments, scoring, tags, and notes.
 - Human review has a refreshed card-first visual design with a larger swipe card, richer preview treatment, cleaner neutral app backdrop, stronger card shadows, and a four-action decision rail for Nope, Undo, Comment, and Nice.
+- The four-action decision rail uses CSS-drawn decision icons instead of raw text glyphs, keeping the controls sharper without adding runtime dependencies.
 - Default Human review flow keeps scoring, tags, and notes behind a `Refine` tap so the first-pass loop stays card-first.
 - A visible `Comment` action opens the same bottom sheet and focuses the optional decision note, with a quick-reason dropdown for common comments so users can add context without leaving the swipe loop.
 - `Refine` opens as a bottom sheet above the decision controls so users do not scroll below the swipe buttons to adjust scores.
@@ -146,7 +147,7 @@ Make AgentMash good enough to launch publicly as a serious app.
 - `npm run check` builds `_site/` and verifies internal files are not packaged.
 - `CHANGELOG.md` records the current local launch-prep build, constraints, and remaining user-owned launch actions, and it is checked as an internal file that is not packaged into `_site/`.
 - `_site/` includes all public app modules, public schema files, and `sw.js` caches those module and schema files.
-- `sw.js` cache name is `agentmash-v44` after the richer swipe-card visual treatment, realistic default website preview, quick-reason comments, mobile overlay polish, screenshot refresh, v0.3.0 build labels, privacy, launch-order, and public contract updates, so the offline app shell refreshes when this build is published.
+- `sw.js` cache name is `agentmash-v45` after the richer swipe-card visual treatment, realistic default website preview, CSS-drawn decision icons, quick-reason comments, mobile overlay polish, screenshot refresh, v0.3.0 build labels, privacy, launch-order, and public contract updates, so the offline app shell refreshes when this build is published.
 - Playwright e2e test passed: after service worker readiness, the app reloaded offline and rendered the AgentMash shell and swipe card.
 - Netlify and Vercel configs are checked for `npm run build` plus `_site/` output.
 - Apple touch icon is linked from `index.html`, cached by `sw.js`, and sized at 180 by 180.
@@ -210,7 +211,7 @@ Make AgentMash good enough to launch publicly as a serious app.
 
 ## Runtime Smoke Evidence
 
-Playwright CLI and `npm run ready:public` checked `http://127.0.0.1:5177` and the local `_site/` package on May 8, 2026 after the `v0.3.0` launch-prep build label and `agentmash-v44` service-worker cache update.
+Playwright CLI and `npm run ready:public` checked `http://127.0.0.1:5177` and the local `_site/` package on May 8, 2026 after the `v0.3.0` launch-prep build label and `agentmash-v45` service-worker cache update.
 
 Passed checks:
 

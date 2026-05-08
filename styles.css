@@ -2198,12 +2198,21 @@ body[data-decision-transition="true"] .decision-button {
   height: 34px;
   display: inline-grid;
   place-items: center;
+  position: relative;
+  flex: 0 0 auto;
   border-radius: 999px;
   background: rgba(21, 23, 32, 0.06);
   color: currentColor;
-  font-size: 0.76rem;
+  font-size: 0;
   font-weight: 950;
   line-height: 1;
+}
+
+.decision-icon::before,
+.decision-icon::after {
+  content: "";
+  position: absolute;
+  display: block;
 }
 
 .swipe-actions .decision-button:active,
@@ -2232,6 +2241,22 @@ body[data-decision-transition="true"] .decision-button {
   background: rgba(239, 79, 97, 0.12);
 }
 
+.swipe-actions .decision-button.reject .decision-icon::before,
+.swipe-actions .decision-button.reject .decision-icon::after {
+  width: 15px;
+  height: 3px;
+  border-radius: 999px;
+  background: currentColor;
+}
+
+.swipe-actions .decision-button.reject .decision-icon::before {
+  transform: rotate(45deg);
+}
+
+.swipe-actions .decision-button.reject .decision-icon::after {
+  transform: rotate(-45deg);
+}
+
 .decision-button.accept {
   background: var(--green-soft);
   border-color: rgba(40, 122, 85, 0.32);
@@ -2252,9 +2277,38 @@ body[data-decision-transition="true"] .decision-button {
   background: rgba(16, 150, 109, 0.12);
 }
 
+.swipe-actions .decision-button.accept .decision-icon::before {
+  width: 14px;
+  height: 8px;
+  margin-top: -3px;
+  border-left: 3px solid currentColor;
+  border-bottom: 3px solid currentColor;
+  transform: rotate(-45deg);
+}
+
 .swipe-actions .decision-button.neutral {
   background: #ffffff;
   color: var(--muted);
+}
+
+.swipe-actions .decision-button.neutral .decision-icon::before {
+  width: 15px;
+  height: 15px;
+  border: 3px solid currentColor;
+  border-right-color: transparent;
+  border-radius: 999px;
+  transform: rotate(-38deg);
+}
+
+.swipe-actions .decision-button.neutral .decision-icon::after {
+  right: 8px;
+  top: 8px;
+  width: 0;
+  height: 0;
+  border-top: 5px solid transparent;
+  border-bottom: 5px solid transparent;
+  border-left: 7px solid currentColor;
+  transform: rotate(-18deg);
 }
 
 .swipe-actions .decision-button.comment {
@@ -2270,6 +2324,22 @@ body[data-decision-transition="true"] .decision-button {
 
 .swipe-actions .decision-button.comment .decision-icon {
   background: rgba(47, 109, 242, 0.12);
+}
+
+.swipe-actions .decision-button.comment .decision-icon::before,
+.swipe-actions .decision-button.comment .decision-icon::after {
+  border-radius: 999px;
+  background: currentColor;
+}
+
+.swipe-actions .decision-button.comment .decision-icon::before {
+  width: 15px;
+  height: 3px;
+}
+
+.swipe-actions .decision-button.comment .decision-icon::after {
+  width: 3px;
+  height: 15px;
 }
 
 .decision-button.neutral {

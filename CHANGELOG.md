@@ -14,7 +14,8 @@ AgentMash uses this file as a private release history for local launch-prep buil
 - Added public launch prep assets: PWA manifest, app icons, Apple startup images, public screenshots, draft store screenshots, static-host security headers, privacy, terms, support, 404, and manual GitHub Pages workflow.
 - Added `npm run refresh:assets`, `npm run configure:public`, `npm run ready:public`, and `npm run verify:public` for repeatable local preparation.
 - Updated the default website review card with realistic status cards, action chips, approval rows, and a mini dashboard instead of anonymous wireframe bars.
-- Updated the offline service worker cache to `agentmash-v44` after the richer swipe-card visual treatment, realistic default website preview, and quick-reason comment path.
+- Replaced the swipe rail's text glyphs with CSS-drawn decision icons for a more polished first impression.
+- Updated the offline service worker cache to `agentmash-v45` after the richer swipe-card visual treatment, realistic default website preview, CSS-drawn decision icons, and quick-reason comment path.
 
 Constraints kept in this build:
 
