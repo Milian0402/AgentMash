@@ -86,6 +86,7 @@ Last local verification: May 8, 2026. No deployment, paid account, domain purcha
 - [ ] Run `npm run configure:public -- --url https://YOUR-PUBLIC-URL --support YOUR-SUPPORT-ROUTE`.
 - [ ] Add developer identity and inquiry route to `privacy.html` if required for the launch type.
 - [ ] Run `npm run ready:public` again after configuring the final public metadata.
+- [ ] Confirm `_site/sitemap.xml` exists after the final metadata build.
 - [ ] Deploy static files.
 - [ ] Confirm `support.html` is publicly reachable.
 - [ ] Confirm `privacy.html` is publicly reachable.

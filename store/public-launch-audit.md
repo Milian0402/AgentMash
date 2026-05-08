@@ -36,6 +36,7 @@ Make AgentMash good enough to launch publicly as a serious app.
 - `npm run ready:public` runs the full local quality gate and rebuilds `_site/` before the user connects hosting.
 - `npm run configure:public -- --url https://YOUR-PUBLIC-URL --support YOUR-SUPPORT-ROUTE` is ready to stamp final public URL and support metadata locally once the user chooses them.
 - The same final metadata command writes `robots.txt` with the public sitemap URL and writes `sitemap.xml` with public app, support, privacy, and terms URLs.
+- First public release order is explicit: configure final metadata, run `npm run ready:public`, deploy `_site/`, then run `npm run verify:public`.
 - `npm run verify:public -- https://YOUR-PUBLIC-URL` is ready for the first live host/domain check after user-owned deployment.
 - Internal publishing notes are not linked from the app footer, packaged into `_site/`, or cached by the service worker.
 - GitHub Pages, Netlify, and Vercel configs publish `_site/` instead of repo root.

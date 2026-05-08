@@ -85,6 +85,8 @@ npm run check:launch
 
 This verifies required pages, app metadata, offline shell files, static-host security headers, local-only network constraints, sitemap packaging, and AgentMash naming.
 
+`npm run ready:public` is a local quality gate, not a final release command. A build made before final metadata configuration does not include a public sitemap URL.
+
 After you choose a final public URL and support route, configure local launch metadata before building:
 
 ```sh
@@ -92,6 +94,8 @@ npm run configure:public -- --url https://YOUR-PUBLIC-URL --support YOUR-SUPPORT
 ```
 
 This only edits local files, including `robots.txt` and `sitemap.xml`. It does not deploy, contact anyone, create accounts, or spend money.
+
+Then run `npm run ready:public` again and only deploy the rebuilt `_site/` directory.
 
 ## Publish Prep
 

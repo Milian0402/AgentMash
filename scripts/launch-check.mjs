@@ -206,6 +206,7 @@ const configurePublicScript = await read("scripts/configure-public-launch.mjs");
 const configurePublicCheck = await read("scripts/check-configure-public.mjs");
 const publicVerifierCheck = await read("scripts/check-public-url-verifier.mjs");
 const publishingNotes = await read("publishing.html");
+const publishingRunbook = await read("PUBLISHING.md");
 const readme = await read("README.md");
 const completionAudit = await read("store/completion-audit.md");
 const audit = await read("store/public-launch-audit.md");
@@ -560,6 +561,11 @@ check(readme.includes("store/app-store-submission.md"), "README links app store 
 check(readme.includes("store/privacy-data-safety-draft.md"), "README links privacy and data safety draft");
 check(readme.includes("store/native-wrapper-handoff.md"), "README links native wrapper handoff");
 check(readme.includes("signal strength"), "README describes signal strength output");
+check(
+  hasAll(readme, ["local quality gate, not a final release command", "run `npm run ready:public` again", "only deploy the rebuilt `_site/` directory"]) &&
+    hasAll(publishingRunbook, ["not enough by itself for a first public release", "The first release order", "deploy `_site/`", "verify:public"]),
+  "launch docs distinguish local readiness from final release metadata"
+);
 check(!/public-beta candidate|lab-ready|should pass/i.test(readme), "README avoids beta status and ambiguous verdict wording");
 check(listing.includes("Human taste for AI work"), "store subtitle fits App Store limit");
 check(!listing.includes("Human taste signals for AI work"), "old over-limit store subtitle is absent");
