@@ -32,7 +32,7 @@ Make AgentMash good enough to launch publicly as a serious app.
 - PWA manifest declares `en-US` language and left-to-right text direction for install surfaces.
 - PWA icon PNGs are verified at 192 by 192, 512 by 512, and 1024 by 1024, with the Apple touch icon verified at 180 by 180.
 - Public build script packages `_site/` without internal launch docs, submission drafts, scripts, or repo metadata.
-- Public build packages `schemas/feedback.v2.json`, `schemas/intake.v1.json`, `schemas/api.v1.openapi.json`, and `schemas/mcp-tools.v1.json` so future integrators can inspect the machine-readable contracts.
+- Public build packages `schemas/feedback.v2.json`, `schemas/intake.v1.json`, `schemas/api.v1.openapi.json`, `schemas/mcp-tools.v1.json`, and `schemas/examples/` so future integrators can inspect the machine-readable contracts and sample payloads.
 - `npm run ready:public` runs the full local quality gate and rebuilds `_site/` before the user connects hosting.
 - `npm run configure:public -- --url https://YOUR-PUBLIC-URL --support YOUR-SUPPORT-ROUTE` is ready to stamp final public URL and support metadata locally once the user chooses them.
 - The same final metadata command writes `robots.txt` with the public sitemap URL and writes `sitemap.xml` with public app, support, privacy, and terms URLs.
@@ -73,7 +73,8 @@ Make AgentMash good enough to launch publicly as a serious app.
 - `schemas/intake.v1.json` documents the local agent-drop contract for future backend, API, or MCP intake.
 - `schemas/api.v1.openapi.json` documents contract-only future backend routes for intake, feedback bundle retrieval, and deletion.
 - `schemas/mcp-tools.v1.json` documents contract-only future MCP tools for artifact submission, feedback bundle retrieval, and deletion requests.
-- The public URL verifier fetches the schema and contract URLs and confirms their contract metadata.
+- `schemas/examples/` provides sample intake, acknowledgement, and feedback bundle payloads.
+- The public URL verifier fetches the schema, contract, and example URLs and confirms their contract metadata.
 - Export workspace shows local contract status badges for the active feedback packet and JSONL dataset rows.
 - Refine panel is hidden by default and closes after a decision, keeping the next card in the fast swipe loop.
 - Refine score sliders are hidden behind `Scores` until explicitly opened.
@@ -117,7 +118,7 @@ Make AgentMash good enough to launch publicly as a serious app.
 - `npm run check` verifies public PWA screenshot PNG dimensions match the manifest-declared 390 by 844 and 1440 by 1000 sizes.
 - `npm run check` verifies `_headers`, Netlify, and Vercel keep the service worker and manifest update-friendly with `Cache-Control: no-cache`.
 - `npm run check` syntax-checks the live public URL verifier without contacting any host.
-- `npm run check` verifies the live public URL verifier checks final canonical/Open Graph/Twitter metadata, preview image URLs, public support contact metadata, robots, sitemap, and public contract URLs.
+- `npm run check` verifies the live public URL verifier checks final canonical/Open Graph/Twitter metadata, preview image URLs, public support contact metadata, robots, sitemap, public contract URLs, and public example URLs.
 - `npm run check` verifies the local public-readiness script exists.
 - `npm run check` verifies the local final-metadata configurator exists, is syntax-checked, covers canonical/Open Graph/Twitter/support/privacy fields, has no network hooks, and has an isolated write-path checker.
 - `npm run check` verifies the public URL verifier smoke check serves a configured local public build and calls `scripts/verify-public-url.mjs`.
@@ -125,6 +126,7 @@ Make AgentMash good enough to launch publicly as a serious app.
 - `schemas/intake.v1.json` parses as JSON and is checked for the `agentmash.intake.v1` contract.
 - `schemas/api.v1.openapi.json` parses as JSON and is checked for contract-only OpenAPI 3.1 routes.
 - `schemas/mcp-tools.v1.json` parses as JSON and is checked for contract-only MCP tool definitions.
+- `schemas/examples/intake.v1.json`, `schemas/examples/intake-ack.v1.json`, and `schemas/examples/feedback-bundle.v1.json` parse as JSON and are checked for matching contract metadata.
 - The runtime packet schema and app code are checked to keep return modes local-only: `json` and `dataset`.
 - `store/native-wrapper-handoff.md` records the later native shell path, bundle IDs, `_site` web directory, and no-analytics native rules.
 - Mobile browser check at 390 by 844 showed no horizontal overflow.
@@ -136,7 +138,7 @@ Make AgentMash good enough to launch publicly as a serious app.
 - Public manifest screenshots point to `assets/screenshots`.
 - `npm run check` builds `_site/` and verifies internal files are not packaged.
 - `_site/` includes all public app modules, public schema files, and `sw.js` caches those module and schema files.
-- `sw.js` cache name is `agentmash-v36` after adding API and MCP contract files to the app shell, so the offline app shell refreshes when this build is published.
+- `sw.js` cache name is `agentmash-v37` after adding public contract examples to the app shell, so the offline app shell refreshes when this build is published.
 - Playwright e2e test passed: after service worker readiness, the app reloaded offline and rendered the AgentMash shell and swipe card.
 - Netlify and Vercel configs are checked for `npm run build` plus `_site/` output.
 - Apple touch icon is linked from `index.html`, cached by `sw.js`, and sized at 180 by 180.

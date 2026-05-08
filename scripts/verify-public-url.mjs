@@ -211,6 +211,20 @@ async function checkMcpToolContract(base) {
   }
 }
 
+async function checkExample(base, path, expectedSchema, label) {
+  const response = await checkOk(base, path, label);
+  try {
+    const parsed = JSON.parse(response.body);
+    if (parsed.schema === expectedSchema) {
+      pass(`${label} has ${expectedSchema} example metadata`);
+    } else {
+      fail(`${label} does not expose ${expectedSchema}`);
+    }
+  } catch {
+    fail(`${label} is not valid JSON`);
+  }
+}
+
 async function main() {
   const base = normalizeBase(input);
   if (base.protocol !== "https:" && !isLocalHost(base)) {
@@ -317,6 +331,9 @@ async function main() {
   await checkSchema(base, "/schemas/intake.v1.json", "agentmash.intake.v1", "intake schema");
   await checkOpenApiContract(base);
   await checkMcpToolContract(base);
+  await checkExample(base, "/schemas/examples/intake.v1.json", "agentmash.intake.v1", "intake example");
+  await checkExample(base, "/schemas/examples/intake-ack.v1.json", "agentmash.intake-ack.v1", "intake acknowledgement example");
+  await checkExample(base, "/schemas/examples/feedback-bundle.v1.json", "agentmash.feedback-bundle.v1", "feedback bundle example");
   await checkNotPublic(base, "/store/completion-audit.md");
   await checkNotPublic(base, "/package.json");
   await checkNotPublic(base, "/PUBLISHING.md");

@@ -31,6 +31,9 @@ const requiredFiles = [
   "schemas/intake.v1.json",
   "schemas/api.v1.openapi.json",
   "schemas/mcp-tools.v1.json",
+  "schemas/examples/intake.v1.json",
+  "schemas/examples/intake-ack.v1.json",
+  "schemas/examples/feedback-bundle.v1.json",
   "store/completion-audit.md",
   "store/public-launch-audit.md",
   "store/public-launch-plan.md",
@@ -86,6 +89,9 @@ const appShellFiles = [
   "./schemas/intake.v1.json",
   "./schemas/api.v1.openapi.json",
   "./schemas/mcp-tools.v1.json",
+  "./schemas/examples/intake.v1.json",
+  "./schemas/examples/intake-ack.v1.json",
+  "./schemas/examples/feedback-bundle.v1.json",
   "./assets/app-icon.svg",
   "./assets/icons/app-icon-192.png",
   "./assets/icons/app-icon-512.png",
@@ -174,6 +180,9 @@ const feedbackSchema = JSON.parse(await read("schemas/feedback.v2.json"));
 const intakeSchema = JSON.parse(await read("schemas/intake.v1.json"));
 const apiContract = JSON.parse(await read("schemas/api.v1.openapi.json"));
 const mcpContract = JSON.parse(await read("schemas/mcp-tools.v1.json"));
+const intakeExample = JSON.parse(await read("schemas/examples/intake.v1.json"));
+const intakeAckExample = JSON.parse(await read("schemas/examples/intake-ack.v1.json"));
+const feedbackBundleExample = JSON.parse(await read("schemas/examples/feedback-bundle.v1.json"));
 const htmlPageSources = Object.fromEntries(await Promise.all(htmlPages.map(async (page) => [page, await read(page)])));
 const index = htmlPageSources["index.html"];
 const support = htmlPageSources["support.html"];
@@ -349,6 +358,11 @@ check(
   apiContract.openapi === "3.1.0"
     && apiContract["x-agentmash-status"] === "contract-only"
     && apiContract["x-agentmash-no-live-server"] === true
+    && hasAll(JSON.stringify(apiContract["x-agentmash-example-files"]), [
+      "/schemas/examples/intake.v1.json",
+      "/schemas/examples/intake-ack.v1.json",
+      "/schemas/examples/feedback-bundle.v1.json"
+    ])
     && Boolean(apiContract.paths?.["/v1/intake"]?.post)
     && Boolean(apiContract.paths?.["/v1/feedback/{runId}"]?.get)
     && Boolean(apiContract.paths?.["/v1/artifacts/{artifactId}"]?.delete)
@@ -360,6 +374,11 @@ check(
   mcpContract.schema === "agentmash.mcp-tools.v1"
     && mcpContract.status === "contract-only"
     && mcpContract.protocolVersion === "2025-11-25"
+    && hasAll(JSON.stringify(mcpContract.exampleFiles), [
+      "./examples/intake.v1.json",
+      "./examples/intake-ack.v1.json",
+      "./examples/feedback-bundle.v1.json"
+    ])
     && Array.isArray(mcpContract.tools)
     && hasAll(JSON.stringify(mcpContract.tools), [
       "agentmash.submit_artifacts",
@@ -369,6 +388,29 @@ check(
       "outputSchema"
     ]),
   "future MCP tool contract is explicit and contract-only"
+);
+check(
+  intakeExample.schema === "agentmash.intake.v1"
+    && intakeExample.source?.runId === "run-2026-05-08-001"
+    && intakeExample.reviewContext?.focus === "trust"
+    && Array.isArray(intakeExample.artifacts)
+    && intakeExample.artifacts[0]?.id === "artifact-homepage-clean",
+  "intake example gives a realistic agent-drop payload"
+);
+check(
+  intakeAckExample.schema === "agentmash.intake-ack.v1"
+    && intakeAckExample.status === "accepted"
+    && intakeAckExample.accepted?.[0]?.artifactId === "artifact-homepage-clean"
+    && intakeAckExample.limits?.allowedImageTypes?.includes("image/webp"),
+  "intake acknowledgement example gives a realistic future response"
+);
+check(
+  feedbackBundleExample.schema === "agentmash.feedback-bundle.v1"
+    && feedbackBundleExample.status === "ready"
+    && feedbackBundleExample.packets?.[0]?.schema === "agentmash.feedback.v2"
+    && feedbackBundleExample.packets?.[0]?.humanSignal?.signalStrength === 0.79
+    && feedbackBundleExample.evalRows?.[0]?.schema === "agentmash.eval-row.v2",
+  "feedback bundle example gives a realistic future response"
 );
 check(!appSurface.includes("confidenceFor") && !appSurface.includes(".confidence"), "app output no longer uses confidence field");
 check(!appSurface.includes("agentRetryQueue") && !appSurface.includes("Retry queue"), "retry queue metric is removed");
@@ -461,8 +503,8 @@ check(
   "public metadata checker exercises real write, idempotency, and dry-run paths"
 );
 check(
-  hasAll(verifyPublicScript, ["canonical URL", "Open Graph URL", "Twitter URL", "Open Graph image", "Twitter image", "data-public-support-contact", "robots file", "sitemap includes", "feedback schema", "intake schema", "API contract", "MCP tool contract"]),
-  "public URL verifier checks final URL, preview image, support metadata, robots, sitemap, schemas, and future contracts"
+  hasAll(verifyPublicScript, ["canonical URL", "Open Graph URL", "Twitter URL", "Open Graph image", "Twitter image", "data-public-support-contact", "robots file", "sitemap includes", "feedback schema", "intake schema", "API contract", "MCP tool contract", "intake example", "feedback bundle example"]),
+  "public URL verifier checks final URL, preview image, support metadata, robots, sitemap, schemas, future contracts, and examples"
 );
 check(
   hasAll(publicVerifierCheck, ["createServer", "configurePublicLaunch", "verify-public-url.mjs", "127.0.0.1", "publicBuildEntries", "application/xml"]) &&

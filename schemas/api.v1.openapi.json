@@ -15,6 +15,11 @@
   "x-agentmash-status": "contract-only",
   "x-agentmash-no-live-server": true,
   "x-agentmash-user-action": "Needs user action before deployment: choose hosting, auth, retention, deletion, support coverage, and public terms.",
+  "x-agentmash-example-files": [
+    "/schemas/examples/intake.v1.json",
+    "/schemas/examples/intake-ack.v1.json",
+    "/schemas/examples/feedback-bundle.v1.json"
+  ],
   "security": [
     {
       "bearerAuth": []
@@ -32,6 +37,12 @@
             "application/json": {
               "schema": {
                 "$ref": "./intake.v1.json"
+              },
+              "examples": {
+                "localAgentDrop": {
+                  "summary": "Local agent-drop payload",
+                  "externalValue": "/schemas/examples/intake.v1.json"
+                }
               }
             }
           }
@@ -43,6 +54,12 @@
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/IntakeAcknowledgement"
+                },
+                "examples": {
+                  "accepted": {
+                    "summary": "Accepted intake acknowledgement",
+                    "externalValue": "/schemas/examples/intake-ack.v1.json"
+                  }
                 }
               }
             }
@@ -103,6 +120,12 @@
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/FeedbackBundle"
+                },
+                "examples": {
+                  "readyBundle": {
+                    "summary": "Ready feedback bundle",
+                    "externalValue": "/schemas/examples/feedback-bundle.v1.json"
+                  }
                 }
               }
             }

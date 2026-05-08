@@ -1,4 +1,4 @@
-const CACHE_NAME = "agentmash-v36";
+const CACHE_NAME = "agentmash-v37";
 const APP_SHELL = [
   "./",
   "./index.html",
@@ -13,6 +13,9 @@ const APP_SHELL = [
   "./schemas/intake.v1.json",
   "./schemas/api.v1.openapi.json",
   "./schemas/mcp-tools.v1.json",
+  "./schemas/examples/intake.v1.json",
+  "./schemas/examples/intake-ack.v1.json",
+  "./schemas/examples/feedback-bundle.v1.json",
   "./assets/app-icon.svg",
   "./assets/icons/app-icon-192.png",
   "./assets/icons/app-icon-512.png",

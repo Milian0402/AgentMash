@@ -7,6 +7,11 @@
   "status": "contract-only",
   "protocolVersion": "2025-11-25",
   "specSource": "https://modelcontextprotocol.io/specification/2025-11-25/server/tools",
+  "exampleFiles": [
+    "./examples/intake.v1.json",
+    "./examples/intake-ack.v1.json",
+    "./examples/feedback-bundle.v1.json"
+  ],
   "tools": [
     {
       "name": "agentmash.submit_artifacts",
@@ -127,6 +132,30 @@
           "type": "array",
           "items": {
             "$ref": "#/$defs/validationIssue"
+          }
+        },
+        "limits": {
+          "$ref": "#/$defs/intakeLimits"
+        }
+      },
+      "additionalProperties": false
+    },
+    "intakeLimits": {
+      "type": "object",
+      "required": ["maxArtifactsPerRequest", "maxImageBytes", "allowedImageTypes"],
+      "properties": {
+        "maxArtifactsPerRequest": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "maxImageBytes": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "allowedImageTypes": {
+          "type": "array",
+          "items": {
+            "enum": ["image/png", "image/jpeg", "image/webp"]
           }
         }
       },

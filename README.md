@@ -119,6 +119,7 @@ This only edits local files, including `robots.txt` and `sitemap.xml`. It does n
 - `schemas/feedback.v2.json`: local feedback packet and eval-row contract, packaged publicly for future integrators.
 - `schemas/api.v1.openapi.json`: contract-only OpenAPI draft for a future backend.
 - `schemas/mcp-tools.v1.json`: contract-only MCP tool draft for a future server.
+- `schemas/examples`: public sample intake, acknowledgement, and feedback bundle payloads.
 - `store/completion-audit.md`: prompt-to-artifact launch readiness audit.
 - `store/public-launch-plan.md`: cheapest practical public launch sequence.
 - `store/research-and-cost-guide.md`: design research and cost guide.

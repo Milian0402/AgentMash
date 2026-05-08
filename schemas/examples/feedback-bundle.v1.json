@@ -1,0 +1,155 @@
+{
+  "schema": "agentmash.feedback-bundle.v1",
+  "runId": "run-2026-05-08-001",
+  "status": "ready",
+  "generatedAt": "2026-05-08T09:40:00.000Z",
+  "packets": [
+    {
+      "schema": "agentmash.feedback.v2",
+      "status": "ready",
+      "packetId": "packet-artifact-homepage-clean-001",
+      "generatedAt": "2026-05-08T09:40:00.000Z",
+      "signalStrengthFormula": {
+        "name": "score_extremity_plus_annotation",
+        "description": "Signal strength is score extremity around a neutral 60 score plus small boosts for tags and a note.",
+        "expression": "roundTo(0.55 + min(1, abs(score - 60) / 40) * 0.27 + min(0.1, tagCount * 0.025) + noteBoost, 2)",
+        "noteBoost": 0.08,
+        "range": [0.55, 1]
+      },
+      "request": {
+        "artifactId": "artifact-homepage-clean",
+        "variant": "original",
+        "type": "website",
+        "title": "Homepage concept: clean dashboard",
+        "prompt": "Create a product homepage for a launch analytics app.",
+        "body": "Observe launch signals before they become support load.",
+        "runId": "run-2026-05-08-001",
+        "requesterType": "agent",
+        "requesterName": "launch-smoke-agent",
+        "goal": "Find which homepage direction feels trustworthy in the first few seconds.",
+        "submittedAt": "2026-05-08T09:35:00.000Z",
+        "reviewContext": {
+          "focus": "trust",
+          "audience": "buyers",
+          "stage": "prelaunch",
+          "priority": "normal",
+          "notes": "Prefer a gut reaction over detailed critique."
+        },
+        "image": {
+          "imageKey": "",
+          "hasImage": false,
+          "included": false
+        }
+      },
+      "humanSignal": {
+        "reviewer": "local-reviewer",
+        "verdict": "accepted",
+        "preferenceLabel": "chosen",
+        "firstImpression": "accepted_on_first_glance",
+        "score": 84,
+        "signalStrength": 0.79,
+        "scoreVector": {
+          "gut": 9,
+          "sense": 8,
+          "craft": 8,
+          "useful": 9
+        },
+        "tags": ["clear", "credible"],
+        "failureModes": [],
+        "judgedAt": "2026-05-08T09:39:10.000Z"
+      },
+      "humanJudgement": {
+        "reviewer": "local-reviewer",
+        "verdict": "accepted",
+        "firstImpression": "accepted_on_first_glance",
+        "preferenceLabel": "chosen",
+        "signalStrength": 0.79,
+        "score": 84,
+        "grade": "Keeper",
+        "scores": {
+          "gut": 9,
+          "sense": 8,
+          "craft": 8,
+          "useful": 9
+        },
+        "tags": ["clear", "credible"],
+        "note": "Felt credible immediately and the promise is easy to understand.",
+        "judgedAt": "2026-05-08T09:39:10.000Z"
+      },
+      "pairwiseComparisons": [],
+      "interpretation": {
+        "recommendation": "ship_or_keep",
+        "likelyFailureModes": [],
+        "repairInstruction": "",
+        "criteriaUsed": ["trust", "first_impression"]
+      },
+      "agentUse": {
+        "trainingUse": ["preference_label", "score_vector"],
+        "preferenceLabel": "chosen",
+        "recommendedAction": "ship_or_keep",
+        "repairInstruction": "",
+        "signalStrength": 0.79,
+        "reviewContext": {
+          "focus": "trust",
+          "audience": "buyers",
+          "stage": "prelaunch",
+          "priority": "normal",
+          "notes": "Prefer a gut reaction over detailed critique."
+        }
+      },
+      "evalRow": {
+        "schema": "agentmash.eval-row.v2",
+        "rowId": "eval-artifact-homepage-clean-001",
+        "createdAt": "2026-05-08T09:40:00.000Z",
+        "artifact": {
+          "artifactId": "artifact-homepage-clean",
+          "type": "website",
+          "title": "Homepage concept: clean dashboard",
+          "variant": "original",
+          "submittedAt": "2026-05-08T09:35:00.000Z"
+        },
+        "humanSignal": {
+          "verdict": "accepted",
+          "preferenceLabel": "chosen",
+          "score": 84,
+          "signalStrength": 0.79
+        },
+        "agentUse": {
+          "recommendedAction": "ship_or_keep",
+          "trainingUse": ["preference_label", "score_vector"]
+        }
+      },
+      "return": {
+        "mode": "dataset",
+        "target": "local export",
+        "format": "application/x-ndjson",
+        "deliveryStatus": "local_ready"
+      }
+    }
+  ],
+  "evalRows": [
+    {
+      "schema": "agentmash.eval-row.v2",
+      "rowId": "eval-artifact-homepage-clean-001",
+      "createdAt": "2026-05-08T09:40:00.000Z",
+      "artifact": {
+        "artifactId": "artifact-homepage-clean",
+        "type": "website",
+        "title": "Homepage concept: clean dashboard",
+        "variant": "original",
+        "submittedAt": "2026-05-08T09:35:00.000Z"
+      },
+      "humanSignal": {
+        "verdict": "accepted",
+        "preferenceLabel": "chosen",
+        "score": 84,
+        "signalStrength": 0.79
+      },
+      "agentUse": {
+        "recommendedAction": "ship_or_keep",
+        "trainingUse": ["preference_label", "score_vector"]
+      }
+    }
+  ],
+  "pairwiseRows": []
+}

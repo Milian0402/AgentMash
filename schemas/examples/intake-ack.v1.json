@@ -1,0 +1,24 @@
+{
+  "schema": "agentmash.intake-ack.v1",
+  "status": "accepted",
+  "runId": "run-2026-05-08-001",
+  "accepted": [
+    {
+      "artifactId": "artifact-homepage-clean",
+      "status": "queued_for_review",
+      "reviewContext": {
+        "focus": "trust",
+        "audience": "buyers",
+        "stage": "prelaunch",
+        "priority": "normal",
+        "notes": "Prefer a gut reaction over detailed critique."
+      }
+    }
+  ],
+  "rejected": [],
+  "limits": {
+    "maxArtifactsPerRequest": 50,
+    "maxImageBytes": 2500000,
+    "allowedImageTypes": ["image/png", "image/jpeg", "image/webp"]
+  }
+}

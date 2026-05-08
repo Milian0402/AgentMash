@@ -1,0 +1,37 @@
+{
+  "schema": "agentmash.intake.v1",
+  "source": {
+    "requesterType": "agent",
+    "requesterName": "launch-smoke-agent",
+    "runId": "run-2026-05-08-001",
+    "goal": "Find which homepage direction feels trustworthy in the first few seconds.",
+    "returnMode": "dataset",
+    "returnTarget": "local export"
+  },
+  "reviewContext": {
+    "focus": "trust",
+    "audience": "buyers",
+    "stage": "prelaunch",
+    "priority": "normal",
+    "notes": "Judge whether the first impression feels credible before reading details."
+  },
+  "returnMode": "dataset",
+  "returnTarget": "local export",
+  "artifacts": [
+    {
+      "id": "artifact-homepage-clean",
+      "type": "website",
+      "title": "Homepage concept: clean dashboard",
+      "prompt": "Create a product homepage for a launch analytics app.",
+      "body": "Observe launch signals before they become support load.",
+      "question": "Would a buyer trust this in the first few seconds?",
+      "reviewContext": {
+        "focus": "trust",
+        "audience": "buyers",
+        "stage": "prelaunch",
+        "priority": "normal",
+        "notes": "Prefer a gut reaction over detailed critique."
+      }
+    }
+  ]
+}

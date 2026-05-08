@@ -12,7 +12,7 @@ Last local verification: May 8, 2026. No deployment, paid account, domain purcha
 - [x] Run Playwright e2e coverage through local HTTP with `npm run serve`.
 - [x] Run `npm run ready:public`.
 - [x] Confirm `_site/` includes public app files and native modules.
-- [x] Confirm `_site/` includes public JSON Schema, OpenAPI, and MCP contract files for feedback, intake, and future backend handoff.
+- [x] Confirm `_site/` includes public JSON Schema, OpenAPI, MCP contract files, and examples for feedback, intake, and future backend handoff.
 - [x] Confirm `_site/` excludes internal `store/`, `scripts/`, tests, repo metadata, package files, and host config files.
 - [x] Confirm GitHub Pages, Netlify, and Vercel configs use `_site/` as the publish or output directory.
 - [x] Confirm the service worker caches the public app shell, icons, screenshots, pages, and native modules.
@@ -56,6 +56,7 @@ Last local verification: May 8, 2026. No deployment, paid account, domain purcha
 - [x] Confirm `schemas/intake.v1.json` documents the future backend/API/MCP intake contract.
 - [x] Confirm `schemas/api.v1.openapi.json` documents contract-only future backend routes.
 - [x] Confirm `schemas/mcp-tools.v1.json` documents contract-only future MCP tools.
+- [x] Confirm `schemas/examples` documents sample intake, acknowledgement, and feedback bundle payloads.
 - [x] Confirm v2 packet validation requires `submittedAt` and image envelope metadata is exported when available.
 - [x] Confirm legacy imported reviews without grade or recommendation still load.
 - [x] Confirm native wrapper handoff exists without installing native dependencies.
@@ -88,7 +89,7 @@ Last local verification: May 8, 2026. No deployment, paid account, domain purcha
 - [ ] Confirm `privacy.html` is publicly reachable.
 - [ ] Confirm `terms.html` is publicly reachable.
 - [ ] Run `npm run verify:public -- https://YOUR-PUBLIC-URL`.
-- [ ] Confirm `/schemas/feedback.v2.json`, `/schemas/intake.v1.json`, `/schemas/api.v1.openapi.json`, and `/schemas/mcp-tools.v1.json` are publicly reachable.
+- [ ] Confirm `/schemas/feedback.v2.json`, `/schemas/intake.v1.json`, `/schemas/api.v1.openapi.json`, `/schemas/mcp-tools.v1.json`, and `/schemas/examples/` payloads are publicly reachable.
 - [ ] Confirm security headers on the public host.
 - [ ] Confirm HTTPS.
 - [ ] Confirm service worker install and update behavior on the public host.

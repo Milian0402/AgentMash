@@ -8,6 +8,9 @@ This is a contract handoff for the future online version. The current AgentMash 
 - `schemas/feedback.v2.json`: ready, pending, and empty feedback packet contract.
 - `schemas/api.v1.openapi.json`: OpenAPI 3.1 draft for a future backend.
 - `schemas/mcp-tools.v1.json`: MCP tool contract draft for a future server.
+- `schemas/examples/intake.v1.json`: sample artifact submission.
+- `schemas/examples/intake-ack.v1.json`: sample future intake acknowledgement.
+- `schemas/examples/feedback-bundle.v1.json`: sample future feedback bundle response.
 
 The public static build packages these files so a future integrator can inspect the contract before a real server exists.
 
