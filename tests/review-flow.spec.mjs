@@ -420,6 +420,26 @@ test("Short mobile review screen keeps preview labels clear", async ({ page }) =
   });
 });
 
+test("Desktop launch screenshot keeps the full decision rail visible", async ({ page }) => {
+  await page.setViewportSize({ width: 1440, height: 1000 });
+  await resetApp(page);
+
+  await expect(page.locator("#swipeCard")).toBeVisible();
+  const layout = await page.evaluate(() => {
+    const actions = document.querySelector(".swipe-actions").getBoundingClientRect();
+    const card = document.querySelector("#swipeCard").getBoundingClientRect();
+    return {
+      actionsClearOfCard: actions.top >= card.bottom + 8,
+      actionsFullyVisible: actions.bottom <= window.innerHeight - 8
+    };
+  });
+
+  expect(layout).toEqual({
+    actionsClearOfCard: true,
+    actionsFullyVisible: true
+  });
+});
+
 test("Keyboard shortcuts support swipe and pairwise without hijacking text entry", async ({ page }) => {
   await resetApp(page);
 

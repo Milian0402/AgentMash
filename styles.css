@@ -3365,3 +3365,17 @@ body[data-decision-transition="true"] .decision-button {
     padding: 7px 8px;
   }
 }
+
+@media (min-width: 761px) and (max-height: 1050px) {
+  .first-look-stage .deck-area {
+    min-height: clamp(620px, 68vh, 680px);
+  }
+
+  .first-look-stage .swipe-card {
+    height: clamp(600px, 66vh, 660px);
+  }
+
+  .card-stack-shadow {
+    min-height: clamp(620px, 68vh, 680px);
+  }
+}
