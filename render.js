@@ -161,8 +161,10 @@ let storageHealthRequest = 0;
 let isRefineOpen = false;
 let isScoreControlsOpen = false;
 let isDetailSheetOpen = false;
+let lastRenderedItemId = "";
 let renderActions = {
-  toggleTag: () => {}
+  toggleTag: () => {},
+  onActiveItemRendered: () => {}
 };
 
 export function configureRenderActions(actions) {
@@ -303,6 +305,10 @@ export function render() {
 
   const filteredIndex = filtered.findIndex((item) => item.id === activeItem.id) + 1;
   state.currentItemId = activeItem.id;
+  if (activeItem.id !== lastRenderedItemId) {
+    lastRenderedItemId = activeItem.id;
+    renderActions.onActiveItemRendered(activeItem.id);
+  }
   elements.stageProgress.textContent = `${filteredIndex} / ${filtered.length}`;
   elements.cardPreview.innerHTML = renderPreview(activeItem);
   elements.artifactTypeLabel.textContent = typeLabel(activeItem.type);

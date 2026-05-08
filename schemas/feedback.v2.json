@@ -282,7 +282,7 @@
     },
     "humanSignal": {
       "type": "object",
-      "required": ["reviewer", "verdict", "preferenceLabel", "score", "signalStrength", "scoreVector", "judgedAt"],
+      "required": ["reviewer", "verdict", "preferenceLabel", "score", "signalStrength", "scoreVector", "reviewProvenance", "judgedAt"],
       "properties": {
         "reviewer": {
           "type": "string"
@@ -320,6 +320,30 @@
           "items": {
             "type": "string"
           }
+        },
+        "reviewProvenance": {
+          "type": "object",
+          "required": ["sessionId", "inputMethod", "decisionLatencyMs", "reviewerContext", "judgedAt"],
+          "properties": {
+            "sessionId": {
+              "type": "string"
+            },
+            "inputMethod": {
+              "enum": ["button", "keyboard", "swipe", "unknown"]
+            },
+            "decisionLatencyMs": {
+              "type": ["number", "null"],
+              "minimum": 0
+            },
+            "reviewerContext": {
+              "type": "object"
+            },
+            "judgedAt": {
+              "type": "string",
+              "format": "date-time"
+            }
+          },
+          "additionalProperties": true
         },
         "rationale": {
           "type": "string"

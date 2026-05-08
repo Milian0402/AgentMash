@@ -31,6 +31,7 @@ export const quickTags = [
   "confusing",
   "off-brand"
 ];
+export const reviewInputMethods = ["button", "keyboard", "swipe", "unknown"];
 
 export const scoreDimensions = [
   {
@@ -363,7 +364,31 @@ export function normalizeReview(review) {
     recommendation: cleanText(review.recommendation) || recommendationFor({ verdict, score, grade }),
     tags: normalizeTags(review.tags),
     note: cleanText(review.note),
+    sessionId: cleanText(review.sessionId || review.reviewSessionId) || "legacy-local-session",
+    inputMethod: reviewInputMethods.includes(review.inputMethod) ? review.inputMethod : "unknown",
+    decisionLatencyMs: normalizeOptionalNonNegativeNumber(review.decisionLatencyMs),
+    reviewerContext: normalizeReviewerContext(review.reviewerContext),
     createdAt: cleanText(review.createdAt) || new Date().toISOString()
+  };
+}
+
+export function normalizeOptionalNonNegativeNumber(value) {
+  const number = Number(value);
+  return Number.isFinite(number) ? Math.max(0, Math.round(number)) : null;
+}
+
+export function normalizeReviewerContext(context = {}) {
+  const viewport = context.viewport || {};
+  return {
+    captureSurface: cleanText(context.captureSurface) || "human_review",
+    reviewMode: normalizeReviewMode(context.reviewMode),
+    filter: ["all", ...artifactTypes].includes(context.filter) ? context.filter : "all",
+    colorScheme: ["light", "dark"].includes(context.colorScheme) ? context.colorScheme : "light",
+    reducedMotion: Boolean(context.reducedMotion),
+    viewport: {
+      width: normalizeOptionalNonNegativeNumber(viewport.width),
+      height: normalizeOptionalNonNegativeNumber(viewport.height)
+    }
   };
 }
 

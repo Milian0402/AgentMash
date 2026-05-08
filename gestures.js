@@ -49,12 +49,12 @@ export function installGestureHandlers({ decide, choosePairwise, undoLastCompari
 
     if (event.key === "ArrowRight") {
       event.preventDefault();
-      decide("nice");
+      decide("nice", "keyboard");
     }
 
     if (event.key === "ArrowLeft") {
       event.preventDefault();
-      decide("pass");
+      decide("pass", "keyboard");
     }
 
     if ((event.metaKey || event.ctrlKey) && event.key.toLowerCase() === "z") {
@@ -119,12 +119,12 @@ function onPointerUp(event, decide) {
   clearSwipeIntent();
 
   if (deltaX > 120) {
-    decide("nice");
+    decide("nice", "swipe");
     return;
   }
 
   if (deltaX < -120) {
-    decide("pass");
+    decide("pass", "swipe");
     return;
   }
 

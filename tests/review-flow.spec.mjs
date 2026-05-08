@@ -247,9 +247,19 @@ test("Nice, Undo, and Nope produce a v2 feedback packet", async ({ page }) => {
   expect(packet.humanJudgement).not.toHaveProperty("confidence");
   expect(packet.humanSignal).toHaveProperty("signalStrength");
   expect(packet.humanSignal.verdict).toBe("rejected");
+  expect(packet.humanSignal.reviewProvenance.sessionId).toMatch(/^session-/);
+  expect(packet.humanSignal.reviewProvenance.inputMethod).toBe("button");
+  expect(packet.humanSignal.reviewProvenance.decisionLatencyMs).toBeGreaterThanOrEqual(0);
+  expect(packet.humanSignal.reviewProvenance.reviewerContext).toMatchObject({
+    captureSurface: "human_review",
+    reviewMode: "swipe",
+    filter: "all"
+  });
+  expect(packet.humanJudgement.reviewProvenance.sessionId).toBe(packet.humanSignal.reviewProvenance.sessionId);
   expect(packet.agentUse).toHaveProperty("signalStrength");
   expect(packet.evalRow.schema).toBe("agentmash.eval-row.v2");
   expect(packet.evalRow.humanSignal).toHaveProperty("signalStrength");
+  expect(packet.evalRow.humanSignal.reviewProvenance.inputMethod).toBe("button");
   expect(packet.evalRow.agentUse).toHaveProperty("signalStrength");
   expect(packet.return.deliveryStatus).toBe("local_ready");
 });
@@ -422,6 +432,26 @@ test("Short mobile review screen keeps preview labels clear", async ({ page }) =
 
 test("Desktop launch screenshot keeps the full decision rail visible", async ({ page }) => {
   await page.setViewportSize({ width: 1440, height: 1000 });
+  await resetApp(page);
+
+  await expect(page.locator("#swipeCard")).toBeVisible();
+  const layout = await page.evaluate(() => {
+    const actions = document.querySelector(".swipe-actions").getBoundingClientRect();
+    const card = document.querySelector("#swipeCard").getBoundingClientRect();
+    return {
+      actionsClearOfCard: actions.top >= card.bottom + 8,
+      actionsFullyVisible: actions.bottom <= window.innerHeight - 8
+    };
+  });
+
+  expect(layout).toEqual({
+    actionsClearOfCard: true,
+    actionsFullyVisible: true
+  });
+});
+
+test("Short desktop review screen keeps decision rail in view", async ({ page }) => {
+  await page.setViewportSize({ width: 1024, height: 768 });
   await resetApp(page);
 
   await expect(page.locator("#swipeCard")).toBeVisible();

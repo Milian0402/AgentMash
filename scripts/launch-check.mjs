@@ -467,6 +467,8 @@ check(
     && feedbackBundleExample.status === "ready"
     && feedbackBundleExample.packets?.[0]?.schema === "agentmash.feedback.v2"
     && feedbackBundleExample.packets?.[0]?.humanSignal?.signalStrength === 0.79
+    && feedbackBundleExample.packets?.[0]?.humanSignal?.reviewProvenance?.inputMethod === "swipe"
+    && feedbackBundleExample.evalRows?.[0]?.humanSignal?.reviewProvenance?.decisionLatencyMs === 1360
     && feedbackBundleExample.evalRows?.[0]?.schema === "agentmash.eval-row.v2",
   "feedback bundle example gives a realistic future response"
 );
@@ -484,7 +486,7 @@ check(
   hasAll(appSurface, ["ALLOWED_IMAGE_TYPES", "MAX_IMAGE_BYTES", "safeImageData", "Choose a PNG, JPG, or WebP image"]),
   "image uploads are type and size constrained"
 );
-check(serviceWorker.includes('const CACHE_NAME = "agentmash-v53"'), "service worker cache is AgentMash scoped and current");
+check(serviceWorker.includes('const CACHE_NAME = "agentmash-v54"'), "service worker cache is AgentMash scoped and current");
 check(hasAll(serviceWorker, appShellFiles), "service worker app shell includes launch pages and icons");
 check(hasAll(headers, securityHeaders), "_headers defines security headers");
 check(hasAll(netlify, securityHeaders), "netlify config defines security headers");
@@ -622,7 +624,7 @@ check(
     "quick-reason dropdown",
     "agentmash.feedback.v2",
     "signalStrength",
-    "agentmash-v53",
+    "agentmash-v54",
     "No public deployment was performed",
     "No domain was bought",
     "No paid service",

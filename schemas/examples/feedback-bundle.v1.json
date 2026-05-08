@@ -38,7 +38,9 @@
         "image": {
           "imageKey": "",
           "hasImage": false,
-          "included": false
+          "included": false,
+          "mediaType": "",
+          "dataUrl": ""
         }
       },
       "humanSignal": {
@@ -47,15 +49,50 @@
         "preferenceLabel": "chosen",
         "firstImpression": "accepted_on_first_glance",
         "score": 84,
+        "grade": "Keeper",
         "signalStrength": 0.79,
         "scoreVector": {
-          "gut": 9,
-          "sense": 8,
-          "craft": 8,
-          "useful": 9
+          "gut": {
+            "label": "First gut call",
+            "value": 9,
+            "weight": 0.35
+          },
+          "sense": {
+            "label": "Instant sense",
+            "value": 8,
+            "weight": 0.25
+          },
+          "craft": {
+            "label": "Looks made well",
+            "value": 8,
+            "weight": 0.22
+          },
+          "useful": {
+            "label": "Worth another look",
+            "value": 9,
+            "weight": 0.18
+          }
         },
-        "tags": ["clear", "credible"],
+        "tags": ["clear", "trustworthy"],
         "failureModes": [],
+        "reviewProvenance": {
+          "sessionId": "session-m9zt2a-12a3b",
+          "inputMethod": "swipe",
+          "decisionLatencyMs": 1360,
+          "reviewerContext": {
+            "captureSurface": "human_review",
+            "reviewMode": "swipe",
+            "filter": "all",
+            "colorScheme": "light",
+            "reducedMotion": false,
+            "viewport": {
+              "width": 390,
+              "height": 844
+            }
+          },
+          "judgedAt": "2026-05-08T09:39:10.000Z"
+        },
+        "rationale": "Felt credible immediately and the promise is easy to understand.",
         "judgedAt": "2026-05-08T09:39:10.000Z"
       },
       "humanJudgement": {
@@ -72,23 +109,46 @@
           "craft": 8,
           "useful": 9
         },
-        "tags": ["clear", "credible"],
+        "tags": ["clear", "trustworthy"],
         "note": "Felt credible immediately and the promise is easy to understand.",
+        "reviewProvenance": {
+          "sessionId": "session-m9zt2a-12a3b",
+          "inputMethod": "swipe",
+          "decisionLatencyMs": 1360,
+          "reviewerContext": {
+            "captureSurface": "human_review",
+            "reviewMode": "swipe",
+            "filter": "all",
+            "colorScheme": "light",
+            "reducedMotion": false,
+            "viewport": {
+              "width": 390,
+              "height": 844
+            }
+          },
+          "judgedAt": "2026-05-08T09:39:10.000Z"
+        },
         "judgedAt": "2026-05-08T09:39:10.000Z"
       },
       "pairwiseComparisons": [],
       "interpretation": {
-        "recommendation": "ship_or_keep",
+        "recommendation": "Keep this direction for website; preserve the prompt pattern and add it to positive examples.",
         "likelyFailureModes": [],
-        "repairInstruction": "",
-        "criteriaUsed": ["trust", "first_impression"]
+        "repairInstruction": "Keep this direction for website; preserve the prompt pattern and add it to positive examples.",
+        "criteriaUsed": [
+          "Can a lazy viewer tell what it is within two seconds?",
+          "Does it feel trustworthy before reading details?",
+          "Does the visual hierarchy pull the eye to the right place?",
+          "Would you keep looking without being paid to?"
+        ]
       },
       "agentUse": {
-        "trainingUse": ["preference_label", "score_vector"],
+        "trainingUse": ["preference_label", "score_vector", "eval_dataset_row"],
         "preferenceLabel": "chosen",
         "recommendedAction": "ship_or_keep",
-        "repairInstruction": "",
+        "repairInstruction": "Keep this direction for website; preserve the prompt pattern and add it to positive examples.",
         "signalStrength": 0.79,
+        "returnTarget": "local export",
         "reviewContext": {
           "focus": "trust",
           "audience": "buyers",
@@ -100,23 +160,100 @@
       "evalRow": {
         "schema": "agentmash.eval-row.v2",
         "rowId": "eval-artifact-homepage-clean-001",
-        "createdAt": "2026-05-08T09:40:00.000Z",
+        "createdAt": "2026-05-08T09:39:10.000Z",
         "artifact": {
           "artifactId": "artifact-homepage-clean",
+          "variant": "original",
           "type": "website",
           "title": "Homepage concept: clean dashboard",
-          "variant": "original",
-          "submittedAt": "2026-05-08T09:35:00.000Z"
+          "prompt": "Create a product homepage for a launch analytics app.",
+          "body": "Observe launch signals before they become support load.",
+          "requesterName": "launch-smoke-agent",
+          "requesterType": "agent",
+          "runId": "run-2026-05-08-001",
+          "goal": "Find which homepage direction feels trustworthy in the first few seconds.",
+          "submittedAt": "2026-05-08T09:35:00.000Z",
+          "reviewContext": {
+            "focus": "trust",
+            "audience": "buyers",
+            "stage": "prelaunch",
+            "priority": "normal",
+            "notes": "Prefer a gut reaction over detailed critique."
+          },
+          "image": {
+            "imageKey": "",
+            "hasImage": false,
+            "included": false,
+            "mediaType": "",
+            "dataUrl": ""
+          }
         },
         "humanSignal": {
+          "reviewer": "local-reviewer",
           "verdict": "accepted",
           "preferenceLabel": "chosen",
+          "firstImpression": "accepted_on_first_glance",
           "score": 84,
-          "signalStrength": 0.79
+          "grade": "Keeper",
+          "signalStrength": 0.79,
+          "scoreVector": {
+            "gut": {
+              "label": "First gut call",
+              "value": 9,
+              "weight": 0.35
+            },
+            "sense": {
+              "label": "Instant sense",
+              "value": 8,
+              "weight": 0.25
+            },
+            "craft": {
+              "label": "Looks made well",
+              "value": 8,
+              "weight": 0.22
+            },
+            "useful": {
+              "label": "Worth another look",
+              "value": 9,
+              "weight": 0.18
+            }
+          },
+          "tags": ["clear", "trustworthy"],
+          "failureModes": [],
+          "reviewProvenance": {
+            "sessionId": "session-m9zt2a-12a3b",
+            "inputMethod": "swipe",
+            "decisionLatencyMs": 1360,
+            "reviewerContext": {
+              "captureSurface": "human_review",
+              "reviewMode": "swipe",
+              "filter": "all",
+              "colorScheme": "light",
+              "reducedMotion": false,
+              "viewport": {
+                "width": 390,
+                "height": 844
+              }
+            },
+            "judgedAt": "2026-05-08T09:39:10.000Z"
+          },
+          "rationale": "Felt credible immediately and the promise is easy to understand.",
+          "judgedAt": "2026-05-08T09:39:10.000Z"
         },
         "agentUse": {
+          "trainingUse": ["preference_label", "score_vector", "eval_dataset_row"],
+          "preferenceLabel": "chosen",
           "recommendedAction": "ship_or_keep",
-          "trainingUse": ["preference_label", "score_vector"]
+          "repairInstruction": "Keep this direction for website; preserve the prompt pattern and add it to positive examples.",
+          "signalStrength": 0.79,
+          "returnTarget": "local export",
+          "reviewContext": {
+            "focus": "trust",
+            "audience": "buyers",
+            "stage": "prelaunch",
+            "priority": "normal",
+            "notes": "Prefer a gut reaction over detailed critique."
+          }
         }
       },
       "return": {
@@ -131,23 +268,100 @@
     {
       "schema": "agentmash.eval-row.v2",
       "rowId": "eval-artifact-homepage-clean-001",
-      "createdAt": "2026-05-08T09:40:00.000Z",
+      "createdAt": "2026-05-08T09:39:10.000Z",
       "artifact": {
         "artifactId": "artifact-homepage-clean",
+        "variant": "original",
         "type": "website",
         "title": "Homepage concept: clean dashboard",
-        "variant": "original",
-        "submittedAt": "2026-05-08T09:35:00.000Z"
+        "prompt": "Create a product homepage for a launch analytics app.",
+        "body": "Observe launch signals before they become support load.",
+        "requesterName": "launch-smoke-agent",
+        "requesterType": "agent",
+        "runId": "run-2026-05-08-001",
+        "goal": "Find which homepage direction feels trustworthy in the first few seconds.",
+        "submittedAt": "2026-05-08T09:35:00.000Z",
+        "reviewContext": {
+          "focus": "trust",
+          "audience": "buyers",
+          "stage": "prelaunch",
+          "priority": "normal",
+          "notes": "Prefer a gut reaction over detailed critique."
+        },
+        "image": {
+          "imageKey": "",
+          "hasImage": false,
+          "included": false,
+          "mediaType": "",
+          "dataUrl": ""
+        }
       },
       "humanSignal": {
+        "reviewer": "local-reviewer",
         "verdict": "accepted",
         "preferenceLabel": "chosen",
+        "firstImpression": "accepted_on_first_glance",
         "score": 84,
-        "signalStrength": 0.79
+        "grade": "Keeper",
+        "signalStrength": 0.79,
+        "scoreVector": {
+          "gut": {
+            "label": "First gut call",
+            "value": 9,
+            "weight": 0.35
+          },
+          "sense": {
+            "label": "Instant sense",
+            "value": 8,
+            "weight": 0.25
+          },
+          "craft": {
+            "label": "Looks made well",
+            "value": 8,
+            "weight": 0.22
+          },
+          "useful": {
+            "label": "Worth another look",
+            "value": 9,
+            "weight": 0.18
+          }
+        },
+        "tags": ["clear", "trustworthy"],
+        "failureModes": [],
+        "reviewProvenance": {
+          "sessionId": "session-m9zt2a-12a3b",
+          "inputMethod": "swipe",
+          "decisionLatencyMs": 1360,
+          "reviewerContext": {
+            "captureSurface": "human_review",
+            "reviewMode": "swipe",
+            "filter": "all",
+            "colorScheme": "light",
+            "reducedMotion": false,
+            "viewport": {
+              "width": 390,
+              "height": 844
+            }
+          },
+          "judgedAt": "2026-05-08T09:39:10.000Z"
+        },
+        "rationale": "Felt credible immediately and the promise is easy to understand.",
+        "judgedAt": "2026-05-08T09:39:10.000Z"
       },
       "agentUse": {
+        "trainingUse": ["preference_label", "score_vector", "eval_dataset_row"],
+        "preferenceLabel": "chosen",
         "recommendedAction": "ship_or_keep",
-        "trainingUse": ["preference_label", "score_vector"]
+        "repairInstruction": "Keep this direction for website; preserve the prompt pattern and add it to positive examples.",
+        "signalStrength": 0.79,
+        "returnTarget": "local export",
+        "reviewContext": {
+          "focus": "trust",
+          "audience": "buyers",
+          "stage": "prelaunch",
+          "priority": "normal",
+          "notes": "Prefer a gut reaction over detailed critique."
+        }
       }
     }
   ],

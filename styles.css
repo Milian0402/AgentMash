@@ -3380,6 +3380,28 @@ body[data-decision-transition="true"] .decision-button {
   }
 }
 
+@media (min-width: 761px) and (max-height: 850px) {
+  .first-look-stage {
+    gap: 10px;
+  }
+
+  .first-look-stage .deck-area {
+    min-height: clamp(420px, 54vh, 470px);
+  }
+
+  .first-look-stage .swipe-card {
+    height: clamp(400px, 53vh, 460px);
+  }
+
+  .card-stack-shadow {
+    min-height: clamp(420px, 54vh, 470px);
+  }
+
+  .first-look-stage .swipe-actions {
+    margin-top: 0;
+  }
+}
+
 @media (prefers-color-scheme: dark) {
   .first-look-stage .preview-website {
     background:

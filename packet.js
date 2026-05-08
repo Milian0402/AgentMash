@@ -137,6 +137,7 @@ export function buildFeedbackPacket(item, review) {
       scores: review.scores,
       tags: review.tags,
       note: review.note,
+      reviewProvenance: humanSignal.reviewProvenance,
       judgedAt: review.createdAt
     },
     pairwiseComparisons,
@@ -183,6 +184,7 @@ export function buildEvalRow(item, review) {
 
 export function humanSignalFor(item, review) {
   const pairwisePreference = pairwiseComparisonsFor(item);
+  const reviewProvenance = reviewProvenanceFor(review);
   return {
     reviewer: review.reviewer,
     verdict: exportVerdictFor(review),
@@ -194,8 +196,19 @@ export function humanSignalFor(item, review) {
     scoreVector: scoreVectorFor(review),
     tags: review.tags,
     failureModes: failureModesFor(review),
+    reviewProvenance,
     ...(pairwisePreference.length ? { pairwisePreference } : {}),
     rationale: review.note || defaultRationaleFor(item, review),
+    judgedAt: review.createdAt
+  };
+}
+
+export function reviewProvenanceFor(review) {
+  return {
+    sessionId: review.sessionId || "legacy-local-session",
+    inputMethod: review.inputMethod || "unknown",
+    decisionLatencyMs: review.decisionLatencyMs,
+    reviewerContext: review.reviewerContext || {},
     judgedAt: review.createdAt
   };
 }
@@ -393,7 +406,21 @@ function validateHumanSignal(signal, errors, path) {
   requireNumber(errors, signal?.score, `${path}.score`);
   requireNumber(errors, signal?.signalStrength, `${path}.signalStrength`);
   requireObject(errors, signal?.scoreVector, `${path}.scoreVector`);
+  validateReviewProvenance(signal?.reviewProvenance, errors, `${path}.reviewProvenance`);
   requireString(errors, signal?.judgedAt, `${path}.judgedAt`);
+}
+
+function validateReviewProvenance(provenance, errors, path) {
+  requireObject(errors, provenance, path);
+  requireString(errors, provenance?.sessionId, `${path}.sessionId`);
+  requireValue(errors, ["button", "keyboard", "swipe", "unknown"].includes(provenance?.inputMethod), `${path}.inputMethod`);
+  requireValue(
+    errors,
+    provenance?.decisionLatencyMs === null || Number.isFinite(provenance?.decisionLatencyMs),
+    `${path}.decisionLatencyMs must be a number or null`
+  );
+  requireObject(errors, provenance?.reviewerContext, `${path}.reviewerContext`);
+  requireString(errors, provenance?.judgedAt, `${path}.judgedAt`);
 }
 
 function validateHumanJudgement(judgement, errors, path) {

@@ -63,10 +63,41 @@ let deferredInstallPrompt = null;
 let imageSelectionToken = 0;
 let isDecisionTransitioning = false;
 let decisionAnimationTimer = 0;
+const reviewSessionId = createShortId("session");
+let timedItemId = "";
+let timedItemStartedAt = Date.now();
 
 function setMobilePanelOpen(isOpen) {
   document.body.dataset.mobilePanelOpen = isOpen ? "true" : "false";
   elements.mobilePanelToggle.setAttribute("aria-expanded", isOpen ? "true" : "false");
+}
+
+function startDecisionTimer(itemId = getActiveItem()?.id || "") {
+  timedItemId = itemId;
+  timedItemStartedAt = Date.now();
+}
+
+function decisionLatencyMs(item) {
+  const now = Date.now();
+  if (timedItemId !== item.id) {
+    timedItemId = item.id;
+    timedItemStartedAt = now;
+  }
+  return Math.max(0, Math.round(now - timedItemStartedAt));
+}
+
+function reviewerContext() {
+  return {
+    captureSurface: "human_review",
+    reviewMode: state.reviewMode,
+    filter: state.filter,
+    colorScheme: window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light",
+    reducedMotion: window.matchMedia("(prefers-reduced-motion: reduce)").matches,
+    viewport: {
+      width: window.innerWidth,
+      height: window.innerHeight
+    }
+  };
 }
 
 async function restoreStoredImages() {
@@ -92,7 +123,7 @@ function toggleTag(tag) {
   renderTags();
 }
 
-function decide(verdict) {
+function decide(verdict, inputMethod = "button") {
   if (isDecisionTransitioning) {
     return;
   }
@@ -120,6 +151,10 @@ function decide(verdict) {
     recommendation: recommendationFor({ verdict, score, grade }),
     tags: [...state.activeTags],
     note: elements.reviewNote.value.trim(),
+    sessionId: reviewSessionId,
+    inputMethod,
+    decisionLatencyMs: decisionLatencyMs(item),
+    reviewerContext: reviewerContext(),
     createdAt: new Date().toISOString()
   });
 
@@ -211,6 +246,7 @@ function animateDecision(verdict) {
   decisionAnimationTimer = window.setTimeout(() => {
     setDecisionTransitioning(false);
     render();
+    startDecisionTimer();
   }, decisionAnimationDuration());
 }
 
@@ -788,7 +824,10 @@ function scrollReviewStageIntoView() {
 }
 
 configureStorageStatus(setStorageStatus);
-configureRenderActions({ toggleTag });
+configureRenderActions({
+  toggleTag,
+  onActiveItemRendered: startDecisionTimer
+});
 
 elements.dashboardSwitch.addEventListener("click", (event) => {
   const button = event.target.closest("button[data-dashboard]");
