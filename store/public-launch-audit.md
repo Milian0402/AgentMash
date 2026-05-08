@@ -45,7 +45,7 @@ Make AgentMash good enough to launch publicly as a serious app.
 - Public status pages avoid naming unavailable backend return channels.
 - Static host configs set `Cache-Control: no-cache` for `sw.js` and `manifest.webmanifest` so app-shell updates are not held behind stale edge/browser caching.
 - Dedicated Apple touch icon is present for iOS home-screen install polish.
-- Apple startup images are present for common large iPhone PWA launch surfaces.
+- Apple startup images are present for common large iPhone PWA launch surfaces and regenerated from the current swipe UI.
 - Every public HTML page links the favicon and Apple touch icon to avoid missing icon requests.
 - Every public HTML page carries AgentMash app-name, light/dark color-scheme, and theme-color metadata.
 - Every public HTML page carries description metadata, including the 404 page.
@@ -137,7 +137,7 @@ Make AgentMash good enough to launch publicly as a serious app.
 - Desktop browser check at 1440 by 1000 showed no horizontal overflow.
 - Browser console showed zero errors during human review and add-artifact testing.
 - No third-party analytics, payments, telemetry, sockets, or API calls were found. The only network fetch is the service worker same-origin cache path.
-- Store and public PWA screenshots were refreshed from the current local app after the swipe-card visual refresh and Comment shortcut.
+- Store, public PWA, iOS startup, and draft submission screenshots were refreshed from the current local app after the swipe-card visual refresh and Comment shortcut.
 - Manifest screenshots point to tracked screenshot assets.
 - Public manifest screenshots point to `assets/screenshots`.
 - `npm run check` builds `_site/` and verifies internal files are not packaged.
@@ -199,7 +199,7 @@ Make AgentMash good enough to launch publicly as a serious app.
 - Playwright e2e test passed: a 500-item profile with 250 existing reviews accepted 100 more keyboard decisions under reduced-motion timing, preserved 350 unique review rows, avoided storage warnings, and kept Export workspace usable.
 - Local simulated-user review was run with four personas: mobile swiper, lab/export consumer, launch QA, and visual critic. No outreach occurred. Findings were converted into the Undo deck fix, export verdict/format normalization, public-page icon metadata checks, export contract hardening, mobile sheet/Pairwise fixes, internal publishing-page cleanup, and screenshot refresh.
 - `npm run serve:build` served `_site/`; `/` and `assets/icons/apple-touch-icon.png` returned 200, while `store/completion-audit.md` returned 404.
-- Draft submission assets are sized for Apple iPhone 6.9, Apple iPhone 6.5, Google phone, and Google Play feature graphic planning.
+- Draft submission assets are sized for Apple iPhone 6.9, Apple iPhone 6.5, Google phone, and Google Play feature graphic planning and reflect the current swipe-card UI.
 - GitHub repo is private at `https://github.com/Milian0402/AgentMash`.
 - README and publishing runbook describe the current state as private launch prep instead of a public beta.
 

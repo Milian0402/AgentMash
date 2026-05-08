@@ -35,6 +35,7 @@ Last local verification: May 8, 2026. No deployment, paid account, domain purcha
 - [x] Undo a decision.
 - [x] Confirm Undo preserves the active deck filter.
 - [x] Open and close Details.
+- [x] Open Comment and verify it focuses the optional decision note.
 - [x] Open Refine and verify it closes after a decision.
 - [x] Confirm Refine opens as a bottom sheet above the decision controls.
 - [x] Confirm Refine keeps score sliders behind the `Scores` toggle.
@@ -66,7 +67,9 @@ Last local verification: May 8, 2026. No deployment, paid account, domain purcha
 - [x] Confirm no console errors in local smoke testing.
 - [x] Confirm app icons load in the manifest.
 - [x] Confirm manifest screenshots load from public assets.
-- [x] Confirm screenshots were refreshed from the current app language and mobile header.
+- [x] Confirm screenshots were refreshed from the current card-first swipe UI.
+- [x] Confirm draft store submission assets were regenerated from the refreshed PWA screenshots.
+- [x] Confirm iOS startup images were regenerated from the refreshed mobile screenshot.
 - [x] Confirm all public HTML pages link the app favicon and Apple touch icon.
 - [x] Confirm all public HTML pages include app-name, color-scheme, and light/dark theme-color metadata.
 - [x] Confirm internal publishing notes are not linked from the app footer or packaged into `_site/`.

@@ -212,6 +212,7 @@ const completionAudit = await read("store/completion-audit.md");
 const audit = await read("store/public-launch-audit.md");
 const listing = await read("store/app-store-listing.md");
 const appStoreSubmission = await read("store/app-store-submission.md");
+const submissionReadme = await read("store/submission/README.md");
 const researchGuide = await read("store/research-and-cost-guide.md");
 const releaseChecklist = await read("store/release-checklist.md");
 const privacyDataSafetyDraft = await read("store/privacy-data-safety-draft.md");
@@ -578,6 +579,10 @@ check(!listing.includes("Human taste signals for AI work"), "old over-limit stor
 check(
   hasAll(appStoreSubmission, ["99 USD per year", "25 USD one-time", "12 opted-in testers", "14 continuous days", "24-bit PNG feature graphic without alpha"]),
   "app store submission prep documents current account, testing, and asset blockers"
+);
+check(
+  hasAll(submissionReadme, ["May 8, 2026", "swipe-card visual refresh", "Comment shortcut"]),
+  "draft submission asset README matches current swipe UI refresh"
 );
 check(
   hasAll(researchGuide, ["Google Play closed testing for new personal accounts", "12 opted-in testers", "14 continuous days"]),

@@ -1,6 +1,6 @@
 # Submission Assets
 
-These are draft store assets generated from the current PWA screenshots on May 7, 2026. They are useful for launch preparation and sizing checks, but native store submission should still use screenshots captured from the final iOS or Android wrapper.
+These are draft store assets regenerated from the current PWA screenshots on May 8, 2026 after the swipe-card visual refresh and Comment shortcut. They are useful for launch preparation and sizing checks, but native store submission should still use screenshots captured from the final iOS or Android wrapper.
 
 ## Files
 
