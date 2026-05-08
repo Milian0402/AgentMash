@@ -1045,18 +1045,22 @@ export function renderPreview(item) {
     return `
       <div class="preview-logo${variantClass}" aria-label="Generated logo preview">
         <div class="logo-board">
-          <div class="logo-lockup">
+          <div class="logo-brand-card">
             <div class="logo-mark"></div>
-            <div class="logo-lines">
-              <i></i>
-              <i></i>
+            <div>
+              <strong>${escapeHtml(shortTitle(item.title, 28))}</strong>
+              <span>${escapeHtml(shortTitle(item.body || "Generated brand mark", 42))}</span>
             </div>
           </div>
-          <span>${escapeHtml(shortTitle(item.title, 24))}</span>
+          <div class="logo-context-row" aria-hidden="true">
+            <span>App icon</span>
+            <span>Bag seal</span>
+            <span>Header</span>
+          </div>
           <div class="logo-samples">
-            <i></i>
-            <i></i>
-            <i></i>
+            <i><b></b></i>
+            <i><b></b></i>
+            <i><b></b></i>
           </div>
         </div>
       </div>
@@ -1070,9 +1074,19 @@ export function renderPreview(item) {
     return `
       <div class="preview-copy${variantClass}" aria-label="Generated copy preview">
         <div class="copy-card">
-          <span class="copy-kicker">${variant === "first-line" ? "First line only" : "Generated copy"}</span>
-          <p class="copy-headline">${escapeHtml(shortTitle(item.title, 48))}</p>
+          <div class="copy-post-header">
+            <span class="copy-avatar" aria-hidden="true"></span>
+            <div>
+              <span class="copy-kicker">${variant === "first-line" ? "First line only" : "Generated post"}</span>
+              <p class="copy-headline">${escapeHtml(shortTitle(item.title, 48))}</p>
+            </div>
+          </div>
           <p class="copy-text">${escapeHtml(copyText)}</p>
+          <div class="copy-reaction-row" aria-hidden="true">
+            <span>Save</span>
+            <span>Reply</span>
+            <span>Share</span>
+          </div>
         </div>
       </div>
     `;
@@ -1082,14 +1096,19 @@ export function renderPreview(item) {
     return `
       <div class="preview-product${variantClass}" aria-label="Generated product image preview">
         <div class="product-scene">
+          <div class="product-surface"></div>
           <div class="product-shadow"></div>
           <div class="product-object">
             <i class="product-lid"></i>
             <i class="product-divider one"></i>
             <i class="product-divider two"></i>
             <i class="product-handle"></i>
+            <i class="product-lip"></i>
           </div>
-          <span>${escapeHtml(shortTitle(item.body || item.title, 36))}</span>
+          <div class="product-caption">
+            <strong>${escapeHtml(shortTitle(item.title, 28))}</strong>
+            <span>${escapeHtml(shortTitle(item.body || "Generated product render", 44))}</span>
+          </div>
         </div>
       </div>
     `;

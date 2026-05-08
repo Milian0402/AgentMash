@@ -322,6 +322,10 @@ check(
   "default website preview uses realistic review content instead of wireframe bars"
 );
 check(
+  hasAll(renderModule, ["logo-brand-card", "logo-context-row", "copy-post-header", "copy-reaction-row", "product-surface", "product-caption"]),
+  "starter logo, copy, and product previews use realistic review-card details"
+);
+check(
   hasAll(styles, [
     ".decision-icon::before",
     ".decision-icon::after",
@@ -468,7 +472,7 @@ check(
   hasAll(appSurface, ["ALLOWED_IMAGE_TYPES", "MAX_IMAGE_BYTES", "safeImageData", "Choose a PNG, JPG, or WebP image"]),
   "image uploads are type and size constrained"
 );
-check(serviceWorker.includes('const CACHE_NAME = "agentmash-v45"'), "service worker cache is AgentMash scoped and current");
+check(serviceWorker.includes('const CACHE_NAME = "agentmash-v46"'), "service worker cache is AgentMash scoped and current");
 check(hasAll(serviceWorker, appShellFiles), "service worker app shell includes launch pages and icons");
 check(hasAll(headers, securityHeaders), "_headers defines security headers");
 check(hasAll(netlify, securityHeaders), "netlify config defines security headers");
@@ -606,7 +610,7 @@ check(
     "quick-reason dropdown",
     "agentmash.feedback.v2",
     "signalStrength",
-    "agentmash-v45",
+    "agentmash-v46",
     "No public deployment was performed",
     "No domain was bought",
     "No paid service",

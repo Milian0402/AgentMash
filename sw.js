@@ -1,4 +1,4 @@
-const CACHE_NAME = "agentmash-v45";
+const CACHE_NAME = "agentmash-v46";
 const APP_SHELL = [
   "./",
   "./index.html",

@@ -28,7 +28,7 @@ Make AgentMash good enough to launch publicly as a serious app.
 - Artifact intake uses local export wording and only offers JSON packet or eval dataset export formats, avoiding unavailable webhook or polling choices.
 - Add Artifact includes review context fields for signal focus, audience, decision stage, priority, and notes.
 - Local `Import drop` accepts backend-ready `agentmash.intake.v1` JSON files without contacting a server and rejects malformed drops with a clear status message.
-- Starter artifacts are credible launch examples instead of placeholder-only cards, and the default website preview now uses real status rows, action chips, and a mini approval dashboard instead of anonymous wireframe bars.
+- Starter artifacts are credible launch examples instead of placeholder-only cards; the website preview uses real status rows, action chips, and a mini approval dashboard, while logo, copy, and product previews use brand, post, and product-render details instead of anonymous demo art.
 - Privacy, terms, support, 404, manifest, icons, service worker, and static host config are present for the public build.
 - PWA manifest includes mobile and desktop screenshots.
 - PWA manifest, package metadata, and README one-line description use consistent structured feedback-packet wording.
@@ -147,7 +147,7 @@ Make AgentMash good enough to launch publicly as a serious app.
 - `npm run check` builds `_site/` and verifies internal files are not packaged.
 - `CHANGELOG.md` records the current local launch-prep build, constraints, and remaining user-owned launch actions, and it is checked as an internal file that is not packaged into `_site/`.
 - `_site/` includes all public app modules, public schema files, and `sw.js` caches those module and schema files.
-- `sw.js` cache name is `agentmash-v45` after the richer swipe-card visual treatment, realistic default website preview, CSS-drawn decision icons, quick-reason comments, mobile overlay polish, screenshot refresh, v0.3.0 build labels, privacy, launch-order, and public contract updates, so the offline app shell refreshes when this build is published.
+- `sw.js` cache name is `agentmash-v46` after the richer swipe-card visual treatment, realistic starter previews, CSS-drawn decision icons, quick-reason comments, mobile overlay polish, screenshot refresh, v0.3.0 build labels, privacy, launch-order, and public contract updates, so the offline app shell refreshes when this build is published.
 - Playwright e2e test passed: after service worker readiness, the app reloaded offline and rendered the AgentMash shell and swipe card.
 - Netlify and Vercel configs are checked for `npm run build` plus `_site/` output.
 - Apple touch icon is linked from `index.html`, cached by `sw.js`, and sized at 180 by 180.
@@ -211,7 +211,7 @@ Make AgentMash good enough to launch publicly as a serious app.
 
 ## Runtime Smoke Evidence
 
-Playwright CLI and `npm run ready:public` checked `http://127.0.0.1:5177` and the local `_site/` package on May 8, 2026 after the `v0.3.0` launch-prep build label and `agentmash-v45` service-worker cache update.
+Playwright CLI and `npm run ready:public` checked `http://127.0.0.1:5177` and the local `_site/` package on May 8, 2026 after the `v0.3.0` launch-prep build label and `agentmash-v46` service-worker cache update.
 
 Passed checks:
 
