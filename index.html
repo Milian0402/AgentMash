@@ -60,8 +60,14 @@
         </div>
 
         <nav class="dashboard-switch" id="dashboardSwitch" aria-label="Dashboard">
-          <button class="dashboard-tab active" type="button" data-dashboard="human" data-short-label="Review">Human review</button>
-          <button class="dashboard-tab" type="button" data-dashboard="agent" data-short-label="Export">Export workspace</button>
+          <button class="dashboard-tab active" type="button" data-dashboard="human" aria-label="Human review">
+            <span class="dashboard-full-label">Human review</span>
+            <span class="dashboard-short-label" aria-hidden="true">Review</span>
+          </button>
+          <button class="dashboard-tab" type="button" data-dashboard="agent" aria-label="Export workspace">
+            <span class="dashboard-full-label">Export workspace</span>
+            <span class="dashboard-short-label" aria-hidden="true">Export</span>
+          </button>
         </nav>
 
         <div class="topbar-actions">

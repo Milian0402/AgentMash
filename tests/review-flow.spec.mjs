@@ -335,6 +335,10 @@ test("Rapid decisions are locked and mobile filter labels stay readable", async 
   expect(clippedFilters).toEqual([]);
   await expect(page.locator("#reviewModeTabs")).toHaveAttribute("role", "group");
   await expect(page.locator("#filterTabs")).toHaveAttribute("role", "group");
+  await expect(page.getByRole("button", { name: "Human review", exact: true })).toBeVisible();
+  await expect(page.getByRole("button", { name: "Export workspace", exact: true })).toBeVisible();
+  await expect(page.getByRole("button", { name: "Human reviewReview", exact: true })).toHaveCount(0);
+  await expect(page.getByRole("button", { name: "Export workspaceExport", exact: true })).toHaveCount(0);
   await expect(page.locator('#filterTabs [data-filter="all"]')).toHaveAttribute("aria-pressed", "true");
   await expect(page.locator('#filterTabs [data-filter="product"]')).toHaveAttribute("aria-pressed", "false");
   await page.locator("#acceptButton").focus();

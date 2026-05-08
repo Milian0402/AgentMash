@@ -384,6 +384,10 @@ body[data-dashboard="human"] .dashboard-tab {
   box-shadow: 0 8px 18px rgba(23, 25, 20, 0.1);
 }
 
+.dashboard-short-label {
+  display: none;
+}
+
 .mobile-panel-toggle,
 .mobile-panel-header {
   display: none;
@@ -2868,12 +2872,15 @@ body[data-decision-transition="true"] .decision-button {
   body[data-dashboard="human"] .dashboard-tab {
     min-height: 28px;
     padding: 0 7px;
-    font-size: 0;
+    font-size: 0.7rem;
   }
 
-  body[data-dashboard="human"] .dashboard-tab::after {
-    content: attr(data-short-label);
-    font-size: 0.7rem;
+  body[data-dashboard="human"] .dashboard-full-label {
+    display: none;
+  }
+
+  body[data-dashboard="human"] .dashboard-short-label {
+    display: inline;
   }
 
   .icon-button {
