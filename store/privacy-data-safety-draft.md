@@ -1,14 +1,15 @@
 # Privacy And Data Safety Draft
 
-Checked on May 7, 2026. This draft applies only to the current local-first build with no backend, no analytics, no ads, no payment SDK, no crash reporting SDK, and no third-party API calls.
+Checked on May 8, 2026. This draft applies only to the current local-first build with no backend, no analytics, no ads, no payment SDK, no crash reporting SDK, and no third-party API calls.
 
 ## Current Data Inventory
 
-- Reviewer name: stored locally in browser storage.
-- Review decisions: stored locally in browser storage.
-- Scores, tags, and notes: stored locally in browser storage.
-- Uploaded images and pasted copy: stored locally in browser storage.
-- Agent/lab request metadata: stored locally in browser storage.
+- Reviewer name: stored locally in `localStorage`.
+- Review decisions: stored locally in `localStorage`.
+- Scores, tags, and notes: stored locally in `localStorage`.
+- Pasted copy and artifact metadata: stored locally in `localStorage`.
+- Uploaded image bytes: stored locally in IndexedDB.
+- Agent/lab request metadata: stored locally in `localStorage`.
 - Feedback packets and JSONL rows: generated locally and copied or downloaded only when the user chooses.
 - Service worker cache: stores static app files for offline use.
 - Clipboard use: only when the user clicks copy.
@@ -38,7 +39,7 @@ Suggested answer for the current build:
 
 - Does the app collect or share any required user data types? No.
 - Is all user data encrypted in transit? Not applicable for app user data because the app does not transmit user data. The public website must still use HTTPS.
-- Can users request deletion? There is no server account. Users can delete local data through Reset, browser storage clearing, or app uninstall.
+- Can users request deletion? There is no server account. Users can delete local data through Reset profile, browser storage clearing, or app uninstall. Reset profile clears both `localStorage` profile data and IndexedDB image bytes.
 - Does the app share data with third parties? No.
 - Does the app use advertising ID? No.
 - Does the app include ads? No.
@@ -55,9 +56,7 @@ Before public web launch or store submission, update `privacy.html` with:
 - Developer or company name matching the store listing.
 - Data retention and deletion wording for the final distribution model.
 
-For the current no-account build, a concise deletion line is enough:
-
-AgentMash stores review data on the user's device. Users can delete local app data through the Reset control, browser storage settings, or app uninstall. Exported files are controlled by the user.
+The current no-account privacy page already documents local deletion through Reset profile, browser storage settings, or app uninstall. Re-check this wording if the app starts storing data on a server.
 
 ## When This Must Change
 

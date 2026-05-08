@@ -213,6 +213,7 @@ const listing = await read("store/app-store-listing.md");
 const appStoreSubmission = await read("store/app-store-submission.md");
 const researchGuide = await read("store/research-and-cost-guide.md");
 const releaseChecklist = await read("store/release-checklist.md");
+const privacyDataSafetyDraft = await read("store/privacy-data-safety-draft.md");
 const nativeHandoff = await read("store/native-wrapper-handoff.md");
 const backendHandoff = await read("store/backend-api-mcp-handoff.md");
 
@@ -248,8 +249,13 @@ check(
   "public app and legal pages expose package version"
 );
 check(
-  privacy.includes("Effective May 7, 2026") && terms.includes("Effective May 7, 2026"),
+  privacy.includes("Effective May 8, 2026") && terms.includes("Effective May 7, 2026"),
   "privacy and terms expose effective date"
+);
+check(
+  hasAll(privacy, ["localStorage", "IndexedDB", "Deletion and retention", "Reset profile", "browser storage", "uninstall the app"]) &&
+    hasAll(privacyDataSafetyDraft, ["localStorage", "IndexedDB", "Reset profile clears both"]),
+  "privacy and data safety docs explain local storage and deletion"
 );
 check(index.includes('rel="apple-touch-icon"') && index.includes("assets/icons/apple-touch-icon.png"), "index links Apple touch icon");
 check(
