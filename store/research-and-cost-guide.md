@@ -1,6 +1,6 @@
 # Research And Cost Guide
 
-This guide is based on public documentation checked on May 7, 2026. No accounts were created, nobody was contacted, and no paid action was taken.
+This guide is based on public documentation checked on May 8, 2026. No accounts were created, nobody was contacted, and no paid action was taken.
 
 ## What Makes This App Look Nice
 
@@ -41,6 +41,30 @@ The human review screen should feel like a consumer phone app, while avoiding la
 - First glance before explanation: the image or mock preview comes before rubrics and notes.
 - Optional detail after the swipe: scoring controls stay below the card so lazy human judgement is not slowed down.
 - Stronger feedback: drag tilt, badge state, button state, and light vibration where the device supports it.
+
+## AI Lab And Agent Data Shape Research
+
+The useful customer data is not just "Nice" or "Nope". Agents and labs need enough structure to turn lazy human reactions into eval rows, prompt repair hints, and tool-call feedback later.
+
+Data fields worth preserving:
+
+- Artifact identity: type, title, prompt/source, run ID, requester, submitted time, and image payload when available.
+- Review context: signal focus, target audience, decision stage, priority, and notes.
+- Human decision: accepted/rejected verdict, score vector, tags, note, first-impression label, and signal strength.
+- Agent use: recommended action, likely failure modes, repair instruction, training-use labels, and return format.
+- Pairwise preference: winner, loser, score delta, and preference label.
+- Validation: JSON Schema for intake, feedback packet, and eval rows.
+
+Why this shape fits agents:
+
+- OpenAI grader docs frame eval/fine-tuning graders as JSON-specified checks that return numeric scores, often 0 to 1, and support model outputs such as text, JSON, and tool calls. That makes `signalStrength`, structured verdicts, and JSONL rows more useful than unstructured comments alone. Source: https://platform.openai.com/docs/guides/graders/
+- The current MCP tools spec says tools are exposed through discoverable names and JSON Schema `inputSchema`, can also define `outputSchema`, and should validate inputs, use access controls, rate-limit invocations, sanitize outputs, and ask for human confirmation on sensitive operations. That supports keeping `schemas/intake.v1.json` ready now, while deferring the actual MCP server until auth and deletion policy exist. Source: https://modelcontextprotocol.io/specification/2025-11-25/server/tools
+
+Local product implication:
+
+- The app now accepts an `agentmash.intake.v1` JSON file through local import.
+- The same payload can later back `POST /artifacts` or an MCP tool such as `agentmash.submit_artifacts`.
+- The public app still does not call an API, expose a server, or send private review data anywhere.
 
 ## Things That Could Cost Money
 

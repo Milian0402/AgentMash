@@ -368,7 +368,12 @@
 
           <aside class="panel add-panel" id="addPanel">
             <section class="section-block">
-              <h2>Add Artifact</h2>
+              <div class="section-title-row">
+                <h2>Add Artifact</h2>
+                <button class="icon-button" id="agentDropButton" type="button">Import drop</button>
+              </div>
+              <input id="agentDropFile" type="file" accept="application/json" hidden />
+              <p id="agentDropStatus" class="help-text" role="status" aria-live="polite">Add one artifact or import an agent drop JSON file.</p>
               <form id="artifactForm" class="artifact-form">
                 <label>
                   <span>Type</span>
@@ -429,6 +434,53 @@
                   <label>
                     <span>Review goal</span>
                     <textarea id="agentGoal" rows="3" placeholder="What this quick judgement should capture"></textarea>
+                  </label>
+                </fieldset>
+
+                <fieldset class="agent-fieldset">
+                  <legend>Review context</legend>
+                  <label>
+                    <span>Signal focus</span>
+                    <select id="reviewFocus">
+                      <option value="first_impression">First impression</option>
+                      <option value="trust">Trust</option>
+                      <option value="clarity">Clarity</option>
+                      <option value="memorability">Memorability</option>
+                      <option value="conversion">Conversion intent</option>
+                      <option value="visual_quality">Visual quality</option>
+                    </select>
+                  </label>
+                  <label>
+                    <span>Audience</span>
+                    <select id="reviewAudience">
+                      <option value="general">General viewer</option>
+                      <option value="buyers">Buyers</option>
+                      <option value="developers">Developers</option>
+                      <option value="executives">Executives</option>
+                      <option value="researchers">Researchers</option>
+                      <option value="internal">Internal team</option>
+                    </select>
+                  </label>
+                  <label>
+                    <span>Decision stage</span>
+                    <select id="decisionStage">
+                      <option value="concept">Concept</option>
+                      <option value="variant">Variant test</option>
+                      <option value="prelaunch">Prelaunch</option>
+                      <option value="regression">Regression check</option>
+                    </select>
+                  </label>
+                  <label>
+                    <span>Priority</span>
+                    <select id="reviewPriority">
+                      <option value="normal">Normal</option>
+                      <option value="high">High</option>
+                      <option value="urgent">Urgent</option>
+                    </select>
+                  </label>
+                  <label>
+                    <span>Extra context</span>
+                    <textarea id="reviewContextNotes" rows="3" placeholder="Audience, constraints, model settings, or what the agent should learn"></textarea>
                   </label>
                 </fieldset>
                 <button class="primary-button full" type="submit">Add to review deck</button>

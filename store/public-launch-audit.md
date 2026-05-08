@@ -23,6 +23,8 @@ Make AgentMash good enough to launch publicly as a serious app.
 - Add Artifact is reachable from the human dashboard and returns to the swipe deck after submit.
 - On mobile Human review, deck/profile/storage controls are tucked behind a `Deck` sheet so the first viewport stays focused on the swipe loop.
 - Artifact intake uses local export wording and only offers JSON packet or eval dataset export formats, avoiding unavailable webhook or polling choices.
+- Add Artifact includes review context fields for signal focus, audience, decision stage, priority, and notes.
+- Local `Import drop` accepts backend-ready `agentmash.intake.v1` JSON files without contacting a server.
 - Starter artifacts are credible launch examples instead of placeholder-only cards.
 - Privacy, terms, support, 404, manifest, icons, service worker, and static host config are present for the public build.
 - PWA manifest includes mobile and desktop screenshots.
@@ -67,6 +69,7 @@ Make AgentMash good enough to launch publicly as a serious app.
 - Feedback packet export verdicts are normalized to `accepted` / `rejected`, while the human UI keeps Nice/Nope copy.
 - Dataset-mode return envelopes report `application/x-ndjson` for local JSONL exports.
 - `schemas/feedback.v2.json` documents the local packet contract for future validation.
+- `schemas/intake.v1.json` documents the local agent-drop contract for future backend, API, or MCP intake.
 - Export workspace shows local contract status badges for the active feedback packet and JSONL dataset rows.
 - Refine panel is hidden by default and closes after a decision, keeping the next card in the fast swipe loop.
 - Refine score sliders are hidden behind `Scores` until explicitly opened.
@@ -102,7 +105,7 @@ Make AgentMash good enough to launch publicly as a serious app.
 - `npm run check:launch` passes.
 - `npm run check` syntax-checks `app.js`, `state.js`, `packet.js`, `render.js`, and `gestures.js`.
 - Playwright runs the module app through `npm run serve` at `http://127.0.0.1:5177/`, not a blocked `file://` module load.
-- `npm run check` now includes Playwright e2e coverage for Nice, Undo, Nope, rapid duplicate decision locking, mobile header clearance, mobile Refine sheet clearance, mobile Pairwise scroll, export contract badges, legacy import normalization, v2 packet shape, visual image payloads, normalized export verdicts, dataset return format, Keepers completion state, Remix repeat sessions with variant metadata, Endless auto-looping, Pairwise comparison export, human-screen install prompt, empty Export workspace state, IndexedDB image storage, pending upload submit-only storage, profile image export/import, offline app-shell loading, and a 500-item local stress path.
+- `npm run check` now includes Playwright e2e coverage for Nice, Undo, Nope, rapid duplicate decision locking, mobile header clearance, mobile Refine sheet clearance, mobile Pairwise scroll, export contract badges, legacy import normalization, v2 packet shape, visual image payloads, normalized export verdicts, dataset return format, backend-ready agent-drop import, Keepers completion state, Remix repeat sessions with variant metadata, Endless auto-looping, Pairwise comparison export, human-screen install prompt, empty Export workspace state, IndexedDB image storage, pending upload submit-only storage, profile image export/import, offline app-shell loading, and a 500-item local stress path.
 - `manifest.webmanifest`, `package.json`, and `vercel.json` parse as JSON.
 - `npm run check` verifies manifest and package descriptions use structured feedback-packet wording.
 - `npm run check` verifies the PWA manifest language and text direction.
@@ -115,6 +118,7 @@ Make AgentMash good enough to launch publicly as a serious app.
 - `npm run check` verifies the local final-metadata configurator exists, is syntax-checked, covers canonical/Open Graph/Twitter/support/privacy fields, has no network hooks, and has an isolated write-path checker.
 - `npm run check` verifies the public URL verifier smoke check serves a configured local public build and calls `scripts/verify-public-url.mjs`.
 - `schemas/feedback.v2.json` parses as JSON and is checked for the `agentmash.feedback.v2` contract.
+- `schemas/intake.v1.json` parses as JSON and is checked for the `agentmash.intake.v1` contract.
 - The runtime packet schema and app code are checked to keep return modes local-only: `json` and `dataset`.
 - `store/native-wrapper-handoff.md` records the later native shell path, bundle IDs, `_site` web directory, and no-analytics native rules.
 - Mobile browser check at 390 by 844 showed no horizontal overflow.
@@ -151,6 +155,7 @@ Make AgentMash good enough to launch publicly as a serious app.
 - Playwright upload smoke test passed: SVG rejected, over-2.5 MB PNG rejected, small PNG accepted, and console errors stayed at zero.
 - Playwright e2e test passed: a tiny PNG upload stored an `imageKey` in `localStorage`, left `imageData` empty in `localStorage`, and stored the data URL in IndexedDB.
 - Playwright e2e test passed: selecting `first.png`, then selecting `second.png`, left zero IndexedDB image keys until submit and exactly one submitted image key after.
+- Playwright e2e test passed: an `agentmash.intake.v1` agent-drop JSON import added an artifact to the Human review deck, stored image bytes in IndexedDB, kept `localStorage` image-free, and exported review context through request, eval-row artifact, and agent-use packet sections.
 - Playwright e2e test passed: profile export bundled uploaded image data, reset cleared the profile and removed the old IndexedDB image bytes, import restored the artifact, `localStorage` kept only the `imageKey`, and IndexedDB contained the restored data URL.
 - Playwright e2e test passed: Nice, Undo, and Nope produced a ready `agentmash.feedback.v2` packet with `signalStrength`, no `confidence` field, `accepted` / `rejected` export verdicts, and `agentmash.eval-row.v2`.
 - Playwright e2e test passed: a dataset-mode pending packet reported `application/x-ndjson` in the expected return envelope.
@@ -226,4 +231,4 @@ Passed checks:
 
 - Paid plans, billing, auth, server storage, lab customer accounts, webhooks, or polling endpoints.
 - Legal review.
-- No backend, inbound agent submission, polling, webhook, or customer pipeline exists; the current second dashboard is a local export workspace.
+- No backend, public inbound agent submission, polling, webhook, or customer pipeline exists; the current second dashboard is a local export workspace with future-compatible JSON contracts.

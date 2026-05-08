@@ -55,12 +55,20 @@ export const elements = {
   artifactBody: document.querySelector("#artifactBody"),
   artifactImage: document.querySelector("#artifactImage"),
   imageStatus: document.querySelector("#imageStatus"),
+  agentDropButton: document.querySelector("#agentDropButton"),
+  agentDropFile: document.querySelector("#agentDropFile"),
+  agentDropStatus: document.querySelector("#agentDropStatus"),
   agentRequesterType: document.querySelector("#agentRequesterType"),
   agentRequesterName: document.querySelector("#agentRequesterName"),
   agentRunId: document.querySelector("#agentRunId"),
   agentReturnMode: document.querySelector("#agentReturnMode"),
   agentReturnTarget: document.querySelector("#agentReturnTarget"),
   agentGoal: document.querySelector("#agentGoal"),
+  reviewFocus: document.querySelector("#reviewFocus"),
+  reviewAudience: document.querySelector("#reviewAudience"),
+  decisionStage: document.querySelector("#decisionStage"),
+  reviewPriority: document.querySelector("#reviewPriority"),
+  reviewContextNotes: document.querySelector("#reviewContextNotes"),
   stageEyebrow: document.querySelector("#stageEyebrow"),
   stageTitle: document.querySelector("#stageTitle"),
   stageProgress: document.querySelector("#stageProgress"),
@@ -829,7 +837,9 @@ export function renderAgentDashboard() {
       [
         `label: ${preferenceLabelFor(review)}`,
         `signal: ${Math.round(signalStrengthFor(review) * 100)}%`,
-        `use: ${recommendedActionFor(review)}`
+        `use: ${recommendedActionFor(review)}`,
+        `focus: ${item.reviewContext.focus}`,
+        `audience: ${item.reviewContext.audience}`
       ].forEach((value) => {
         const chip = document.createElement("span");
         chip.className = "signal-chip";
@@ -844,7 +854,7 @@ export function renderAgentDashboard() {
     const footer = document.createElement("div");
     footer.className = "agent-request-footer";
     const returnTarget = document.createElement("span");
-    returnTarget.textContent = `Export: ${item.agent.returnMode} / ${item.agent.returnTarget || "local export"}`;
+    returnTarget.textContent = `Export: ${item.agent.returnMode} / ${item.agent.returnTarget || "local export"} / ${item.reviewContext.stage}`;
     const inspect = document.createElement("button");
     inspect.type = "button";
     inspect.className = "mini-button";
@@ -891,10 +901,13 @@ export function renderAgentUsePanel(evalRows) {
   elements.agentUseList.replaceChildren();
   const packet = activePacket();
   const selectedUse = packet?.agentUse;
+  const selectedContext = packet?.request?.reviewContext;
   const rows = selectedUse
     ? [
         ["Preference label", selectedUse.preferenceLabel],
         ["Signal strength", `${Math.round(selectedUse.signalStrength * 100)}%`],
+        ["Review focus", selectedContext ? `${selectedContext.focus} for ${selectedContext.audience}` : "None"],
+        ["Stage", selectedContext ? `${selectedContext.stage} / ${selectedContext.priority}` : "None"],
         ["Recommended action", selectedUse.recommendedAction],
         ["Repair instruction", selectedUse.repairInstruction]
       ]

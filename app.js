@@ -18,6 +18,7 @@ import {
   getPairwiseItems,
   gradeFor,
   hydrateStateImages,
+  normalizeItem,
   normalizeReviewMode,
   normalizeScores,
   normalizeState,
@@ -266,6 +267,13 @@ async function addArtifact(event) {
       returnTarget: elements.agentReturnTarget.value.trim(),
       submittedAt: new Date().toISOString()
     },
+    reviewContext: {
+      focus: elements.reviewFocus.value,
+      audience: elements.reviewAudience.value,
+      stage: elements.decisionStage.value,
+      priority: elements.reviewPriority.value,
+      notes: elements.reviewContextNotes.value.trim()
+    },
     imageKey,
     imageData: pendingImageData,
     createdAt: new Date().toISOString()
@@ -279,10 +287,98 @@ async function addArtifact(event) {
   imageSelectionToken += 1;
   elements.artifactForm.reset();
   elements.imageStatus.textContent = "No image selected.";
-  elements.agentRequesterType.value = "agent";
-  elements.agentReturnMode.value = "json";
+  resetArtifactFormDefaults();
   saveState();
   render();
+}
+
+function resetArtifactFormDefaults() {
+  elements.agentRequesterType.value = "agent";
+  elements.agentReturnMode.value = "json";
+  elements.reviewFocus.value = "first_impression";
+  elements.reviewAudience.value = "general";
+  elements.decisionStage.value = "concept";
+  elements.reviewPriority.value = "normal";
+}
+
+function payloadArtifacts(payload) {
+  if (Array.isArray(payload)) {
+    return payload;
+  }
+  if (Array.isArray(payload?.artifacts)) {
+    return payload.artifacts;
+  }
+  if (payload?.artifact && typeof payload.artifact === "object") {
+    return [payload.artifact];
+  }
+  return payload && typeof payload === "object" ? [payload] : [];
+}
+
+function normalizeAgentDropItem(rawArtifact, payload = {}) {
+  const payloadSource = payload.source || payload.agent || {};
+  const artifactAgent = rawArtifact.agent || {};
+  const imageData = safeImageData(rawArtifact.imageData || rawArtifact.image?.dataUrl || "");
+  return normalizeItem({
+    ...rawArtifact,
+    imageData,
+    agent: {
+      ...payloadSource,
+      ...artifactAgent,
+      requesterType: artifactAgent.requesterType || payloadSource.requesterType || "agent",
+      requesterName: artifactAgent.requesterName || artifactAgent.name || payloadSource.requesterName || payloadSource.name,
+      runId: artifactAgent.runId || rawArtifact.runId || payloadSource.runId || payload.runId,
+      goal: artifactAgent.goal || rawArtifact.goal || payloadSource.goal || payload.goal,
+      returnMode: artifactAgent.returnMode || payload.returnMode || payloadSource.returnMode || "json",
+      returnTarget: artifactAgent.returnTarget || payload.returnTarget || payloadSource.returnTarget
+    },
+    reviewContext: {
+      ...(payload.reviewContext || payload.context || {}),
+      ...(rawArtifact.reviewContext || rawArtifact.context || {})
+    },
+    createdAt: rawArtifact.createdAt || new Date().toISOString()
+  });
+}
+
+async function importAgentDrop(file) {
+  elements.agentDropStatus.textContent = "Reading agent drop...";
+  try {
+    const payload = JSON.parse(await file.text());
+    const artifacts = payloadArtifacts(payload)
+      .filter((artifact) => artifact && typeof artifact === "object")
+      .map((artifact) => normalizeAgentDropItem(artifact, payload));
+
+    if (!artifacts.length) {
+      elements.agentDropStatus.textContent = "No artifacts found in that JSON file.";
+      return;
+    }
+
+    let imageFailures = 0;
+    await Promise.all(artifacts.map(async (item) => {
+      if (!item.imageData) {
+        return;
+      }
+      try {
+        await writeImageData(item.imageKey, item.imageData);
+      } catch {
+        item.imageKey = "";
+        item.imageData = "";
+        imageFailures += 1;
+      }
+    }));
+
+    state.items = [...artifacts, ...state.items];
+    state.filter = artifacts[0].type;
+    state.currentItemId = artifacts[0].id;
+    state.lastPacketItemId = null;
+    state.dashboard = "human";
+    saveState();
+    elements.agentDropStatus.textContent = imageFailures
+      ? `Imported ${artifacts.length} artifacts. ${imageFailures} image${imageFailures === 1 ? "" : "s"} could not be stored.`
+      : `Imported ${artifacts.length} artifacts from agent drop.`;
+    render();
+  } catch {
+    elements.agentDropStatus.textContent = "Could not import that agent drop JSON file.";
+  }
 }
 
 function remixCurrentDeck() {
@@ -651,6 +747,14 @@ elements.artifactType.addEventListener("change", () => {
 });
 elements.artifactImage.addEventListener("change", handleImageSelection);
 elements.artifactForm.addEventListener("submit", addArtifact);
+elements.agentDropButton.addEventListener("click", () => elements.agentDropFile.click());
+elements.agentDropFile.addEventListener("change", () => {
+  const [file] = elements.agentDropFile.files;
+  if (file) {
+    importAgentDrop(file);
+  }
+  elements.agentDropFile.value = "";
+});
 elements.refineButton.addEventListener("click", toggleRefinePanel);
 elements.advancedScoresButton.addEventListener("click", toggleScoreControls);
 elements.detailsButton.addEventListener("click", openDetailSheet);

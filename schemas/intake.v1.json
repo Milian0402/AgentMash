@@ -1,0 +1,125 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://agentmash.local/schemas/intake.v1.json",
+  "title": "AgentMash Agent Intake v1",
+  "description": "Backend-ready artifact intake payload for agent, lab, or product-team submissions. The current app imports this as a local JSON agent drop.",
+  "type": "object",
+  "required": ["schema", "artifacts"],
+  "properties": {
+    "schema": {
+      "const": "agentmash.intake.v1"
+    },
+    "source": {
+      "$ref": "#/$defs/source"
+    },
+    "reviewContext": {
+      "$ref": "#/$defs/reviewContext"
+    },
+    "returnMode": {
+      "enum": ["json", "dataset"]
+    },
+    "returnTarget": {
+      "type": "string"
+    },
+    "artifacts": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "$ref": "#/$defs/artifact"
+      }
+    }
+  },
+  "$defs": {
+    "source": {
+      "type": "object",
+      "properties": {
+        "requesterType": {
+          "enum": ["agent", "lab", "team"]
+        },
+        "requesterName": {
+          "type": "string"
+        },
+        "runId": {
+          "type": "string"
+        },
+        "goal": {
+          "type": "string"
+        },
+        "returnMode": {
+          "enum": ["json", "dataset"]
+        },
+        "returnTarget": {
+          "type": "string"
+        }
+      },
+      "additionalProperties": true
+    },
+    "artifact": {
+      "type": "object",
+      "required": ["type", "title"],
+      "properties": {
+        "id": {
+          "type": "string"
+        },
+        "type": {
+          "enum": ["website", "logo", "copy", "product"]
+        },
+        "title": {
+          "type": "string"
+        },
+        "prompt": {
+          "type": "string"
+        },
+        "body": {
+          "type": "string"
+        },
+        "question": {
+          "type": "string"
+        },
+        "agent": {
+          "$ref": "#/$defs/source"
+        },
+        "reviewContext": {
+          "$ref": "#/$defs/reviewContext"
+        },
+        "imageData": {
+          "type": "string",
+          "pattern": "^data:image/(png|jpeg|webp);base64,"
+        },
+        "image": {
+          "type": "object",
+          "properties": {
+            "dataUrl": {
+              "type": "string",
+              "pattern": "^data:image/(png|jpeg|webp);base64,"
+            }
+          },
+          "additionalProperties": true
+        }
+      },
+      "additionalProperties": true
+    },
+    "reviewContext": {
+      "type": "object",
+      "properties": {
+        "focus": {
+          "enum": ["first_impression", "trust", "clarity", "memorability", "conversion", "visual_quality"]
+        },
+        "audience": {
+          "enum": ["general", "buyers", "developers", "executives", "researchers", "internal"]
+        },
+        "stage": {
+          "enum": ["concept", "variant", "prelaunch", "regression"]
+        },
+        "priority": {
+          "enum": ["normal", "high", "urgent"]
+        },
+        "notes": {
+          "type": "string"
+        }
+      },
+      "additionalProperties": false
+    }
+  },
+  "additionalProperties": true
+}

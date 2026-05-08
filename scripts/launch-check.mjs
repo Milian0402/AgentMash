@@ -28,6 +28,7 @@ const requiredFiles = [
   "scripts/check-configure-public.mjs",
   "scripts/check-public-url-verifier.mjs",
   "schemas/feedback.v2.json",
+  "schemas/intake.v1.json",
   "store/completion-audit.md",
   "store/public-launch-audit.md",
   "store/public-launch-plan.md",
@@ -163,6 +164,7 @@ const packageLock = JSON.parse(await read("package-lock.json"));
 const manifest = JSON.parse(await read("manifest.webmanifest"));
 const vercel = JSON.parse(await read("vercel.json"));
 const feedbackSchema = JSON.parse(await read("schemas/feedback.v2.json"));
+const intakeSchema = JSON.parse(await read("schemas/intake.v1.json"));
 const htmlPageSources = Object.fromEntries(await Promise.all(htmlPages.map(async (page) => [page, await read(page)])));
 const index = htmlPageSources["index.html"];
 const support = htmlPageSources["support.html"];
@@ -295,6 +297,16 @@ check(index.includes("storageHealthStatus") && renderModule.includes("estimateIm
 check(appSurface.includes("Local storage full") && appSurface.includes("setStorageStatus"), "localStorage quota failure surfaces in the UI");
 check(appSurface.includes("signalStrengthFormula") && appSurface.includes("agentmash.feedback.v2"), "feedback packets use schema v2 with signal strength formula");
 check(
+  hasAll(index, ["agentDropButton", "agentDropFile", "reviewFocus", "reviewAudience", "decisionStage", "reviewPriority", "reviewContextNotes"]),
+  "agent drop import and review context controls exist"
+);
+check(
+  hasAll(appSurface, ["importAgentDrop", "payloadArtifacts", "normalizeAgentDropItem", "reviewContext"]) &&
+    !/\b(fetch|XMLHttpRequest|sendBeacon|WebSocket)\b/i.test(appSurface),
+  "agent drop import stays local and normalizes backend-ready payloads"
+);
+check(hasAll(packetModule, ["reviewContext", "validateReviewContext"]), "feedback packets carry backend-ready review context");
+check(
   packetModule.includes("validateFeedbackPacket")
     && packetModule.includes("validateExportRows")
     && index.includes("packetContractStatus")
@@ -314,6 +326,13 @@ check(
     && feedbackSchema.properties?.schema?.const === "agentmash.feedback.v2"
     && JSON.stringify(feedbackSchema).includes("signalStrength"),
   "feedback packet JSON Schema documents v2 output"
+);
+check(
+  intakeSchema.title === "AgentMash Agent Intake v1"
+    && intakeSchema.properties?.schema?.const === "agentmash.intake.v1"
+    && JSON.stringify(intakeSchema).includes("reviewContext")
+    && JSON.stringify(intakeSchema).includes("artifacts"),
+  "agent intake JSON Schema documents local drop contract"
 );
 check(!appSurface.includes("confidenceFor") && !appSurface.includes(".confidence"), "app output no longer uses confidence field");
 check(!appSurface.includes("agentRetryQueue") && !appSurface.includes("Retry queue"), "retry queue metric is removed");

@@ -22,6 +22,7 @@ Last local verification: May 8, 2026. No deployment, paid account, domain purcha
 - [x] Confirm SVG upload is rejected.
 - [x] Confirm oversized image upload is rejected.
 - [x] Confirm a small PNG upload stores bytes in IndexedDB, not `localStorage`.
+- [x] Confirm local agent-drop JSON import stores image bytes in IndexedDB and produces backend-ready packets.
 - [x] Confirm profile export/import restores uploaded image bytes to IndexedDB without storing them in `localStorage`.
 - [x] Confirm reset removes uploaded image bytes from IndexedDB.
 - [x] Confirm storage health reports local profile usage and IndexedDB image usage.
@@ -50,6 +51,7 @@ Last local verification: May 8, 2026. No deployment, paid account, domain purcha
 - [x] Confirm dataset-mode return envelopes use `application/x-ndjson`.
 - [x] Confirm Export workspace shows local packet and JSONL contract status.
 - [x] Confirm `schemas/feedback.v2.json` documents the v2 feedback packet contract.
+- [x] Confirm `schemas/intake.v1.json` documents the future backend/API/MCP intake contract.
 - [x] Confirm v2 packet validation requires `submittedAt` and image envelope metadata is exported when available.
 - [x] Confirm legacy imported reviews without grade or recommendation still load.
 - [x] Confirm native wrapper handoff exists without installing native dependencies.
@@ -89,6 +91,7 @@ Last local verification: May 8, 2026. No deployment, paid account, domain purcha
 ## Deferred Agent Customer Service
 
 - [ ] Decide who can submit artifacts: agents, labs, product teams, or internal users only.
+- [ ] Decide whether future intake starts as an API endpoint, an MCP server, or both.
 - [ ] Add authentication before accepting outside submissions.
 - [ ] Add storage and deletion rules for uploaded artifacts.
 - [ ] Add a review queue backed by a server.

@@ -42,6 +42,8 @@ This keeps the app launchable without paying for a domain, app-store accounts, h
 - Human review dashboard.
 - Export workspace dashboard.
 - Local-only privacy model.
+- Backend-ready local intake schema for future API/MCP handoff.
+- Local agent-drop JSON import for testing future submitted artifacts without a backend.
 - Export and import.
 - JSON feedback packets.
 - JSONL eval rows.
@@ -109,5 +111,6 @@ Move toward a paid lab/customer product only after:
 - Support issues are understood.
 - A retention and deletion policy exists.
 - Agent/lab customers ask for hosted submissions or return channels.
+- The local `agentmash.intake.v1` contract has been tested against real agent/lab workflows.
 - Backend auth, queueing, rate limits, and abuse handling are designed.
 - Legal/privacy review is complete for hosted or paid use.

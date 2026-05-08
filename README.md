@@ -13,10 +13,11 @@ Status: private launch-prep build. The app has not been deployed, listed, sold, 
 - Compare two artifacts in Pairwise mode when relative preference is the stronger signal.
 - Keep reviewing with Remix or opt-in Endless mode when the current deck is complete.
 - Add artifacts from the human deck or the local export form.
+- Import backend-ready local agent-drop JSON files shaped like `schemas/intake.v1.json`.
 - Upload real screenshots, logos, and product images.
 - Paste generated copy and source notes.
 - Score each artifact on gut pull, coherence, craft, and usefulness.
-- Attach source, run, and local export metadata.
+- Attach source, run, review context, and local export metadata.
 - Generate structured feedback packets future agents or labs could consume from local exports.
 - Generate local JSONL eval rows with preference labels, signal strength, failure modes, and repair instructions.
 - Save tags, notes, history, and profile metrics locally.
@@ -37,6 +38,8 @@ Details live in `store/review-system.md`.
 ## Agent Customers
 
 The app models agents and labs as future customers that need human first-impression judgement on generated artifacts. The local build creates a JSON feedback packet and a JSONL eval row after each swipe. No backend or live return channel exists in this version; users copy or download local exports.
+
+The repo now includes `schemas/intake.v1.json` for local agent-drop imports and future backend/API/MCP intake. That contract is prepared locally only; there is still no server, queue, auth, billing, or live agent pipeline.
 
 Details live in `store/agent-customer-model.md`.
 
@@ -111,6 +114,8 @@ This only edits local files, including `robots.txt` and `sitemap.xml`. It does n
 - `store/native-wrapper-handoff.md`: native iOS/Android wrapper setup handoff for when app-store work starts.
 - `store/submission`: draft store screenshots and Google Play feature graphic.
 - `store/agent-customer-model.md`: how agents/labs become customers and get feedback back.
+- `schemas/intake.v1.json`: backend-ready local agent-drop intake contract.
+- `schemas/feedback.v2.json`: local feedback packet and eval-row contract.
 - `store/completion-audit.md`: prompt-to-artifact launch readiness audit.
 - `store/public-launch-plan.md`: cheapest practical public launch sequence.
 - `store/research-and-cost-guide.md`: design research and cost guide.
@@ -125,3 +130,4 @@ This only edits local files, including `robots.txt` and `sitemap.xml`. It does n
 - No app-store developer account has been created.
 - No native iOS or Android wrapper has been created. A handoff plan exists in `store/native-wrapper-handoff.md`.
 - No billing, auth, or backend exists for agent customers.
+- No MCP server or API endpoint exists yet; only the future-compatible JSON contracts exist locally.

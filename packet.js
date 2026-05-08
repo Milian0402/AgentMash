@@ -74,6 +74,7 @@ export function artifactSummary(item) {
     requesterType: item.agent.requesterType,
     requesterName: item.agent.requesterName,
     submittedAt: submittedAtFor(item),
+    reviewContext: item.reviewContext,
     image: imageEnvelope(item, { includeData: false })
   };
 }
@@ -172,6 +173,7 @@ export function buildEvalRow(item, review) {
       runId: item.agent.runId,
       goal: item.agent.goal,
       submittedAt: submittedAtFor(item),
+      reviewContext: item.reviewContext,
       image: imageEnvelope(item)
     },
     humanSignal: humanSignalFor(item, review),
@@ -227,7 +229,8 @@ export function agentUseFor(item, review) {
     recommendedAction: recommendedActionFor(review),
     repairInstruction: repairInstructionFor(item, review),
     signalStrength: signalStrengthFor(review),
-    returnTarget: item.agent.returnTarget || "local export"
+    returnTarget: item.agent.returnTarget || "local export",
+    reviewContext: item.reviewContext
   };
 }
 
@@ -254,6 +257,7 @@ export function requestEnvelope(item) {
     requesterName: item.agent.requesterName,
     goal: item.agent.goal,
     submittedAt: submittedAtFor(item),
+    reviewContext: item.reviewContext,
     image: imageEnvelope(item)
   };
 }
@@ -379,6 +383,7 @@ function validateRequest(request, errors, path) {
   requireValue(errors, ["agent", "lab", "team"].includes(request?.requesterType), `${path}.requesterType`);
   requireString(errors, request?.requesterName, `${path}.requesterName`);
   requireString(errors, request?.submittedAt, `${path}.submittedAt`);
+  validateReviewContext(request?.reviewContext, errors, `${path}.reviewContext`);
 }
 
 function validateHumanSignal(signal, errors, path) {
@@ -412,6 +417,14 @@ function validateReturnEnvelope(envelope, errors, path) {
   requireValue(errors, ["json", "dataset"].includes(envelope?.mode), `${path}.mode`);
   requireString(errors, envelope?.target, `${path}.target`);
   requireValue(errors, ["application/json", "application/x-ndjson"].includes(envelope?.format), `${path}.format`);
+}
+
+function validateReviewContext(context, errors, path) {
+  requireObject(errors, context, path);
+  requireValue(errors, ["first_impression", "trust", "clarity", "memorability", "conversion", "visual_quality"].includes(context?.focus), `${path}.focus`);
+  requireValue(errors, ["general", "buyers", "developers", "executives", "researchers", "internal"].includes(context?.audience), `${path}.audience`);
+  requireValue(errors, ["concept", "variant", "prelaunch", "regression"].includes(context?.stage), `${path}.stage`);
+  requireValue(errors, ["normal", "high", "urgent"].includes(context?.priority), `${path}.priority`);
 }
 
 function requireObject(errors, value, path) {

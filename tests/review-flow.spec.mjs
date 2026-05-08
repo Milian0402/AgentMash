@@ -729,6 +729,101 @@ test("Changing a pending upload stores only the submitted image", async ({ page 
   expect(packet.request.image.dataUrl).toContain("data:image/png;base64,");
 });
 
+test("Agent drop import creates backend-ready review packets", async ({ page }) => {
+  await resetApp(page);
+  await page.getByRole("button", { name: "Add artifact" }).click();
+  await expect(page.locator("#agentDropStatus")).toHaveAttribute("role", "status");
+  await expect(page.locator("#agentDropStatus")).toHaveAttribute("aria-live", "polite");
+
+  const dropPayload = {
+    schema: "agentmash.intake.v1",
+    source: {
+      requesterType: "agent",
+      requesterName: "future-intake-agent",
+      runId: "drop-run-001",
+      goal: "Check whether a generated product shot earns trust before a launch build.",
+      returnMode: "dataset",
+      returnTarget: "future-api-preview"
+    },
+    reviewContext: {
+      focus: "trust",
+      audience: "buyers",
+      stage: "prelaunch",
+      priority: "high",
+      notes: "Payload-level context should survive normalization."
+    },
+    artifacts: [
+      {
+        id: "agent-drop-product-001",
+        type: "product",
+        title: "Agent drop bottle render",
+        prompt: "Generated hero product render for a wellness drink.",
+        body: "A matte green bottle on a clean surface with a short benefit line.",
+        question: "Does this earn trust at first glance?",
+        imageData: `data:image/png;base64,${tinyPngBase64}`,
+        reviewContext: {
+          focus: "visual_quality",
+          notes: "Check product credibility at thumbnail size."
+        }
+      }
+    ]
+  };
+
+  await page.setInputFiles("#agentDropFile", {
+    name: "agent-drop.json",
+    mimeType: "application/json",
+    buffer: Buffer.from(JSON.stringify(dropPayload))
+  });
+
+  await expect(page.locator("#agentDropStatus")).toContainText("Imported 1 artifacts from agent drop.");
+  await expect(page.locator("#artifactTitleLabel")).toContainText("Agent drop bottle render");
+
+  const storedProfile = await page.evaluate((key) => JSON.parse(localStorage.getItem(key)), storageKey);
+  const importedItem = storedProfile.items[0];
+  expect(importedItem).toMatchObject({
+    id: "agent-drop-product-001",
+    type: "product",
+    title: "Agent drop bottle render",
+    imageData: "",
+    agent: {
+      requesterType: "agent",
+      requesterName: "future-intake-agent",
+      runId: "drop-run-001",
+      returnMode: "dataset",
+      returnTarget: "future-api-preview"
+    },
+    reviewContext: {
+      focus: "visual_quality",
+      audience: "buyers",
+      stage: "prelaunch",
+      priority: "high",
+      notes: "Check product credibility at thumbnail size."
+    }
+  });
+  expect(importedItem.imageKey).toMatch(/^image-/);
+  await expect.poll(() => storedImageForKey(page, importedItem.imageKey)).toContain("data:image/png;base64,");
+
+  await page.getByRole("button", { name: /Nice/ }).click();
+  await expect.poll(() => reviewCount(page)).toBe(1);
+  await page.getByRole("button", { name: "Export workspace" }).click();
+  await expect(page.locator("#packetStatus")).toHaveText("Ready");
+  await expect(page.locator("#packetContractStatus")).toHaveText("v2 valid");
+  await expect(page.locator("#datasetContractStatus")).toHaveText("Rows valid");
+
+  const packet = await page.locator("#packetPreview").evaluate((node) => JSON.parse(node.textContent));
+  expect(packet.schema).toBe("agentmash.feedback.v2");
+  expect(packet.request.reviewContext).toEqual(importedItem.reviewContext);
+  expect(packet.evalRow.artifact.reviewContext).toEqual(importedItem.reviewContext);
+  expect(packet.agentUse.reviewContext).toEqual(importedItem.reviewContext);
+  expect(packet.return.format).toBe("application/x-ndjson");
+  expect(packet.request.image.dataUrl).toContain("data:image/png;base64,");
+  expect(packet.evalRow.artifact.image.dataUrl).toContain("data:image/png;base64,");
+
+  const [row] = await page.locator("#datasetPreview").evaluate((node) => node.textContent.trim().split("\n").map(JSON.parse));
+  expect(row.artifact.reviewContext).toEqual(importedItem.reviewContext);
+  expect(row.agentUse.reviewContext).toEqual(importedItem.reviewContext);
+});
+
 test("Profile export and import roundtrip restores uploaded images", async ({ page }) => {
   await resetApp(page);
   await addTinyImageArtifact(page, "Roundtrip upload smoke");

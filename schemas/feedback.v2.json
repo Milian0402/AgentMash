@@ -190,7 +190,7 @@
   "$defs": {
     "request": {
       "type": "object",
-      "required": ["artifactId", "variant", "type", "title", "runId", "requesterType", "requesterName", "submittedAt"],
+      "required": ["artifactId", "variant", "type", "title", "runId", "requesterType", "requesterName", "submittedAt", "reviewContext"],
       "properties": {
         "artifactId": {
           "type": "string"
@@ -225,6 +225,9 @@
         "submittedAt": {
           "type": "string",
           "format": "date-time"
+        },
+        "reviewContext": {
+          "$ref": "#/$defs/reviewContext"
         },
         "image": {
           "type": "object",
@@ -354,9 +357,34 @@
         },
         "returnTarget": {
           "type": "string"
+        },
+        "reviewContext": {
+          "$ref": "#/$defs/reviewContext"
         }
       },
       "additionalProperties": true
+    },
+    "reviewContext": {
+      "type": "object",
+      "required": ["focus", "audience", "stage", "priority", "notes"],
+      "properties": {
+        "focus": {
+          "enum": ["first_impression", "trust", "clarity", "memorability", "conversion", "visual_quality"]
+        },
+        "audience": {
+          "enum": ["general", "buyers", "developers", "executives", "researchers", "internal"]
+        },
+        "stage": {
+          "enum": ["concept", "variant", "prelaunch", "regression"]
+        },
+        "priority": {
+          "enum": ["normal", "high", "urgent"]
+        },
+        "notes": {
+          "type": "string"
+        }
+      },
+      "additionalProperties": false
     },
     "returnEnvelope": {
       "type": "object",

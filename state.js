@@ -14,6 +14,10 @@ export const PREVIOUS_STORAGE_KEYS = [
 
 export const artifactTypes = ["website", "logo", "copy", "product"];
 export const artifactVariants = ["original", "thumbnail", "first-line", "tagline", "mark-only", "cutout"];
+export const reviewFocusOptions = ["first_impression", "trust", "clarity", "memorability", "conversion", "visual_quality"];
+export const audienceOptions = ["general", "buyers", "developers", "executives", "researchers", "internal"];
+export const decisionStageOptions = ["concept", "variant", "prelaunch", "regression"];
+export const priorityOptions = ["normal", "high", "urgent"];
 export const ALLOWED_IMAGE_TYPES = ["image/png", "image/jpeg", "image/webp"];
 export const MAX_IMAGE_BYTES = 2_500_000;
 export const LOCAL_STORAGE_APPROX_LIMIT = 5 * 1024 * 1024;
@@ -102,6 +106,13 @@ export const sampleItems = [
       returnMode: "json",
       returnTarget: "ops-site-feedback"
     },
+    reviewContext: {
+      focus: "trust",
+      audience: "buyers",
+      stage: "prelaunch",
+      priority: "normal",
+      notes: "Judge whether a buyer would trust the offer before reading details."
+    },
     createdAt: "2026-05-07T00:00:00.000Z"
   },
   {
@@ -118,6 +129,13 @@ export const sampleItems = [
       goal: "Test whether logo candidates make semantic and visual sense.",
       returnMode: "json",
       returnTarget: "pantry-logo-feedback"
+    },
+    reviewContext: {
+      focus: "memorability",
+      audience: "general",
+      stage: "variant",
+      priority: "normal",
+      notes: "Check tiny-size recognition and category association."
     },
     createdAt: "2026-05-07T00:00:00.000Z"
   },
@@ -136,6 +154,13 @@ export const sampleItems = [
       returnMode: "json",
       returnTarget: "notes-copy-feedback"
     },
+    reviewContext: {
+      focus: "clarity",
+      audience: "buyers",
+      stage: "concept",
+      priority: "high",
+      notes: "Reward copy that feels specific and human on first read."
+    },
     createdAt: "2026-05-07T00:00:00.000Z"
   },
   {
@@ -153,6 +178,13 @@ export const sampleItems = [
       returnMode: "json",
       returnTarget: "tray-render-feedback"
     },
+    reviewContext: {
+      focus: "visual_quality",
+      audience: "buyers",
+      stage: "prelaunch",
+      priority: "high",
+      notes: "Look for plausibility, materials, and desire cues."
+    },
     createdAt: "2026-05-07T00:00:00.000Z"
   }
 ];
@@ -162,6 +194,14 @@ export const defaultScores = {
   sense: 6,
   craft: 6,
   useful: 6
+};
+
+export const defaultReviewContext = {
+  focus: "first_impression",
+  audience: "general",
+  stage: "concept",
+  priority: "normal",
+  notes: ""
 };
 
 export const defaultState = {
@@ -279,11 +319,22 @@ export function normalizeItem(item) {
     body: cleanText(item.body || item.copy || item.description),
     question: cleanText(item.question) || defaultQuestion(type),
     agent: normalizeAgent(item.agent),
+    reviewContext: normalizeReviewContext(item.reviewContext || item.context),
     variant: normalizeVariant(item.variant),
     loopSourceItemId: cleanText(item.loopSourceItemId),
     imageKey: cleanText(item.imageKey) || (imageData ? createShortId("image") : ""),
     imageData,
     createdAt: cleanText(item.createdAt) || new Date().toISOString()
+  };
+}
+
+export function normalizeReviewContext(context = {}) {
+  return {
+    focus: reviewFocusOptions.includes(context.focus) ? context.focus : defaultReviewContext.focus,
+    audience: audienceOptions.includes(context.audience) ? context.audience : defaultReviewContext.audience,
+    stage: decisionStageOptions.includes(context.stage) ? context.stage : defaultReviewContext.stage,
+    priority: priorityOptions.includes(context.priority) ? context.priority : defaultReviewContext.priority,
+    notes: cleanText(context.notes || context.description)
   };
 }
 
