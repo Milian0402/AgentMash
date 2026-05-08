@@ -143,7 +143,7 @@ Make AgentMash good enough to launch publicly as a serious app.
 - Public manifest screenshots point to `assets/screenshots`.
 - `npm run check` builds `_site/` and verifies internal files are not packaged.
 - `_site/` includes all public app modules, public schema files, and `sw.js` caches those module and schema files.
-- `sw.js` cache name is `agentmash-v41` after the card-dominant swipe layout, mobile overlay polish, Comment shortcut, screenshot refresh, privacy, launch-order, and public contract updates, so the offline app shell refreshes when this build is published.
+- `sw.js` cache name is `agentmash-v42` after the card-dominant swipe layout, mobile overlay polish, Comment shortcut, screenshot refresh, v0.3.0 build labels, privacy, launch-order, and public contract updates, so the offline app shell refreshes when this build is published.
 - Playwright e2e test passed: after service worker readiness, the app reloaded offline and rendered the AgentMash shell and swipe card.
 - Netlify and Vercel configs are checked for `npm run build` plus `_site/` output.
 - Apple touch icon is linked from `index.html`, cached by `sw.js`, and sized at 180 by 180.

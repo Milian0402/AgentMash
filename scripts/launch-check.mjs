@@ -445,7 +445,7 @@ check(
   hasAll(appSurface, ["ALLOWED_IMAGE_TYPES", "MAX_IMAGE_BYTES", "safeImageData", "Choose a PNG, JPG, or WebP image"]),
   "image uploads are type and size constrained"
 );
-check(serviceWorker.includes('const CACHE_NAME = "agentmash-v41"'), "service worker cache is AgentMash scoped and current");
+check(serviceWorker.includes('const CACHE_NAME = "agentmash-v42"'), "service worker cache is AgentMash scoped and current");
 check(hasAll(serviceWorker, appShellFiles), "service worker app shell includes launch pages and icons");
 check(hasAll(headers, securityHeaders), "_headers defines security headers");
 check(hasAll(netlify, securityHeaders), "netlify config defines security headers");
