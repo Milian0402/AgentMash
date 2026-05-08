@@ -58,6 +58,7 @@ Make AgentMash good enough to launch publicly as a serious app.
 - Public footer and support page expose the current release version for support/debugging without labeling the public app as beta.
 - Public app, support, privacy, and terms pages show the current launch-prep build label: AgentMash `v0.3.0`.
 - Public support and privacy pages avoid prelaunch placeholder language such as missing support inbox copy.
+- Public support page covers local backups, storage, import/export, deletion, diagnostics, and troubleshooting without adding forms, accounts, or outbound services.
 - Privacy and terms pages expose the effective date and current build version.
 - Reset uses profile wording and requires confirmation before clearing local data.
 - Reset clears uploaded image bytes from IndexedDB as well as local profile state.

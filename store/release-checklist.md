@@ -78,6 +78,7 @@ Last local verification: May 8, 2026. No deployment, paid account, domain purcha
 - [x] Confirm internal publishing notes are not linked from the app footer or packaged into `_site/`.
 - [x] Confirm the install prompt is visible from the Human review screen without exposing other profile actions.
 - [x] Confirm support, privacy, terms, publishing, and 404 pages render locally.
+- [x] Confirm support page covers backup, storage, import/export, deletion, and diagnostics without adding forms or outbound services.
 - [x] Confirm configured `robots.txt` and `sitemap.xml` are generated and verified by the public URL smoke test.
 - [x] Confirm no analytics, payment, contact, telemetry, socket, third-party API, or outbound fetch hooks exist in the public app surface.
 - [x] Confirm pending image uploads are written to IndexedDB only after submit.

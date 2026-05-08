@@ -276,6 +276,10 @@ check(
 );
 check(index.includes('name="mobile-web-app-capable"'), "index includes mobile web app install metadata");
 check(index.includes("Reset profile") && !index.includes("Reset demo"), "reset action uses profile wording");
+check(
+  hasAll(support, ["Back Up Your Profile", "Storage", "Local storage full", "Import And Export", "Delete Local Data", "does not send diagnostics automatically"]),
+  "support page covers backup, storage, import/export, deletion, and diagnostics"
+);
 check(index.includes('name="color-scheme" content="light dark"') && styles.includes("@media (prefers-color-scheme: dark)") && styles.includes("color-scheme: dark"), "app follows OS light and dark color scheme");
 check(index.includes('accept="image/png,image/jpeg,image/webp"') && !index.includes("image/svg+xml"), "user uploads exclude SVG");
 check(hasAll(index, ["support.html", "privacy.html", "terms.html"]) && !index.includes("publishing.html"), "footer links only user-facing public pages");
