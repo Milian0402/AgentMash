@@ -729,11 +729,23 @@ test("Changing a pending upload stores only the submitted image", async ({ page 
   expect(packet.request.image.dataUrl).toContain("data:image/png;base64,");
 });
 
-test("Agent drop import creates backend-ready review packets", async ({ page }) => {
+test("Agent drop import validates payloads and creates backend-ready review packets", async ({ page }) => {
   await resetApp(page);
   await page.getByRole("button", { name: "Add artifact" }).click();
   await expect(page.locator("#agentDropStatus")).toHaveAttribute("role", "status");
   await expect(page.locator("#agentDropStatus")).toHaveAttribute("aria-live", "polite");
+
+  await page.setInputFiles("#agentDropFile", {
+    name: "bad-agent-drop.json",
+    mimeType: "application/json",
+    buffer: Buffer.from(JSON.stringify({
+      schema: "agentmash.intake.v1",
+      artifacts: [{ type: "video" }]
+    }))
+  });
+  await expect(page.locator("#agentDropStatus")).toContainText("Agent drop rejected:");
+  await expect(page.locator("#agentDropStatus")).toContainText("artifacts[0].type");
+  await expect.poll(() => itemCount(page)).toBe(4);
 
   const dropPayload = {
     schema: "agentmash.intake.v1",

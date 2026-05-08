@@ -2,6 +2,7 @@ import {
   ALLOWED_IMAGE_TYPES,
   APP_VERSION,
   MAX_IMAGE_BYTES,
+  audienceOptions,
   artifactTypes,
   calculateScore,
   clearImageStore,
@@ -9,6 +10,7 @@ import {
   configureStorageStatus,
   createId,
   createShortId,
+  decisionStageOptions,
   defaultQuestion,
   defaultScores,
   defaultScoresForNext,
@@ -23,8 +25,10 @@ import {
   normalizeScores,
   normalizeState,
   persistInlineImages,
+  priorityOptions,
   recommendationFor,
   replaceState,
+  reviewFocusOptions,
   safeImageData,
   sampleItems,
   saveState,
@@ -302,16 +306,101 @@ function resetArtifactFormDefaults() {
 }
 
 function payloadArtifacts(payload) {
-  if (Array.isArray(payload)) {
-    return payload;
-  }
   if (Array.isArray(payload?.artifacts)) {
     return payload.artifacts;
   }
-  if (payload?.artifact && typeof payload.artifact === "object") {
-    return [payload.artifact];
+  return [];
+}
+
+function validateAgentDropPayload(payload) {
+  const errors = [];
+  if (!payload || typeof payload !== "object" || Array.isArray(payload)) {
+    return ["payload must be an agentmash.intake.v1 object"];
   }
-  return payload && typeof payload === "object" ? [payload] : [];
+
+  if (payload.schema !== "agentmash.intake.v1") {
+    errors.push("schema must be agentmash.intake.v1");
+  }
+
+  if (!Array.isArray(payload.artifacts) || payload.artifacts.length === 0) {
+    errors.push("artifacts must include at least one artifact");
+  }
+
+  validateSource(payload.source, errors, "source");
+  validateReviewContextInput(payload.reviewContext, errors, "reviewContext");
+
+  payloadArtifacts(payload).forEach((artifact, index) => {
+    const path = `artifacts[${index}]`;
+    if (!artifact || typeof artifact !== "object" || Array.isArray(artifact)) {
+      errors.push(`${path} must be an object`);
+      return;
+    }
+
+    if (!artifactTypes.includes(artifact.type)) {
+      errors.push(`${path}.type must be website, logo, copy, or product`);
+    }
+    if (!isNonEmptyString(artifact.title)) {
+      errors.push(`${path}.title is required`);
+    }
+
+    validateSource(artifact.agent, errors, `${path}.agent`);
+    validateReviewContextInput(artifact.reviewContext || artifact.context, errors, `${path}.reviewContext`);
+    validateImageDataUrl(artifact.imageData, errors, `${path}.imageData`);
+    validateImageDataUrl(artifact.image?.dataUrl, errors, `${path}.image.dataUrl`);
+  });
+
+  return errors;
+}
+
+function validateSource(source, errors, path) {
+  if (source === undefined) {
+    return;
+  }
+  if (!source || typeof source !== "object" || Array.isArray(source)) {
+    errors.push(`${path} must be an object`);
+    return;
+  }
+  if (source.requesterType !== undefined && !["agent", "lab", "team"].includes(source.requesterType)) {
+    errors.push(`${path}.requesterType must be agent, lab, or team`);
+  }
+  if (source.returnMode !== undefined && !["json", "dataset"].includes(source.returnMode)) {
+    errors.push(`${path}.returnMode must be json or dataset`);
+  }
+}
+
+function validateReviewContextInput(context, errors, path) {
+  if (context === undefined) {
+    return;
+  }
+  if (!context || typeof context !== "object" || Array.isArray(context)) {
+    errors.push(`${path} must be an object`);
+    return;
+  }
+  if (context.focus !== undefined && !reviewFocusOptions.includes(context.focus)) {
+    errors.push(`${path}.focus is not supported`);
+  }
+  if (context.audience !== undefined && !audienceOptions.includes(context.audience)) {
+    errors.push(`${path}.audience is not supported`);
+  }
+  if (context.stage !== undefined && !decisionStageOptions.includes(context.stage)) {
+    errors.push(`${path}.stage is not supported`);
+  }
+  if (context.priority !== undefined && !priorityOptions.includes(context.priority)) {
+    errors.push(`${path}.priority is not supported`);
+  }
+}
+
+function validateImageDataUrl(value, errors, path) {
+  if (value === undefined || value === "") {
+    return;
+  }
+  if (typeof value !== "string" || !safeImageData(value)) {
+    errors.push(`${path} must be a PNG, JPG, or WebP data URL`);
+  }
+}
+
+function isNonEmptyString(value) {
+  return typeof value === "string" && value.trim().length > 0;
 }
 
 function normalizeAgentDropItem(rawArtifact, payload = {}) {
@@ -343,6 +432,12 @@ async function importAgentDrop(file) {
   elements.agentDropStatus.textContent = "Reading agent drop...";
   try {
     const payload = JSON.parse(await file.text());
+    const validationErrors = validateAgentDropPayload(payload);
+    if (validationErrors.length) {
+      elements.agentDropStatus.textContent = `Agent drop rejected: ${validationErrors.slice(0, 3).join("; ")}.`;
+      return;
+    }
+
     const artifacts = payloadArtifacts(payload)
       .filter((artifact) => artifact && typeof artifact === "object")
       .map((artifact) => normalizeAgentDropItem(artifact, payload));

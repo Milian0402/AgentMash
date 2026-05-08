@@ -301,10 +301,11 @@ check(
   "agent drop import and review context controls exist"
 );
 check(
-  hasAll(appSurface, ["importAgentDrop", "payloadArtifacts", "normalizeAgentDropItem", "reviewContext"]) &&
+  hasAll(appSurface, ["importAgentDrop", "validateAgentDropPayload", "payloadArtifacts", "normalizeAgentDropItem", "reviewContext"]) &&
     !/\b(fetch|XMLHttpRequest|sendBeacon|WebSocket)\b/i.test(appSurface),
   "agent drop import stays local and normalizes backend-ready payloads"
 );
+check(hasAll(testSpec, ["Agent drop rejected:", "bad-agent-drop.json", "artifacts[0].type"]), "Playwright covers invalid agent-drop rejection");
 check(hasAll(packetModule, ["reviewContext", "validateReviewContext"]), "feedback packets carry backend-ready review context");
 check(
   packetModule.includes("validateFeedbackPacket")

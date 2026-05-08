@@ -23,6 +23,7 @@ Last local verification: May 8, 2026. No deployment, paid account, domain purcha
 - [x] Confirm oversized image upload is rejected.
 - [x] Confirm a small PNG upload stores bytes in IndexedDB, not `localStorage`.
 - [x] Confirm local agent-drop JSON import stores image bytes in IndexedDB and produces backend-ready packets.
+- [x] Confirm malformed agent-drop JSON is rejected without changing the local deck.
 - [x] Confirm profile export/import restores uploaded image bytes to IndexedDB without storing them in `localStorage`.
 - [x] Confirm reset removes uploaded image bytes from IndexedDB.
 - [x] Confirm storage health reports local profile usage and IndexedDB image usage.

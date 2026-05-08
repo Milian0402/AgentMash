@@ -24,7 +24,7 @@ Make AgentMash good enough to launch publicly as a serious app.
 - On mobile Human review, deck/profile/storage controls are tucked behind a `Deck` sheet so the first viewport stays focused on the swipe loop.
 - Artifact intake uses local export wording and only offers JSON packet or eval dataset export formats, avoiding unavailable webhook or polling choices.
 - Add Artifact includes review context fields for signal focus, audience, decision stage, priority, and notes.
-- Local `Import drop` accepts backend-ready `agentmash.intake.v1` JSON files without contacting a server.
+- Local `Import drop` accepts backend-ready `agentmash.intake.v1` JSON files without contacting a server and rejects malformed drops with a clear status message.
 - Starter artifacts are credible launch examples instead of placeholder-only cards.
 - Privacy, terms, support, 404, manifest, icons, service worker, and static host config are present for the public build.
 - PWA manifest includes mobile and desktop screenshots.
@@ -155,7 +155,7 @@ Make AgentMash good enough to launch publicly as a serious app.
 - Playwright upload smoke test passed: SVG rejected, over-2.5 MB PNG rejected, small PNG accepted, and console errors stayed at zero.
 - Playwright e2e test passed: a tiny PNG upload stored an `imageKey` in `localStorage`, left `imageData` empty in `localStorage`, and stored the data URL in IndexedDB.
 - Playwright e2e test passed: selecting `first.png`, then selecting `second.png`, left zero IndexedDB image keys until submit and exactly one submitted image key after.
-- Playwright e2e test passed: an `agentmash.intake.v1` agent-drop JSON import added an artifact to the Human review deck, stored image bytes in IndexedDB, kept `localStorage` image-free, and exported review context through request, eval-row artifact, and agent-use packet sections.
+- Playwright e2e test passed: an invalid agent-drop JSON was rejected without changing the deck; a valid `agentmash.intake.v1` import then added an artifact to the Human review deck, stored image bytes in IndexedDB, kept `localStorage` image-free, and exported review context through request, eval-row artifact, and agent-use packet sections.
 - Playwright e2e test passed: profile export bundled uploaded image data, reset cleared the profile and removed the old IndexedDB image bytes, import restored the artifact, `localStorage` kept only the `imageKey`, and IndexedDB contained the restored data URL.
 - Playwright e2e test passed: Nice, Undo, and Nope produced a ready `agentmash.feedback.v2` packet with `signalStrength`, no `confidence` field, `accepted` / `rejected` export verdicts, and `agentmash.eval-row.v2`.
 - Playwright e2e test passed: a dataset-mode pending packet reported `application/x-ndjson` in the expected return envelope.
