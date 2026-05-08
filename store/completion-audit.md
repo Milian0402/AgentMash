@@ -55,6 +55,7 @@ Make AgentMash good enough to launch publicly as a serious app, while staying in
 - Keyboard focus rings are visible on interactive controls.
 - Image upload validation feedback is exposed through a polite status region.
 - Public pages expose the package version for support and debugging.
+- Current public build labels show AgentMash `v0.3.0`.
 - Privacy and terms pages show an effective date and current build version.
 - Public pages avoid deferred backend-channel language that would imply a live webhook, polling, or hosted agent pipeline.
 - Public HTML pages include CSP fallback metadata for static hosts that do not honor custom header files.
@@ -128,6 +129,7 @@ Make AgentMash good enough to launch publicly as a serious app, while staying in
 | Put repo in the code folder. | Local repo path is `/Users/maximiliannordler/code/AgentMash`. | Met locally |
 | Make it ready for public web launch where possible. | Privacy, terms, support, 404, manifest, service worker, icons, screenshots, preview workflow, and security header configs exist. Publishing and cost guidance stays in internal repo docs. | Met locally |
 | Keep install and repo metadata aligned. | `manifest.webmanifest`, `package.json`, and `README.md` now describe AgentMash as turning fast judgement into structured feedback packets; `scripts/launch-check.mjs` verifies the manifest and package descriptions. | Met locally |
+| Keep the visible launch-prep build version current. | `package.json` and `package-lock.json` are at `0.3.0`; `index.html`, `support.html`, `privacy.html`, and `terms.html` show `v0.3.0`; `sw.js` cache is `agentmash-v42`; `scripts/launch-check.mjs` verifies package-version exposure and cache currency. | Met locally |
 | Keep PWA install language metadata explicit. | `manifest.webmanifest` declares `lang: en-US` and `dir: ltr`; `scripts/launch-check.mjs` verifies both values. | Met locally |
 | Keep PWA install icons consistent with the manifest. | `assets/icons/app-icon-192.png`, `assets/icons/app-icon-512.png`, `assets/icons/app-icon-1024.png`, and `store/app-icon-1024.png` match their declared PNG sizes; `scripts/launch-check.mjs` verifies those dimensions. | Met locally |
 | Keep PWA screenshots consistent with the manifest. | Public and store mirror PWA screenshots are 390 by 844 and 1440 by 1000 PNGs, matching `manifest.webmanifest`; `scripts/launch-check.mjs` verifies those dimensions. | Met locally |

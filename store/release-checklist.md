@@ -12,6 +12,7 @@ Last local verification: May 8, 2026. No deployment, paid account, domain purcha
 - [x] Run Playwright e2e coverage through local HTTP with `npm run serve`.
 - [x] Run `npm run ready:public`.
 - [x] Run `npm run refresh:assets` when launch screenshots need to match the current UI.
+- [x] Confirm public app, support, privacy, and terms pages expose the current `v0.3.0` build label.
 - [x] Confirm `_site/` includes public app files and native modules.
 - [x] Confirm `_site/` includes public JSON Schema, OpenAPI, MCP contract files, and examples for feedback, intake, and future backend handoff.
 - [x] Confirm `_site/` excludes internal `store/`, `scripts/`, tests, repo metadata, package files, and host config files.

@@ -56,6 +56,7 @@ Make AgentMash good enough to launch publicly as a serious app.
 - Light and dark modes follow the user's operating system preference.
 - Top and bottom spacing use iOS safe-area insets to reduce notch and home-indicator collisions.
 - Public footer and support page expose the current release version for support/debugging without labeling the public app as beta.
+- Public app, support, privacy, and terms pages show the current launch-prep build label: AgentMash `v0.3.0`.
 - Public support and privacy pages avoid prelaunch placeholder language such as missing support inbox copy.
 - Privacy and terms pages expose the effective date and current build version.
 - Reset uses profile wording and requires confirmation before clearing local data.
@@ -157,7 +158,7 @@ Make AgentMash good enough to launch publicly as a serious app.
 - `npm run check` verifies every public HTML page has CSP fallback metadata with self-only defaults, blocked object embedding, self-only connections, and self-only form actions.
 - Playwright e2e test passed: a synthetic install prompt showed the `Install` button on Human review, kept Import/Export/Reset hidden, and hid Install after the prompt resolved.
 - `index.html` declares `light dark` color schemes, and `styles.css` includes a dark-mode `prefers-color-scheme` branch.
-- `index.html`, `support.html`, `privacy.html`, and `terms.html` show the package version; privacy and terms also show the effective date.
+- `index.html`, `support.html`, `privacy.html`, and `terms.html` show `v0.3.0`; privacy and terms also show the effective date.
 - `index.html` avoids demo reset wording and `app.js` confirms before reset.
 - Playwright reset smoke test passed: cancel kept one review, confirm cleared it, and console errors stayed at zero.
 - Import confirmation protects local reviews, uploads, notes, added artifacts, and reviewer name from silent overwrite.
@@ -206,7 +207,7 @@ Make AgentMash good enough to launch publicly as a serious app.
 
 ## Runtime Smoke Evidence
 
-Playwright CLI checked `http://127.0.0.1:5177` on May 7, 2026 after the local folder move.
+Playwright CLI and `npm run ready:public` checked `http://127.0.0.1:5177` and the local `_site/` package on May 8, 2026 after the `v0.3.0` launch-prep build label and `agentmash-v42` service-worker cache update.
 
 Passed checks:
 
