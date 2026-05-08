@@ -517,6 +517,7 @@ check(
 );
 check(hasAll(testSpec, ["application/x-ndjson", "rejected", "accepted"]), "Playwright covers normalized export packet contract");
 check(hasAll(testSpec, ["Rapid decisions are locked", "decisionTransition", "clippedFilters"]), "Playwright covers transition lock and mobile filter readability");
+check(hasAll(testSpec, ["Keyboard shortcuts support swipe and pairwise", "Control+Z", "Typing here should keep arrow keys in the note"]), "Playwright covers keyboard shortcut accessibility");
 check(hasAll(testSpec, ["advancedScoresButton", "scoreControls", "Scores"]), "Playwright covers compact Refine score toggle");
 check(hasAll(testSpec, ["packetContractStatus", "datasetContractStatus", "Rows valid"]), "Playwright covers export contract status");
 check(

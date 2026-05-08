@@ -30,6 +30,7 @@ Last local verification: May 8, 2026. No deployment, paid account, domain purcha
 - [x] Confirm storage health reports local profile usage and IndexedDB image usage.
 - [x] Stress-test 500 local artifacts, 250 existing reviews, and 100 more swipes.
 - [x] Swipe Nice and Nope.
+- [x] Confirm keyboard shortcuts handle Nice, Nope, Undo, and Pairwise without hijacking text entry.
 - [x] Confirm rapid duplicate decisions create one review and lock controls until the next card is ready.
 - [x] Undo a decision.
 - [x] Confirm Undo preserves the active deck filter.

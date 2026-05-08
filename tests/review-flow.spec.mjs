@@ -377,6 +377,51 @@ test("Rapid decisions are locked and mobile filter labels stay readable", async 
   await expect.poll(() => reviewCount(page)).toBe(1);
 });
 
+test("Keyboard shortcuts support swipe and pairwise without hijacking text entry", async ({ page }) => {
+  await resetApp(page);
+
+  await page.getByRole("button", { name: "Refine" }).click();
+  await page.getByLabel("Decision note").fill("Typing here should keep arrow keys in the note.");
+  await page.keyboard.press("ArrowRight");
+  await expect.poll(() => reviewCount(page)).toBe(0);
+  await expect(page.locator("#signalPanel")).toBeVisible();
+
+  await page.getByRole("button", { name: "Refine" }).click();
+  await page.keyboard.press("ArrowRight");
+  await expect.poll(() => reviewCount(page)).toBe(1);
+  await expect(page.locator("#stageProgress")).toHaveText("2 / 4");
+
+  await page.keyboard.press("Control+Z");
+  await expect.poll(() => reviewCount(page)).toBe(0);
+  await expect(page.locator("#stageProgress")).toHaveText("1 / 4");
+
+  await page.keyboard.press("ArrowLeft");
+  await expect.poll(() => reviewCount(page)).toBe(1);
+  await expect(page.locator("#acceptButton")).toBeEnabled();
+  let profile = await page.evaluate((key) => JSON.parse(localStorage.getItem(key)), storageKey);
+  expect(profile.reviews[0].verdict).toBe("pass");
+
+  await page.locator('#reviewModeTabs [data-review-mode="pairwise"]').click();
+  await expect(page.locator("#pairwiseStage")).toBeVisible();
+  await page.keyboard.press("ArrowRight");
+
+  await expect.poll(async () => {
+    const nextProfile = await page.evaluate((key) => JSON.parse(localStorage.getItem(key)), storageKey);
+    return nextProfile.pairwiseComparisons.length;
+  }).toBe(1);
+  profile = await page.evaluate((key) => JSON.parse(localStorage.getItem(key)), storageKey);
+  expect(profile.reviews).toHaveLength(1);
+  expect(profile.pairwiseComparisons[0]).toMatchObject({
+    winnerItemId: "logo-bakery-001",
+    loserItemId: "site-landing-001"
+  });
+
+  await page.keyboard.press("Control+Z");
+  profile = await page.evaluate((key) => JSON.parse(localStorage.getItem(key)), storageKey);
+  expect(profile.reviews).toHaveLength(1);
+  expect(profile.pairwiseComparisons).toHaveLength(0);
+});
+
 test("Export workspace empty state reads correctly with zero items and reviews", async ({ page }) => {
   await page.goto(appUrl);
   await page.evaluate((key) => {

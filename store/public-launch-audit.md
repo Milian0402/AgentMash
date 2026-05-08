@@ -110,7 +110,7 @@ Make AgentMash good enough to launch publicly as a serious app.
 - `npm run check:launch` passes.
 - `npm run check` syntax-checks `app.js`, `state.js`, `packet.js`, `render.js`, and `gestures.js`.
 - Playwright runs the module app through `npm run serve` at `http://127.0.0.1:5177/`, not a blocked `file://` module load.
-- `npm run check` now includes Playwright e2e coverage for Nice, Undo, Nope, rapid duplicate decision locking, mobile header clearance, mobile Refine sheet clearance, mobile Pairwise scroll, export contract badges, legacy import normalization, v2 packet shape, visual image payloads, normalized export verdicts, dataset return format, backend-ready agent-drop import, Keepers completion state, Remix repeat sessions with variant metadata, Endless auto-looping, Pairwise comparison export, human-screen install prompt, empty Export workspace state, IndexedDB image storage, pending upload submit-only storage, profile image export/import, offline app-shell loading, and a 500-item local stress path.
+- `npm run check` now includes Playwright e2e coverage for Nice, Undo, Nope, keyboard shortcuts, rapid duplicate decision locking, mobile header clearance, mobile Refine sheet clearance, mobile Pairwise scroll, export contract badges, legacy import normalization, v2 packet shape, visual image payloads, normalized export verdicts, dataset return format, backend-ready agent-drop import, Keepers completion state, Remix repeat sessions with variant metadata, Endless auto-looping, Pairwise comparison export, human-screen install prompt, empty Export workspace state, IndexedDB image storage, pending upload submit-only storage, profile image export/import, offline app-shell loading, and a 500-item local stress path.
 - `manifest.webmanifest`, `package.json`, and `vercel.json` parse as JSON.
 - `npm run check` verifies manifest and package descriptions use structured feedback-packet wording.
 - `npm run check` verifies the PWA manifest language and text direction.
@@ -170,6 +170,7 @@ Make AgentMash good enough to launch publicly as a serious app.
 - Playwright e2e test passed: Export workspace showed `v2 valid` for packets, `Rows valid` when JSONL rows existed, and `No rows` in the empty dataset state.
 - Playwright e2e test passed: Undo from the `All` deck restored `1 / 4` progress and left the active filter as `all`.
 - Playwright e2e test passed: two rapid decision events produced one review, left the transition lock active immediately, then unlocked the next card.
+- Playwright e2e test passed: Arrow keys handled Nice/Nope decisions, `Control+Z` undid swipe and pairwise choices, and arrow keys were ignored while typing in the decision note.
 - Playwright e2e test passed: filter labels had no horizontal overflow at 390 by 844.
 - Playwright e2e test passed: review-mode and filter segmented controls use group roles, and active filters expose `aria-pressed`.
 - Playwright e2e test passed: the Nice decision button exposes a visible keyboard focus ring.
