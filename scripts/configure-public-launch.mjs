@@ -71,6 +71,17 @@ function normalizePublicUrl(value) {
   return url;
 }
 
+function normalizeSupport(value) {
+  const support = value.trim();
+  if (!support) {
+    throw new Error(`Missing --support.\n\n${usage()}`);
+  }
+  if (/YOUR[-_\s]?SUPPORT[-_\s]?ROUTE/i.test(support)) {
+    throw new Error("Replace YOUR-SUPPORT-ROUTE with a real public support route before configuring launch metadata.");
+  }
+  return support;
+}
+
 function escapeHtml(value) {
   return value
     .replaceAll("&", "&amp;")
@@ -171,7 +182,7 @@ function configurePrivacy(source, contact) {
 
 export async function configurePublicLaunch({ dryRun = false, root = ".", support = "", url }) {
   const publicUrl = normalizePublicUrl(url);
-  const trimmedSupport = support.trim();
+  const trimmedSupport = normalizeSupport(support);
 
   const files = {
     [pageNames.index]: configureIndex(await readFile(join(root, pageNames.index), "utf8"), publicUrl),

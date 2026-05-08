@@ -96,7 +96,7 @@ Make AgentMash good enough to launch publicly as a serious app.
 
 - `npm run check` passes.
 - `npm run ready:public` passes and rebuilds `_site/` after the full local quality gate.
-- `npm run check:configure-public` runs the final public URL/support metadata command against temporary copies, verifies the written metadata, verifies idempotency, and verifies dry-run does not mutate files.
+- `npm run check:configure-public` runs the final public URL/support metadata command against temporary copies, verifies the written metadata, verifies idempotency, verifies dry-run does not mutate files, and verifies blank or placeholder support routes are rejected.
 - `npm run check:verify-public` serves a configured temporary public build on localhost and runs the same public URL verifier that will be used after hosting exists.
 - `npm run check:launch` passes.
 - `npm run check` syntax-checks `app.js`, `state.js`, `packet.js`, `render.js`, and `gestures.js`.

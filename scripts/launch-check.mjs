@@ -374,12 +374,30 @@ check(packageJson.scripts?.check.includes("npm run check:verify-public"), "packa
 check(packageJson.scripts?.["test:e2e"] === "playwright test", "package has Playwright e2e script");
 check(packageJson.devDependencies?.["@playwright/test"], "Playwright is a dev dependency only");
 check(
-  hasAll(configurePublicScript, ["og:url", "twitter:url", "canonical", "data-public-support-contact", "--dry-run", "--root", "configurePublicLaunch"]) &&
+  hasAll(configurePublicScript, [
+    "og:url",
+    "twitter:url",
+    "canonical",
+    "data-public-support-contact",
+    "--dry-run",
+    "--root",
+    "configurePublicLaunch",
+    "Missing --support",
+    "YOUR-SUPPORT-ROUTE"
+  ]) &&
     !/\b(fetch|XMLHttpRequest|sendBeacon|WebSocket)\b/i.test(configurePublicScript),
   "public metadata configurator is local-only and covers URL/support launch fields"
 );
 check(
-  hasAll(configurePublicCheck, ["mkdtemp", "configurePublicLaunch", "idempotent", "dry-run does not mutate files", "app/assets/icons/app-icon-1024.png"]),
+  hasAll(configurePublicCheck, [
+    "mkdtemp",
+    "configurePublicLaunch",
+    "idempotent",
+    "dry-run does not mutate files",
+    "app/assets/icons/app-icon-1024.png",
+    "rejects missing support route",
+    "rejects placeholder support route"
+  ]),
   "public metadata checker exercises real write, idempotency, and dry-run paths"
 );
 check(

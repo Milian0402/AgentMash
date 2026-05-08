@@ -27,6 +27,20 @@ function hasSameMembers(actual, expected) {
   return actual.length === expected.length && expected.every((item) => actual.includes(item));
 }
 
+async function rejectsSupport(root, support, pattern) {
+  try {
+    await configurePublicLaunch({
+      dryRun: true,
+      root,
+      support,
+      url: publicUrl
+    });
+    return false;
+  } catch (error) {
+    return pattern.test(error.message);
+  }
+}
+
 async function readPages(root) {
   const entries = await Promise.all(pages.map(async (page) => [page, await readFile(join(root, page), "utf8")]));
   return Object.fromEntries(entries);
@@ -79,6 +93,11 @@ async function main() {
     const afterDryRun = JSON.stringify(await readPages(root));
     check(hasSameMembers(dryRun.changedFiles, pages), "configure public dry-run reports pending changes");
     check(beforeDryRun === afterDryRun, "configure public dry-run does not mutate files");
+    check(await rejectsSupport(root, " ", /Missing --support/), "configure public rejects missing support route");
+    check(
+      await rejectsSupport(root, "YOUR-SUPPORT-ROUTE", /Replace YOUR-SUPPORT-ROUTE/),
+      "configure public rejects placeholder support route"
+    );
   } finally {
     await rm(root, { force: true, recursive: true });
   }
