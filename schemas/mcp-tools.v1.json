@@ -1,0 +1,206 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://agentmash.local/schemas/mcp-tools.v1.json",
+  "schema": "agentmash.mcp-tools.v1",
+  "title": "AgentMash Future MCP Tools v1",
+  "description": "Contract-only MCP tool definitions for a future AgentMash server. The current app does not expose an MCP server or send data anywhere.",
+  "status": "contract-only",
+  "protocolVersion": "2025-11-25",
+  "specSource": "https://modelcontextprotocol.io/specification/2025-11-25/server/tools",
+  "tools": [
+    {
+      "name": "agentmash.submit_artifacts",
+      "title": "Submit artifacts",
+      "description": "Submit AI-generated artifacts for human first-impression review using the same payload shape as the local agent-drop import.",
+      "inputSchema": {
+        "$ref": "./intake.v1.json"
+      },
+      "outputSchema": {
+        "$ref": "#/$defs/intakeAcknowledgement"
+      },
+      "annotations": {
+        "readOnlyHint": false,
+        "destructiveHint": false,
+        "idempotentHint": false,
+        "openWorldHint": true
+      }
+    },
+    {
+      "name": "agentmash.get_feedback_bundle",
+      "title": "Get feedback bundle",
+      "description": "Read ready feedback packets, eval rows, and pairwise rows for a submitted run.",
+      "inputSchema": {
+        "type": "object",
+        "required": ["runId"],
+        "properties": {
+          "runId": {
+            "type": "string",
+            "minLength": 1
+          },
+          "limit": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 500,
+            "default": 100
+          },
+          "includeImageData": {
+            "type": "boolean",
+            "default": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "outputSchema": {
+        "$ref": "#/$defs/feedbackBundle"
+      },
+      "annotations": {
+        "readOnlyHint": true,
+        "destructiveHint": false,
+        "idempotentHint": true,
+        "openWorldHint": true
+      }
+    },
+    {
+      "name": "agentmash.request_deletion",
+      "title": "Request deletion",
+      "description": "Request deletion of a submitted artifact and related image bytes. A deployed server must enforce ownership checks before honoring it.",
+      "inputSchema": {
+        "type": "object",
+        "required": ["artifactId"],
+        "properties": {
+          "artifactId": {
+            "type": "string",
+            "minLength": 1
+          },
+          "runId": {
+            "type": "string"
+          },
+          "reason": {
+            "type": "string",
+            "maxLength": 500
+          }
+        },
+        "additionalProperties": false
+      },
+      "outputSchema": {
+        "$ref": "#/$defs/deletionAcknowledgement"
+      },
+      "annotations": {
+        "readOnlyHint": false,
+        "destructiveHint": true,
+        "idempotentHint": true,
+        "openWorldHint": true
+      }
+    }
+  ],
+  "$defs": {
+    "intakeAcknowledgement": {
+      "type": "object",
+      "required": ["schema", "status", "accepted", "rejected"],
+      "properties": {
+        "schema": {
+          "const": "agentmash.intake-ack.v1"
+        },
+        "status": {
+          "enum": ["accepted", "partially_accepted", "rejected"]
+        },
+        "runId": {
+          "type": "string"
+        },
+        "accepted": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": ["artifactId", "status"],
+            "properties": {
+              "artifactId": {
+                "type": "string"
+              },
+              "status": {
+                "enum": ["queued_for_review"]
+              }
+            },
+            "additionalProperties": false
+          }
+        },
+        "rejected": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/validationIssue"
+          }
+        }
+      },
+      "additionalProperties": false
+    },
+    "feedbackBundle": {
+      "type": "object",
+      "required": ["schema", "runId", "status", "packets", "evalRows", "pairwiseRows"],
+      "properties": {
+        "schema": {
+          "const": "agentmash.feedback-bundle.v1"
+        },
+        "runId": {
+          "type": "string"
+        },
+        "status": {
+          "enum": ["pending", "partial", "ready", "not_found"]
+        },
+        "generatedAt": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "packets": {
+          "type": "array",
+          "items": {
+            "$ref": "./feedback.v2.json"
+          }
+        },
+        "evalRows": {
+          "type": "array",
+          "items": {
+            "type": "object"
+          }
+        },
+        "pairwiseRows": {
+          "type": "array",
+          "items": {
+            "type": "object"
+          }
+        },
+        "nextCursor": {
+          "type": "string"
+        }
+      },
+      "additionalProperties": false
+    },
+    "deletionAcknowledgement": {
+      "type": "object",
+      "required": ["schema", "artifactId", "status"],
+      "properties": {
+        "schema": {
+          "const": "agentmash.deletion-ack.v1"
+        },
+        "artifactId": {
+          "type": "string"
+        },
+        "status": {
+          "enum": ["deleted", "already_absent"]
+        }
+      },
+      "additionalProperties": false
+    },
+    "validationIssue": {
+      "type": "object",
+      "required": ["path", "message"],
+      "properties": {
+        "path": {
+          "type": "string"
+        },
+        "message": {
+          "type": "string"
+        }
+      },
+      "additionalProperties": false
+    }
+  }
+}

@@ -29,6 +29,8 @@ const requiredFiles = [
   "scripts/check-public-url-verifier.mjs",
   "schemas/feedback.v2.json",
   "schemas/intake.v1.json",
+  "schemas/api.v1.openapi.json",
+  "schemas/mcp-tools.v1.json",
   "store/completion-audit.md",
   "store/public-launch-audit.md",
   "store/public-launch-plan.md",
@@ -36,6 +38,7 @@ const requiredFiles = [
   "store/research-and-cost-guide.md",
   "store/native-wrapper-handoff.md",
   "store/agent-customer-model.md",
+  "store/backend-api-mcp-handoff.md",
   "store/app-store-listing.md",
   "store/app-store-submission.md",
   "store/privacy-data-safety-draft.md",
@@ -81,6 +84,8 @@ const appShellFiles = [
   "./manifest.webmanifest",
   "./schemas/feedback.v2.json",
   "./schemas/intake.v1.json",
+  "./schemas/api.v1.openapi.json",
+  "./schemas/mcp-tools.v1.json",
   "./assets/app-icon.svg",
   "./assets/icons/app-icon-192.png",
   "./assets/icons/app-icon-512.png",
@@ -167,6 +172,8 @@ const manifest = JSON.parse(await read("manifest.webmanifest"));
 const vercel = JSON.parse(await read("vercel.json"));
 const feedbackSchema = JSON.parse(await read("schemas/feedback.v2.json"));
 const intakeSchema = JSON.parse(await read("schemas/intake.v1.json"));
+const apiContract = JSON.parse(await read("schemas/api.v1.openapi.json"));
+const mcpContract = JSON.parse(await read("schemas/mcp-tools.v1.json"));
 const htmlPageSources = Object.fromEntries(await Promise.all(htmlPages.map(async (page) => [page, await read(page)])));
 const index = htmlPageSources["index.html"];
 const support = htmlPageSources["support.html"];
@@ -195,6 +202,7 @@ const completionAudit = await read("store/completion-audit.md");
 const audit = await read("store/public-launch-audit.md");
 const listing = await read("store/app-store-listing.md");
 const nativeHandoff = await read("store/native-wrapper-handoff.md");
+const backendHandoff = await read("store/backend-api-mcp-handoff.md");
 
 check(packageJson.name === "agentmash", "package name is agentmash");
 check(packageJson.type === "module", "package uses native ES modules");
@@ -337,6 +345,31 @@ check(
     && JSON.stringify(intakeSchema).includes("artifacts"),
   "agent intake JSON Schema documents local drop contract"
 );
+check(
+  apiContract.openapi === "3.1.0"
+    && apiContract["x-agentmash-status"] === "contract-only"
+    && apiContract["x-agentmash-no-live-server"] === true
+    && Boolean(apiContract.paths?.["/v1/intake"]?.post)
+    && Boolean(apiContract.paths?.["/v1/feedback/{runId}"]?.get)
+    && Boolean(apiContract.paths?.["/v1/artifacts/{artifactId}"]?.delete)
+    && JSON.stringify(apiContract).includes("./intake.v1.json")
+    && JSON.stringify(apiContract).includes("./feedback.v2.json"),
+  "future backend OpenAPI contract is explicit and contract-only"
+);
+check(
+  mcpContract.schema === "agentmash.mcp-tools.v1"
+    && mcpContract.status === "contract-only"
+    && mcpContract.protocolVersion === "2025-11-25"
+    && Array.isArray(mcpContract.tools)
+    && hasAll(JSON.stringify(mcpContract.tools), [
+      "agentmash.submit_artifacts",
+      "agentmash.get_feedback_bundle",
+      "agentmash.request_deletion",
+      "inputSchema",
+      "outputSchema"
+    ]),
+  "future MCP tool contract is explicit and contract-only"
+);
 check(!appSurface.includes("confidenceFor") && !appSurface.includes(".confidence"), "app output no longer uses confidence field");
 check(!appSurface.includes("agentRetryQueue") && !appSurface.includes("Retry queue"), "retry queue metric is removed");
 check(appSurface.includes("renderRefinePanel") && appSurface.includes("isRefineOpen = false"), "decision flow returns to fast loop after refinement");
@@ -428,8 +461,8 @@ check(
   "public metadata checker exercises real write, idempotency, and dry-run paths"
 );
 check(
-  hasAll(verifyPublicScript, ["canonical URL", "Open Graph URL", "Twitter URL", "Open Graph image", "Twitter image", "data-public-support-contact", "robots file", "sitemap includes", "feedback schema", "intake schema"]),
-  "public URL verifier checks final URL, preview image, support metadata, robots, sitemap, and schemas"
+  hasAll(verifyPublicScript, ["canonical URL", "Open Graph URL", "Twitter URL", "Open Graph image", "Twitter image", "data-public-support-contact", "robots file", "sitemap includes", "feedback schema", "intake schema", "API contract", "MCP tool contract"]),
+  "public URL verifier checks final URL, preview image, support metadata, robots, sitemap, schemas, and future contracts"
 );
 check(
   hasAll(publicVerifierCheck, ["createServer", "configurePublicLaunch", "verify-public-url.mjs", "127.0.0.1", "publicBuildEntries", "application/xml"]) &&
@@ -478,6 +511,11 @@ check(!listing.includes("Human taste signals for AI work"), "old over-limit stor
 check(
   hasAll(nativeHandoff, ["Capacitor", "com.agentmash.app", "webDir", "_site", "No native wrapper was created", "Do not add analytics SDKs"]),
   "native wrapper handoff keeps store-shell setup explicit"
+);
+check(
+  hasAll(backendHandoff, ["schemas/api.v1.openapi.json", "schemas/mcp-tools.v1.json", "contract handoff", "Needs User Action Later"]) &&
+    !/\b(fetch|XMLHttpRequest|sendBeacon|WebSocket)\b/i.test(backendHandoff),
+  "backend handoff documents future API and MCP without runtime networking"
 );
 
 for (const [file, size] of Object.entries(submissionPngSizes)) {

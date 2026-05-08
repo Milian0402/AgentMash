@@ -170,6 +170,47 @@ async function checkSchema(base, path, expectedConst, label) {
   }
 }
 
+async function checkOpenApiContract(base) {
+  const response = await checkOk(base, "/schemas/api.v1.openapi.json", "API contract");
+  try {
+    const parsed = JSON.parse(response.body);
+    if (
+      parsed.openapi === "3.1.0" &&
+      parsed["x-agentmash-status"] === "contract-only" &&
+      parsed["x-agentmash-no-live-server"] === true &&
+      parsed.paths?.["/v1/intake"]?.post &&
+      parsed.paths?.["/v1/feedback/{runId}"]?.get
+    ) {
+      pass("API contract exposes contract-only future backend routes");
+    } else {
+      fail("API contract metadata or routes are incomplete");
+    }
+  } catch {
+    fail("API contract is not valid JSON");
+  }
+}
+
+async function checkMcpToolContract(base) {
+  const response = await checkOk(base, "/schemas/mcp-tools.v1.json", "MCP tool contract");
+  try {
+    const parsed = JSON.parse(response.body);
+    const toolNames = Array.isArray(parsed.tools) ? parsed.tools.map((tool) => tool.name) : [];
+    if (
+      parsed.schema === "agentmash.mcp-tools.v1" &&
+      parsed.status === "contract-only" &&
+      toolNames.includes("agentmash.submit_artifacts") &&
+      toolNames.includes("agentmash.get_feedback_bundle") &&
+      toolNames.includes("agentmash.request_deletion")
+    ) {
+      pass("MCP tool contract exposes future submit, feedback, and deletion tools");
+    } else {
+      fail("MCP tool contract metadata or tool list is incomplete");
+    }
+  } catch {
+    fail("MCP tool contract is not valid JSON");
+  }
+}
+
 async function main() {
   const base = normalizeBase(input);
   if (base.protocol !== "https:" && !isLocalHost(base)) {
@@ -274,6 +315,8 @@ async function main() {
   await checkOk(base, "/assets/icons/apple-touch-icon.png", "Apple touch icon");
   await checkSchema(base, "/schemas/feedback.v2.json", "agentmash.feedback.v2", "feedback schema");
   await checkSchema(base, "/schemas/intake.v1.json", "agentmash.intake.v1", "intake schema");
+  await checkOpenApiContract(base);
+  await checkMcpToolContract(base);
   await checkNotPublic(base, "/store/completion-audit.md");
   await checkNotPublic(base, "/package.json");
   await checkNotPublic(base, "/PUBLISHING.md");

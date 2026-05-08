@@ -1,0 +1,323 @@
+{
+  "openapi": "3.1.0",
+  "jsonSchemaDialect": "https://json-schema.org/draft/2020-12/schema",
+  "info": {
+    "title": "AgentMash Future Backend API",
+    "version": "1.0.0",
+    "description": "Contract-only handoff for a future AgentMash backend. The current app does not deploy these routes or send data to any server."
+  },
+  "servers": [
+    {
+      "url": "https://api.agentmash.example",
+      "description": "Placeholder only. No live AgentMash backend is deployed by this repository."
+    }
+  ],
+  "x-agentmash-status": "contract-only",
+  "x-agentmash-no-live-server": true,
+  "x-agentmash-user-action": "Needs user action before deployment: choose hosting, auth, retention, deletion, support coverage, and public terms.",
+  "security": [
+    {
+      "bearerAuth": []
+    }
+  ],
+  "paths": {
+    "/v1/intake": {
+      "post": {
+        "operationId": "submitArtifactsForReview",
+        "summary": "Submit artifacts for human first-impression review",
+        "description": "Accepts the same agentmash.intake.v1 payload that the current app imports as a local agent drop. A future backend would validate, store, and make accepted artifacts available to reviewers.",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "./intake.v1.json"
+              }
+            }
+          }
+        },
+        "responses": {
+          "202": {
+            "description": "Artifacts accepted for review",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/IntakeAcknowledgement"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Payload failed validation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ValidationError"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Missing or invalid authentication"
+          },
+          "413": {
+            "description": "Payload or image data exceeded configured limits"
+          },
+          "429": {
+            "description": "Submission rate limit exceeded"
+          }
+        }
+      }
+    },
+    "/v1/feedback/{runId}": {
+      "get": {
+        "operationId": "getFeedbackBundle",
+        "summary": "Read feedback packets for an agent run",
+        "description": "Returns ready feedback packets, eval rows, and pairwise rows for a submitted run. The current local app creates the same data through copy and download actions.",
+        "parameters": [
+          {
+            "name": "runId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "minLength": 1
+            }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 500,
+              "default": 100
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Feedback rows are available",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/FeedbackBundle"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Missing or invalid authentication"
+          },
+          "404": {
+            "description": "Run was not found or is not visible to the caller"
+          }
+        }
+      }
+    },
+    "/v1/artifacts/{artifactId}": {
+      "delete": {
+        "operationId": "deleteArtifact",
+        "summary": "Delete a submitted artifact and related image bytes",
+        "description": "Future deletion hook for user-controlled data cleanup. A deployed backend must enforce auth, ownership checks, retention rules, and audit logging before enabling this route.",
+        "parameters": [
+          {
+            "name": "artifactId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "minLength": 1
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Artifact deletion was accepted",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DeletionAcknowledgement"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Missing or invalid authentication"
+          },
+          "404": {
+            "description": "Artifact was not found or is not visible to the caller"
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "securitySchemes": {
+      "bearerAuth": {
+        "type": "http",
+        "scheme": "bearer"
+      }
+    },
+    "schemas": {
+      "IntakeAcknowledgement": {
+        "type": "object",
+        "required": ["schema", "status", "accepted", "rejected", "limits"],
+        "properties": {
+          "schema": {
+            "const": "agentmash.intake-ack.v1"
+          },
+          "status": {
+            "enum": ["accepted", "partially_accepted", "rejected"]
+          },
+          "runId": {
+            "type": "string"
+          },
+          "accepted": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/AcceptedArtifact"
+            }
+          },
+          "rejected": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ValidationIssue"
+            }
+          },
+          "limits": {
+            "$ref": "#/components/schemas/IntakeLimits"
+          }
+        },
+        "additionalProperties": false
+      },
+      "AcceptedArtifact": {
+        "type": "object",
+        "required": ["artifactId", "status"],
+        "properties": {
+          "artifactId": {
+            "type": "string"
+          },
+          "status": {
+            "enum": ["queued_for_review"]
+          },
+          "reviewContext": {
+            "$ref": "./intake.v1.json#/$defs/reviewContext"
+          }
+        },
+        "additionalProperties": false
+      },
+      "IntakeLimits": {
+        "type": "object",
+        "required": ["maxArtifactsPerRequest", "maxImageBytes", "allowedImageTypes"],
+        "properties": {
+          "maxArtifactsPerRequest": {
+            "type": "integer",
+            "minimum": 1
+          },
+          "maxImageBytes": {
+            "type": "integer",
+            "minimum": 1
+          },
+          "allowedImageTypes": {
+            "type": "array",
+            "items": {
+              "enum": ["image/png", "image/jpeg", "image/webp"]
+            }
+          }
+        },
+        "additionalProperties": false
+      },
+      "FeedbackBundle": {
+        "type": "object",
+        "required": ["schema", "runId", "status", "packets", "evalRows", "pairwiseRows"],
+        "properties": {
+          "schema": {
+            "const": "agentmash.feedback-bundle.v1"
+          },
+          "runId": {
+            "type": "string"
+          },
+          "status": {
+            "enum": ["pending", "partial", "ready", "not_found"]
+          },
+          "generatedAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "packets": {
+            "type": "array",
+            "items": {
+              "$ref": "./feedback.v2.json"
+            }
+          },
+          "evalRows": {
+            "type": "array",
+            "items": {
+              "type": "object"
+            }
+          },
+          "pairwiseRows": {
+            "type": "array",
+            "items": {
+              "type": "object"
+            }
+          },
+          "nextCursor": {
+            "type": "string"
+          }
+        },
+        "additionalProperties": false
+      },
+      "DeletionAcknowledgement": {
+        "type": "object",
+        "required": ["schema", "artifactId", "status"],
+        "properties": {
+          "schema": {
+            "const": "agentmash.deletion-ack.v1"
+          },
+          "artifactId": {
+            "type": "string"
+          },
+          "status": {
+            "enum": ["deleted", "already_absent"]
+          }
+        },
+        "additionalProperties": false
+      },
+      "ValidationError": {
+        "type": "object",
+        "required": ["schema", "message", "issues"],
+        "properties": {
+          "schema": {
+            "const": "agentmash.validation-error.v1"
+          },
+          "message": {
+            "type": "string"
+          },
+          "issues": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ValidationIssue"
+            }
+          }
+        },
+        "additionalProperties": false
+      },
+      "ValidationIssue": {
+        "type": "object",
+        "required": ["path", "message"],
+        "properties": {
+          "path": {
+            "type": "string"
+          },
+          "message": {
+            "type": "string"
+          }
+        },
+        "additionalProperties": false
+      }
+    }
+  }
+}

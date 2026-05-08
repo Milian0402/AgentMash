@@ -1,4 +1,4 @@
-const CACHE_NAME = "agentmash-v35";
+const CACHE_NAME = "agentmash-v36";
 const APP_SHELL = [
   "./",
   "./index.html",
@@ -11,6 +11,8 @@ const APP_SHELL = [
   "./manifest.webmanifest",
   "./schemas/feedback.v2.json",
   "./schemas/intake.v1.json",
+  "./schemas/api.v1.openapi.json",
+  "./schemas/mcp-tools.v1.json",
   "./assets/app-icon.svg",
   "./assets/icons/app-icon-192.png",
   "./assets/icons/app-icon-512.png",

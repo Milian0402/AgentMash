@@ -74,9 +74,17 @@ The local app imports this JSON file, normalizes each artifact, moves image byte
 
 Later backend shape:
 
-- API: `POST /artifacts` can accept the same `agentmash.intake.v1` payload and return accepted artifact IDs plus queue status.
+- API: `POST /v1/intake` can accept the same `agentmash.intake.v1` payload and return accepted artifact IDs plus validation status.
+- API: `GET /v1/feedback/{runId}` can return ready feedback packets, JSONL eval rows, and pairwise rows.
+- API: `DELETE /v1/artifacts/{artifactId}` can remove submitted artifacts and related image bytes after auth and ownership checks.
 - MCP: a future tool such as `agentmash.submit_artifacts` can use `schemas/intake.v1.json` as its `inputSchema`, and return structured content with accepted IDs, rejected rows, and validation errors.
 - Security: do not expose either path until auth, user consent, uploaded-file limits, storage retention, deletion, rate limits, and support coverage exist.
+
+Contract handoff files:
+
+- `schemas/api.v1.openapi.json`: OpenAPI 3.1 draft with future intake, feedback-bundle, and deletion routes.
+- `schemas/mcp-tools.v1.json`: MCP tool draft with `agentmash.submit_artifacts`, `agentmash.get_feedback_bundle`, and `agentmash.request_deletion`.
+- `store/backend-api-mcp-handoff.md`: implementation order and user-owned launch actions for a future backend.
 
 ## Packet Contract
 
@@ -193,6 +201,7 @@ The Export workspace validates the active feedback packet and JSONL export rows 
 ## Migration Notes
 
 - `agentmash.intake.v1` documents the artifact submission shape for local agent-drop imports and later backend/API/MCP intake.
+- `agentmash.intake-ack.v1`, `agentmash.feedback-bundle.v1`, and `agentmash.deletion-ack.v1` are prepared as future backend response contracts in the OpenAPI and MCP handoff files.
 - `agentmash.feedback.v2` renames `confidence` to `signalStrength` because the value measures score extremity plus annotation strength, not statistical confidence.
 - Feedback packets now include top-level `signalStrengthFormula` so agents and labs can interpret the score without reverse-engineering it.
 - Feedback packets, eval-row artifacts, and agent-use blocks now include `reviewContext` so downstream consumers know the review focus, audience, decision stage, priority, and notes behind the human signal.

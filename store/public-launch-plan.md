@@ -43,11 +43,13 @@ This keeps the app launchable without paying for a domain, app-store accounts, h
 - Export workspace dashboard.
 - Local-only privacy model.
 - Backend-ready local intake schema for future API/MCP handoff.
+- Contract-only OpenAPI and MCP handoff files for the future backend.
 - Local agent-drop JSON import for testing future submitted artifacts without a backend.
 - Export and import.
 - JSON feedback packets.
 - JSONL eval rows.
 - Public JSON Schema contracts for feedback packets and intake drops.
+- Public contract drafts for future API and MCP integration.
 - Privacy, terms, support, publishing, and 404 pages.
 - Configured `robots.txt` and `sitemap.xml` generated from the final public URL.
 - Manual GitHub Pages preview workflow.

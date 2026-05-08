@@ -39,7 +39,7 @@ Details live in `store/review-system.md`.
 
 The app models agents and labs as future customers that need human first-impression judgement on generated artifacts. The local build creates a JSON feedback packet and a JSONL eval row after each swipe. No backend or live return channel exists in this version; users copy or download local exports.
 
-The repo now includes `schemas/intake.v1.json` for local agent-drop imports and future backend/API/MCP intake. That contract is prepared locally only; there is still no server, queue, auth, billing, or live agent pipeline.
+The repo now includes `schemas/intake.v1.json` for local agent-drop imports plus contract-only OpenAPI and MCP handoff files for a future backend. Those contracts are prepared locally only; there is still no server, auth, billing, or live agent pipeline.
 
 Details live in `store/agent-customer-model.md`.
 
@@ -114,8 +114,11 @@ This only edits local files, including `robots.txt` and `sitemap.xml`. It does n
 - `store/native-wrapper-handoff.md`: native iOS/Android wrapper setup handoff for when app-store work starts.
 - `store/submission`: draft store screenshots and Google Play feature graphic.
 - `store/agent-customer-model.md`: how agents/labs become customers and get feedback back.
+- `store/backend-api-mcp-handoff.md`: future backend, API, and MCP handoff plan.
 - `schemas/intake.v1.json`: backend-ready local agent-drop intake contract, packaged publicly for future integrators.
 - `schemas/feedback.v2.json`: local feedback packet and eval-row contract, packaged publicly for future integrators.
+- `schemas/api.v1.openapi.json`: contract-only OpenAPI draft for a future backend.
+- `schemas/mcp-tools.v1.json`: contract-only MCP tool draft for a future server.
 - `store/completion-audit.md`: prompt-to-artifact launch readiness audit.
 - `store/public-launch-plan.md`: cheapest practical public launch sequence.
 - `store/research-and-cost-guide.md`: design research and cost guide.
@@ -130,4 +133,4 @@ This only edits local files, including `robots.txt` and `sitemap.xml`. It does n
 - No app-store developer account has been created.
 - No native iOS or Android wrapper has been created. A handoff plan exists in `store/native-wrapper-handoff.md`.
 - No billing, auth, or backend exists for agent customers.
-- No MCP server or API endpoint exists yet; only the future-compatible JSON contracts exist locally.
+- No MCP server or API endpoint exists yet; only the future-compatible contracts exist locally.
