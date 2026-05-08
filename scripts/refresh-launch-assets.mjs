@@ -1,5 +1,5 @@
 import { createServer } from "node:http";
-import { copyFile, mkdir, readFile, stat } from "node:fs/promises";
+import { copyFile, mkdir, readFile, stat, writeFile } from "node:fs/promises";
 import { dirname, extname, resolve, sep } from "node:path";
 import { fileURLToPath } from "node:url";
 import { chromium } from "@playwright/test";
@@ -65,6 +65,70 @@ const captures = [
     targets: ["store/submission/google-play-feature-graphic.png"]
   }
 ];
+
+const submissionAssetManifestPath = "store/submission/asset-manifest.json";
+
+function submissionAssetManifest(refreshedAt) {
+  return {
+    schema: "agentmash.submission-assets.v1",
+    refreshedAt,
+    generatedBy: "npm run refresh:assets",
+    source: "local PWA Human review screen",
+    draftOnly: true,
+    nativeRecaptureRequired: true,
+    notes: [
+      "No public deployment, paid account, app-store submission, or outreach is performed by this command.",
+      "Use these files for private planning and listing drafts.",
+      "Recapture screenshots from final native iOS and Android builds before store submission."
+    ],
+    assets: [
+      {
+        path: "store/app-icon-1024.png",
+        width: 1024,
+        height: 1024,
+        format: "png",
+        platform: ["Apple App Store", "Google Play"],
+        use: "source store icon"
+      },
+      {
+        path: "store/submission/apple-iphone-6-9-human-review.png",
+        width: 1290,
+        height: 2796,
+        format: "png",
+        platform: ["Apple App Store"],
+        use: "draft iPhone 6.9 screenshot",
+        source: "assets/startup/apple-iphone-6-9-human-review.png"
+      },
+      {
+        path: "store/submission/apple-iphone-6-5-human-review.png",
+        width: 1242,
+        height: 2688,
+        format: "png",
+        platform: ["Apple App Store"],
+        use: "draft iPhone 6.5 screenshot",
+        source: "assets/startup/apple-iphone-6-5-human-review.png"
+      },
+      {
+        path: "store/submission/google-phone-human-review.png",
+        width: 1080,
+        height: 1920,
+        format: "png",
+        platform: ["Google Play"],
+        use: "draft phone screenshot",
+        source: "assets/screenshots/mobile-review.png"
+      },
+      {
+        path: "store/submission/google-play-feature-graphic.png",
+        width: 1024,
+        height: 500,
+        format: "png",
+        platform: ["Google Play"],
+        use: "draft feature graphic",
+        source: "assets/screenshots/desktop-review.png"
+      }
+    ]
+  };
+}
 
 function contentType(filePath) {
   return mimeTypes[extname(filePath)] || "application/octet-stream";
@@ -161,6 +225,13 @@ async function captureAsset(browser, origin, capture) {
   console.log(`captured ${capture.label}: ${renderedWidth}x${renderedHeight}`);
 }
 
+async function writeSubmissionAssetManifest() {
+  const refreshedAt = new Date().toISOString().slice(0, 10);
+  const manifest = submissionAssetManifest(refreshedAt);
+  await writeFile(resolve(repoRoot, submissionAssetManifestPath), `${JSON.stringify(manifest, null, 2)}\n`);
+  console.log(`wrote ${submissionAssetManifestPath}`);
+}
+
 const { server, origin } = await startServer();
 const browser = await chromium.launch({ channel: "chrome" });
 
@@ -168,6 +239,7 @@ try {
   for (const capture of captures) {
     await captureAsset(browser, origin, capture);
   }
+  await writeSubmissionAssetManifest();
 } finally {
   await browser.close();
   await new Promise((resolveClose) => server.close(resolveClose));

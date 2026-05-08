@@ -8,6 +8,7 @@ These are draft store assets regenerated with `npm run refresh:assets` from the 
 - `apple-iphone-6-5-human-review.png`: 1242 by 2688.
 - `google-phone-human-review.png`: 1080 by 1920.
 - `google-play-feature-graphic.png`: 1024 by 500.
+- `asset-manifest.json`: machine-readable draft asset inventory with dimensions, source files, platform use, and native recapture status.
 
 ## Source Files
 
@@ -22,3 +23,4 @@ These are draft store assets regenerated with `npm run refresh:assets` from the 
 - Use these for planning, private review, and listing drafts.
 - Recreate screenshots from real native builds before App Store or Google Play submission.
 - Replace these files after the public URL, support contact, and native wrapper are final.
+- Keep `asset-manifest.json` with the assets so reviewers can confirm what is draft-only and what still needs native capture.

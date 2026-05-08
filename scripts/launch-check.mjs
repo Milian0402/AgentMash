@@ -48,6 +48,7 @@ const requiredFiles = [
   "store/app-store-submission.md",
   "store/privacy-data-safety-draft.md",
   "store/submission/README.md",
+  "store/submission/asset-manifest.json",
   "_headers",
   "netlify.toml",
   "vercel.json",
@@ -217,6 +218,7 @@ const audit = await read("store/public-launch-audit.md");
 const listing = await read("store/app-store-listing.md");
 const appStoreSubmission = await read("store/app-store-submission.md");
 const submissionReadme = await read("store/submission/README.md");
+const submissionAssetManifest = JSON.parse(await read("store/submission/asset-manifest.json"));
 const researchGuide = await read("store/research-and-cost-guide.md");
 const releaseChecklist = await read("store/release-checklist.md");
 const privacyDataSafetyDraft = await read("store/privacy-data-safety-draft.md");
@@ -492,7 +494,14 @@ check(packageJson.scripts?.check.includes("node --check scripts/verify-public-ur
 check(packageJson.scripts?.check.includes("node --check scripts/configure-public-launch.mjs"), "package check syntax-checks public metadata configurator");
 check(
   hasAll(packageJson.scripts?.check || "", ["node --check scripts/refresh-launch-assets.mjs"]) &&
-    hasAll(refreshAssetsScript, ["@playwright/test", "deviceScaleFactor: 3", "assets/startup/apple-iphone-6-9-human-review.png", "store/submission/google-phone-human-review.png"]),
+    hasAll(refreshAssetsScript, [
+      "@playwright/test",
+      "deviceScaleFactor: 3",
+      "assets/startup/apple-iphone-6-9-human-review.png",
+      "store/submission/google-phone-human-review.png",
+      "store/submission/asset-manifest.json",
+      "writeSubmissionAssetManifest"
+    ]),
   "launch asset refresh script captures PWA, startup, and draft store assets locally"
 );
 check(packageJson.scripts?.check.includes("node --check scripts/check-configure-public.mjs"), "package check syntax-checks public metadata checker");
@@ -607,8 +616,36 @@ check(
   "app store submission prep documents current account, testing, and asset blockers"
 );
 check(
-  hasAll(submissionReadme, ["May 8, 2026", "card-dominant swipe layout", "Comment shortcut"]),
+  hasAll(submissionReadme, ["May 8, 2026", "card-dominant swipe layout", "Comment shortcut", "asset-manifest.json"]),
   "draft submission asset README matches current swipe UI refresh"
+);
+const submissionAssetSizes = Object.fromEntries(
+  (submissionAssetManifest.assets || []).map((asset) => [asset.path, `${asset.width}x${asset.height}`])
+);
+check(
+  submissionAssetManifest.schema === "agentmash.submission-assets.v1"
+    && submissionAssetManifest.generatedBy === "npm run refresh:assets"
+    && submissionAssetManifest.draftOnly === true
+    && submissionAssetManifest.nativeRecaptureRequired === true
+    && hasAll(JSON.stringify(submissionAssetManifest), [
+      "Apple App Store",
+      "Google Play",
+      "draft iPhone 6.9 screenshot",
+      "draft feature graphic",
+      "No public deployment",
+      "Recapture screenshots from final native iOS and Android builds"
+    ]),
+  "submission asset manifest identifies draft-only native recapture requirements"
+);
+check(
+  [
+    "store/app-icon-1024.png",
+    "store/submission/apple-iphone-6-9-human-review.png",
+    "store/submission/apple-iphone-6-5-human-review.png",
+    "store/submission/google-phone-human-review.png",
+    "store/submission/google-play-feature-graphic.png"
+  ].every((path) => submissionAssetSizes[path] === submissionPngSizes[path]),
+  "submission asset manifest dimensions match checked PNG dimensions"
 );
 check(
   hasAll(researchGuide, ["Google Play closed testing for new personal accounts", "12 opted-in testers", "14 continuous days"]),

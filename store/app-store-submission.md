@@ -80,6 +80,7 @@ Google-specific requirements still owned by the user:
 - Draft Apple iPhone 6.5 screenshot: `store/submission/apple-iphone-6-5-human-review.png` at 1242 by 2688
 - Draft Google phone screenshot: `store/submission/google-phone-human-review.png` at 1080 by 1920
 - Draft Google Play feature graphic: `store/submission/google-play-feature-graphic.png` at 1024 by 500
+- Draft asset inventory: `store/submission/asset-manifest.json`
 
 The current draft screenshots were regenerated from the May 8, 2026 PWA swipe-card UI and are good for the website, README, PWA manifest, and private store-listing review. For native store submission, recapture from the real native wrapper at store-required sizes so reviewers see exactly what the installable app displays.
 

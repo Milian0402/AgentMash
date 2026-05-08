@@ -71,6 +71,7 @@ Last local verification: May 8, 2026. No deployment, paid account, domain purcha
 - [x] Confirm manifest screenshots load from public assets.
 - [x] Confirm screenshots were refreshed from the current card-first swipe UI.
 - [x] Confirm draft store submission assets were regenerated from the refreshed PWA screenshots.
+- [x] Confirm `store/submission/asset-manifest.json` inventories draft store assets and marks native recapture as required.
 - [x] Confirm iOS startup images were regenerated from the refreshed mobile screenshot.
 - [x] Confirm all public HTML pages link the app favicon and Apple touch icon.
 - [x] Confirm all public HTML pages include app-name, color-scheme, and light/dark theme-color metadata.

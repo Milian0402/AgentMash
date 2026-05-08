@@ -150,6 +150,7 @@ Make AgentMash good enough to launch publicly as a serious app.
 - Netlify and Vercel configs are checked for `npm run build` plus `_site/` output.
 - Apple touch icon is linked from `index.html`, cached by `sw.js`, and sized at 180 by 180.
 - Apple startup images are linked from `index.html`, cached by `sw.js`, and checked at 1290 by 2796 and 1242 by 2688.
+- Draft store submission assets have `store/submission/asset-manifest.json` with platform use, source paths, dimensions, and native recapture status.
 - `npm run check` verifies `index.html`, support, privacy, terms, and 404 pages all link the app favicon and Apple touch icon.
 - `npm run check` verifies every public HTML page has description metadata.
 - `npm run check` verifies `publishing.html` is excluded from the public build.
