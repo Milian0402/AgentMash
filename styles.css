@@ -2376,7 +2376,7 @@ body[data-decision-transition="true"] .decision-button {
 }
 
 .swipe-actions .decision-button.reject {
-  background: #ffffff;
+  background: #fff3f5;
   color: #ea5c4f;
 }
 
@@ -2412,7 +2412,7 @@ body[data-decision-transition="true"] .decision-button {
 }
 
 .swipe-actions .decision-button.accept {
-  background: #ffffff;
+  background: #edf9f4;
   color: var(--green);
 }
 
@@ -2435,7 +2435,7 @@ body[data-decision-transition="true"] .decision-button {
 }
 
 .swipe-actions .decision-button.neutral {
-  background: #ffffff;
+  background: rgba(255, 255, 255, 0.9);
   color: var(--muted);
 }
 
@@ -2460,7 +2460,7 @@ body[data-decision-transition="true"] .decision-button {
 }
 
 .swipe-actions .decision-button.comment {
-  background: #ffffff;
+  background: #eef4ff;
   color: var(--blue);
 }
 
@@ -2959,6 +2959,10 @@ body[data-decision-transition="true"] .decision-button {
     grid-row: 2;
     width: 100%;
     min-height: 28px;
+    border: 1px solid rgba(21, 25, 35, 0.08);
+    background: rgba(255, 255, 255, 0.74);
+    color: var(--ink);
+    box-shadow: 0 10px 26px rgba(21, 25, 35, 0.1);
     font-size: 0.68rem;
   }
 
@@ -2967,7 +2971,7 @@ body[data-decision-transition="true"] .decision-button {
   }
 
   .first-look-stage .deck-area {
-    min-height: min(72vh, 604px);
+    min-height: min(73svh, 612px);
   }
 
   .swipe-card {
@@ -2975,7 +2979,7 @@ body[data-decision-transition="true"] .decision-button {
   }
 
   .first-look-stage .swipe-card {
-    height: min(70vh, 590px);
+    height: min(71svh, 604px);
     min-height: 0;
     grid-template-rows: none;
     border-radius: 26px;
@@ -3016,29 +3020,35 @@ body[data-decision-transition="true"] .decision-button {
   }
 
   .swipe-actions .decision-button {
-    min-height: 60px;
-    padding: 7px;
-    gap: 5px;
+    min-height: 62px;
+    padding: 6px;
+    flex-direction: column;
+    gap: 3px;
   }
 
   .swipe-actions {
-    grid-template-columns: minmax(0, 1fr) 54px 96px minmax(0, 1fr);
-    gap: 7px;
+    grid-template-columns: 66px 52px 88px 66px;
+    justify-content: center;
+    gap: 6px;
   }
 
   .swipe-actions .decision-button strong {
-    font-size: 0.92rem;
+    font-size: 0.72rem;
+    line-height: 1;
   }
 
   .swipe-actions .decision-button.comment strong {
-    font-size: 0.82rem;
+    font-size: 0.7rem;
   }
 
   .first-look-stage .swipe-actions {
     position: sticky;
     bottom: max(7px, var(--safe-bottom));
+    width: min(100%, 354px);
+    justify-self: center;
     margin-top: -6px;
-    padding: 6px;
+    padding: 7px;
+    background: rgba(255, 255, 255, 0.86);
   }
 
   .swipe-actions .decision-key {
@@ -3046,8 +3056,9 @@ body[data-decision-transition="true"] .decision-button {
   }
 
   .decision-icon {
-    width: 28px;
-    height: 28px;
+    order: -1;
+    width: 30px;
+    height: 30px;
     font-size: 0.68rem;
   }
 
@@ -3238,15 +3249,32 @@ body[data-decision-transition="true"] .decision-button {
   }
 
   .first-look-stage .signal-panel {
-    bottom: calc(max(12px, var(--safe-bottom)) + 212px);
+    bottom: calc(max(12px, var(--safe-bottom)) + 118px);
     z-index: 60;
-    max-height: min(46vh, 390px);
+    max-height: min(44svh, 380px);
     border-radius: 18px;
     padding: 12px;
   }
 
   .signal-panel-header {
     font-size: 0.7rem;
+  }
+
+  .first-look-stage .signal-panel .tag-row {
+    min-height: 36px;
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    padding-bottom: 2px;
+    scrollbar-width: none;
+  }
+
+  .first-look-stage .signal-panel .tag-row::-webkit-scrollbar {
+    display: none;
+  }
+
+  .first-look-stage .signal-panel .tag-chip {
+    flex: 0 0 auto;
+    min-height: 34px;
   }
 
   .site-mock,
@@ -3262,6 +3290,23 @@ body[data-decision-transition="true"] .decision-button {
   .agent-request-top,
   .agent-request-footer {
     display: grid;
+  }
+
+  .first-look-stage .signal-panel .score-preview {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 8px;
+  }
+
+  .first-look-stage .signal-panel .score-preview > div {
+    padding: 9px;
+  }
+
+  .first-look-stage .signal-panel .score-preview strong {
+    font-size: 1rem;
+  }
+
+  .first-look-stage .signal-panel .note-field textarea {
+    min-height: 84px;
   }
 
   .site-visual {
