@@ -2173,6 +2173,13 @@ body[data-decision-transition="true"] .decision-button {
   color: var(--ink);
 }
 
+.signal-panel-actions {
+  display: flex;
+  justify-content: end;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
 .score-preview {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));

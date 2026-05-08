@@ -110,6 +110,7 @@ export const elements = {
   scoreControls: document.querySelector("#scoreControls"),
   refineButton: document.querySelector("#refineButton"),
   advancedScoresButton: document.querySelector("#advancedScoresButton"),
+  closeRefineButton: document.querySelector("#closeRefineButton"),
   signalPanel: document.querySelector("#signalPanel"),
   liveScore: document.querySelector("#liveScore"),
   liveGrade: document.querySelector("#liveGrade"),
@@ -200,6 +201,12 @@ export function toggleRefinePanel() {
 
 export function openRefinePanel() {
   isRefineOpen = true;
+  renderRefinePanel();
+}
+
+export function closeRefinePanel() {
+  isRefineOpen = false;
+  isScoreControlsOpen = false;
   renderRefinePanel();
 }
 

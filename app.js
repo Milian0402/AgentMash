@@ -41,6 +41,7 @@ import {
 import {
   activePacket,
   closeDetailSheet,
+  closeRefinePanel,
   configureRenderActions,
   elements,
   openDetailSheet,
@@ -228,6 +229,7 @@ function setDecisionTransitioning(isLocked) {
     elements.undoButton,
     elements.commentButton,
     elements.refineButton,
+    elements.closeRefineButton,
     elements.detailsButton,
     elements.advancedScoresButton
   ].forEach((button) => {
@@ -878,6 +880,7 @@ elements.agentDropFile.addEventListener("change", () => {
   elements.agentDropFile.value = "";
 });
 elements.refineButton.addEventListener("click", toggleRefinePanel);
+elements.closeRefineButton.addEventListener("click", closeRefinePanel);
 elements.commentButton.addEventListener("click", openCommentSheet);
 elements.commentReason.addEventListener("change", applyQuickCommentReason);
 elements.advancedScoresButton.addEventListener("click", toggleScoreControls);
