@@ -114,6 +114,7 @@ Then run `npm run ready:public` again and only deploy the rebuilt `_site/` direc
 - `support.html`: local self-support page.
 - `privacy.html`: privacy page draft.
 - `terms.html`: terms page draft.
+- `CHANGELOG.md`: private release history for local launch-prep builds.
 - `PUBLISHING.md`: private publishing runbook and cost-bearing user-action notes.
 - `store/research-and-cost-guide.md`: design research and cost guide.
 - `.github/workflows/pages.yml`: manual GitHub Pages deploy workflow.

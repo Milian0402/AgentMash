@@ -18,6 +18,7 @@ const requiredFiles = [
   "publishing.html",
   "404.html",
   "README.md",
+  "CHANGELOG.md",
   "PUBLISHING.md",
   "package-lock.json",
   "playwright.config.mjs",
@@ -210,6 +211,7 @@ const publicVerifierCheck = await read("scripts/check-public-url-verifier.mjs");
 const publishingNotes = await read("publishing.html");
 const publishingRunbook = await read("PUBLISHING.md");
 const readme = await read("README.md");
+const changelog = await read("CHANGELOG.md");
 const completionAudit = await read("store/completion-audit.md");
 const audit = await read("store/public-launch-audit.md");
 const listing = await read("store/app-store-listing.md");
@@ -568,6 +570,22 @@ check(pagesWorkflow.includes("npm run build"), "GitHub Pages workflow uses publi
 check(!pagesWorkflow.includes(" store"), "GitHub Pages workflow does not copy internal store docs directly");
 check(readme.includes("store/public-launch-audit.md"), "README links public launch audit");
 check(readme.includes("store/completion-audit.md"), "README links completion audit");
+check(readme.includes("CHANGELOG.md"), "README links private changelog");
+check(
+  hasAll(changelog, [
+    "## 0.3.0 - 2026-05-08",
+    "card-first swipe loop",
+    "quick-reason dropdown",
+    "agentmash.feedback.v2",
+    "signalStrength",
+    "agentmash-v43",
+    "No public deployment was performed",
+    "No domain was bought",
+    "No paid service",
+    "manual-only"
+  ]),
+  "changelog records current launch-prep build and constraints"
+);
 check(completionAudit.includes("Prompt-To-Artifact Checklist"), "completion audit has prompt-to-artifact checklist");
 check(completionAudit.includes("Not Achieved Yet"), "completion audit keeps external blockers explicit");
 check(audit.includes("Remaining Public Launch Blockers"), "launch audit lists remaining blockers");

@@ -41,6 +41,7 @@ export const blockedBuildEntries = [
   "PUBLISHING.md",
   "publishing.html",
   "README.md",
+  "CHANGELOG.md",
   "package-lock.json",
   "package.json",
   "netlify.toml",

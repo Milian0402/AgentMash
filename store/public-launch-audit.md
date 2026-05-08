@@ -143,6 +143,7 @@ Make AgentMash good enough to launch publicly as a serious app.
 - Manifest screenshots point to tracked screenshot assets.
 - Public manifest screenshots point to `assets/screenshots`.
 - `npm run check` builds `_site/` and verifies internal files are not packaged.
+- `CHANGELOG.md` records the current local launch-prep build, constraints, and remaining user-owned launch actions, and it is checked as an internal file that is not packaged into `_site/`.
 - `_site/` includes all public app modules, public schema files, and `sw.js` caches those module and schema files.
 - `sw.js` cache name is `agentmash-v43` after the richer swipe-card visual treatment, quick-reason comments, mobile overlay polish, screenshot refresh, v0.3.0 build labels, privacy, launch-order, and public contract updates, so the offline app shell refreshes when this build is published.
 - Playwright e2e test passed: after service worker readiness, the app reloaded offline and rendered the AgentMash shell and swipe card.
