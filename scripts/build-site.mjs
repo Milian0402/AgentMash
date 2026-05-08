@@ -49,14 +49,17 @@ export const blockedBuildEntries = [
 export async function buildSite({ silent = false } = {}) {
   await rm(buildDir, { recursive: true, force: true });
   await mkdir(buildDir, { recursive: true });
+  let copiedEntries = 0;
 
   for (const entry of publicBuildEntries) {
     await cp(entry, join(buildDir, entry), { recursive: true });
+    copiedEntries += 1;
   }
 
   for (const entry of optionalPublicBuildEntries) {
     try {
       await cp(entry, join(buildDir, entry), { recursive: true });
+      copiedEntries += 1;
     } catch (error) {
       if (error.code !== "ENOENT") {
         throw error;
@@ -65,7 +68,7 @@ export async function buildSite({ silent = false } = {}) {
   }
 
   if (!silent) {
-    console.log(`Built ${buildDir} with ${publicBuildEntries.length} public entries.`);
+    console.log(`Built ${buildDir} with ${copiedEntries} public entries.`);
   }
 }
 

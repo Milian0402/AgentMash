@@ -53,7 +53,7 @@ npm run configure:public -- --url https://YOUR-PUBLIC-URL --support YOUR-SUPPORT
 
 - Run `npm run ready:public` again after configuring the final URL/support route.
 - Enable HTTPS on the host.
-- Confirm `support.html`, `privacy.html`, `terms.html`, and `manifest.webmanifest` are reachable.
+- Confirm `support.html`, `privacy.html`, `terms.html`, `robots.txt`, `sitemap.xml`, and `manifest.webmanifest` are reachable.
 - Run `npm run verify:public -- https://YOUR-PUBLIC-URL` after the host is live.
 - Test the installed PWA on desktop and mobile.
 - Confirm service worker updates after a new deploy.
@@ -66,7 +66,7 @@ After you connect hosting and any domain, run:
 npm run verify:public -- https://YOUR-PUBLIC-URL
 ```
 
-The verifier checks the public app shell, final canonical/Open Graph/Twitter URLs, preview image URLs, public support contact metadata, support/privacy/terms/404 pages, manifest, service worker, Apple touch icon, update-friendly cache headers for `sw.js` and `manifest.webmanifest`, and that internal files such as `store/completion-audit.md`, `package.json`, and `PUBLISHING.md` are not public.
+The verifier checks the public app shell, final canonical/Open Graph/Twitter URLs, preview image URLs, public support contact metadata, robots/sitemap output, support/privacy/terms/404 pages, manifest, service worker, Apple touch icon, update-friendly cache headers for `sw.js` and `manifest.webmanifest`, and that internal files such as `store/completion-audit.md`, `package.json`, and `PUBLISHING.md` are not public.
 
 Warnings mean the site can load but the host should be reviewed, usually because security headers or no-cache headers are missing. Failures should be fixed before announcing the link.
 

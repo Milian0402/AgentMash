@@ -185,6 +185,7 @@ const verifyPublicScript = await read("scripts/verify-public-url.mjs");
 const configurePublicScript = await read("scripts/configure-public-launch.mjs");
 const configurePublicCheck = await read("scripts/check-configure-public.mjs");
 const publicVerifierCheck = await read("scripts/check-public-url-verifier.mjs");
+const publishingNotes = await read("publishing.html");
 const readme = await read("README.md");
 const completionAudit = await read("store/completion-audit.md");
 const audit = await read("store/public-launch-audit.md");
@@ -489,6 +490,7 @@ check(!/\b(dating|tinder|hinge|mate|mates)\b/i.test(launchSurfaceText), "no rela
 check(!/\b(webhook|polling)\b/i.test(publicHtmlText), "public pages avoid deferred backend channel wording");
 check(!/\bbeta\b|No public support inbox|still needs to be chosen|support route listed/i.test(publicHtmlText), "public pages avoid prelaunch support placeholders");
 check(!publicBuildEntries.includes("publishing.html"), "public build excludes internal publishing notes");
+check(!/\bbeta\b|public-beta candidate/i.test(publishingNotes), "internal publishing notes avoid beta-candidate wording");
 check(!/mailto:|tel:|XMLHttpRequest|sendBeacon|WebSocket|stripe|paypal|posthog|sentry/i.test(launchSurfaceText), "no contact, payment, analytics, or socket hooks");
 
 for (const file of textFiles.filter((file) => file !== "sw.js")) {

@@ -80,7 +80,7 @@ npm run serve:build
 npm run check:launch
 ```
 
-This verifies required pages, app metadata, offline shell files, static-host security headers, local-only network constraints, and AgentMash naming.
+This verifies required pages, app metadata, offline shell files, static-host security headers, local-only network constraints, sitemap packaging, and AgentMash naming.
 
 After you choose a final public URL and support route, configure local launch metadata before building:
 
@@ -88,7 +88,7 @@ After you choose a final public URL and support route, configure local launch me
 npm run configure:public -- --url https://YOUR-PUBLIC-URL --support YOUR-SUPPORT-ROUTE
 ```
 
-This only edits local files. It does not deploy, contact anyone, create accounts, or spend money.
+This only edits local files, including `robots.txt` and `sitemap.xml`. It does not deploy, contact anyone, create accounts, or spend money.
 
 ## Publish Prep
 
