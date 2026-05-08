@@ -386,6 +386,40 @@ test("Rapid decisions are locked and mobile filter labels stay readable", async 
   await expect.poll(() => reviewCount(page)).toBe(1);
 });
 
+test("Short mobile review screen keeps preview labels clear", async ({ page }) => {
+  await page.setViewportSize({ width: 360, height: 640 });
+  await resetApp(page);
+
+  await expect(page.locator("#swipeCard")).toBeVisible();
+  await expect(page.locator(".first-look-stage .site-cta-row")).toBeHidden();
+
+  const layout = await page.evaluate(() => {
+    const type = document.querySelector("#artifactTypeLabel").getBoundingClientRect();
+    const question = document.querySelector("#artifactQuestionLabel").getBoundingClientRect();
+    const proofRows = [...document.querySelectorAll(".site-proof-row span")].map((row) => row.getBoundingClientRect());
+    const actions = document.querySelector(".swipe-actions").getBoundingClientRect();
+    const card = document.querySelector("#swipeCard").getBoundingClientRect();
+    const separatedFrom = (target) => proofRows.every((row) => (
+      row.bottom <= target.top - 4 ||
+      row.top >= target.bottom + 4 ||
+      row.right <= target.left - 4 ||
+      row.left >= target.right + 4
+    ));
+
+    return {
+      actionsBelowCard: actions.top >= card.bottom - 4,
+      proofClearOfQuestion: separatedFrom(question),
+      proofClearOfType: separatedFrom(type)
+    };
+  });
+
+  expect(layout).toEqual({
+    actionsBelowCard: true,
+    proofClearOfQuestion: true,
+    proofClearOfType: true
+  });
+});
+
 test("Keyboard shortcuts support swipe and pairwise without hijacking text entry", async ({ page }) => {
   await resetApp(page);
 
