@@ -44,6 +44,7 @@ import {
   configureRenderActions,
   elements,
   openDetailSheet,
+  openRefinePanel,
   render,
   renderRubric,
   renderTags,
@@ -223,6 +224,7 @@ function setDecisionTransitioning(isLocked) {
     elements.rejectButton,
     elements.acceptButton,
     elements.undoButton,
+    elements.commentButton,
     elements.refineButton,
     elements.detailsButton,
     elements.advancedScoresButton
@@ -232,6 +234,17 @@ function setDecisionTransitioning(isLocked) {
   elements.filterTabs.querySelectorAll("button").forEach((button) => {
     button.disabled = isLocked;
   });
+}
+
+function openCommentSheet() {
+  openRefinePanel();
+  window.setTimeout(() => {
+    try {
+      elements.reviewNote.focus({ preventScroll: true });
+    } catch {
+      elements.reviewNote.focus();
+    }
+  }, 0);
 }
 
 async function addArtifact(event) {
@@ -851,6 +864,7 @@ elements.agentDropFile.addEventListener("change", () => {
   elements.agentDropFile.value = "";
 });
 elements.refineButton.addEventListener("click", toggleRefinePanel);
+elements.commentButton.addEventListener("click", openCommentSheet);
 elements.advancedScoresButton.addEventListener("click", toggleScoreControls);
 elements.detailsButton.addEventListener("click", openDetailSheet);
 elements.detailCloseButton.addEventListener("click", closeDetailSheet);

@@ -193,8 +193,10 @@ test("Nice, Undo, and Nope produce a v2 feedback packet", async ({ page }) => {
   await expect(page.locator("#detailSheet")).toBeHidden();
   await expect(page.locator("#stageProgress")).toHaveText("1 / 4");
   await expect(page.locator("#signalPanel")).toBeHidden();
-  await page.getByRole("button", { name: "Refine" }).click();
+  await page.getByRole("button", { name: "Comment" }).click();
   await expect(page.locator("#signalPanel")).toBeVisible();
+  await expect(page.locator("#commentButton")).toHaveAttribute("aria-expanded", "true");
+  await expect(page.locator("#reviewNote")).toBeFocused();
   await expect(page.locator("#tagRow")).toBeVisible();
   await expect(page.getByLabel("Decision note")).toBeVisible();
   await expect(page.locator("#scoreControls")).toBeHidden();

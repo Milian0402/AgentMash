@@ -106,6 +106,7 @@ export const elements = {
   rejectButton: document.querySelector("#rejectButton"),
   acceptButton: document.querySelector("#acceptButton"),
   undoButton: document.querySelector("#undoButton"),
+  commentButton: document.querySelector("#commentButton"),
   scoreControls: document.querySelector("#scoreControls"),
   refineButton: document.querySelector("#refineButton"),
   advancedScoresButton: document.querySelector("#advancedScoresButton"),
@@ -196,6 +197,11 @@ export function toggleRefinePanel() {
   renderRefinePanel();
 }
 
+export function openRefinePanel() {
+  isRefineOpen = true;
+  renderRefinePanel();
+}
+
 export function toggleScoreControls() {
   isScoreControlsOpen = !isScoreControlsOpen;
   renderRefinePanel();
@@ -275,6 +281,8 @@ export function render() {
   elements.swipeCard.hidden = !activeItem;
   elements.rejectButton.disabled = !activeItem;
   elements.acceptButton.disabled = !activeItem;
+  elements.commentButton.disabled = !activeItem;
+  elements.refineButton.disabled = !activeItem;
   elements.undoButton.disabled = state.reviews.length === 0;
 
   if (!activeItem) {
@@ -487,6 +495,8 @@ export function renderRefinePanel() {
   elements.signalPanel.hidden = !isRefineOpen;
   elements.refineButton.classList.toggle("active", isRefineOpen);
   elements.refineButton.setAttribute("aria-expanded", isRefineOpen ? "true" : "false");
+  elements.commentButton.classList.toggle("active", isRefineOpen);
+  elements.commentButton.setAttribute("aria-expanded", isRefineOpen ? "true" : "false");
   elements.scoreControls.hidden = !isRefineOpen || !isScoreControlsOpen;
   elements.advancedScoresButton.classList.toggle("active", isScoreControlsOpen);
   elements.advancedScoresButton.setAttribute("aria-expanded", isScoreControlsOpen ? "true" : "false");

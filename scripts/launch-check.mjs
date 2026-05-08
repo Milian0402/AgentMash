@@ -285,7 +285,10 @@ check(
   hasAll(playwrightConfig, ["webServer", "npm run serve", "http://127.0.0.1:5177/"]),
   "Playwright serves native modules over local HTTP"
 );
-check(index.includes("refineButton") && index.includes('id="signalPanel" hidden'), "rubric and note panel is hidden behind Refine by default");
+check(
+  index.includes("refineButton") && index.includes("commentButton") && index.includes('id="signalPanel" hidden'),
+  "rubric and note panel is hidden behind Refine and the Comment shortcut by default"
+);
 check(
   hasAll(index, [
     'id="reviewModeTabs" role="group"',
@@ -427,7 +430,10 @@ check(
 );
 check(!appSurface.includes("confidenceFor") && !appSurface.includes(".confidence"), "app output no longer uses confidence field");
 check(!appSurface.includes("agentRetryQueue") && !appSurface.includes("Retry queue"), "retry queue metric is removed");
-check(appSurface.includes("renderRefinePanel") && appSurface.includes("isRefineOpen = false"), "decision flow returns to fast loop after refinement");
+check(
+  appSurface.includes("renderRefinePanel") && appSurface.includes("isRefineOpen = false") && appSurface.includes("openCommentSheet"),
+  "decision flow returns to fast loop after refinement and comments"
+);
 check(appSurface.includes("advancedScoresButton") && renderModule.includes("toggleScoreControls"), "Refine keeps score sliders behind an advanced toggle");
 check(appSurface.includes("renderDetailSheet") && appSurface.includes("isDetailSheetOpen = false"), "decision flow closes the details sheet after swipe");
 check(app.includes("isDecisionTransitioning") && gesturesModule.includes("isDecisionLocked"), "rapid duplicate decisions are locked during swipe animation");
@@ -436,7 +442,7 @@ check(
   hasAll(appSurface, ["ALLOWED_IMAGE_TYPES", "MAX_IMAGE_BYTES", "safeImageData", "Choose a PNG, JPG, or WebP image"]),
   "image uploads are type and size constrained"
 );
-check(serviceWorker.includes('const CACHE_NAME = "agentmash-v'), "service worker cache is AgentMash scoped");
+check(serviceWorker.includes('const CACHE_NAME = "agentmash-v39"'), "service worker cache is AgentMash scoped and current");
 check(hasAll(serviceWorker, appShellFiles), "service worker app shell includes launch pages and icons");
 check(hasAll(headers, securityHeaders), "_headers defines security headers");
 check(hasAll(netlify, securityHeaders), "netlify config defines security headers");
@@ -531,7 +537,7 @@ check(
 check(hasAll(testSpec, ["application/x-ndjson", "rejected", "accepted"]), "Playwright covers normalized export packet contract");
 check(hasAll(testSpec, ["Rapid decisions are locked", "decisionTransition", "clippedFilters"]), "Playwright covers transition lock and mobile filter readability");
 check(hasAll(testSpec, ["Keyboard shortcuts support swipe and pairwise", "Control+Z", "Typing here should keep arrow keys in the note"]), "Playwright covers keyboard shortcut accessibility");
-check(hasAll(testSpec, ["advancedScoresButton", "scoreControls", "Scores"]), "Playwright covers compact Refine score toggle");
+check(hasAll(testSpec, ["commentButton", "reviewNote", "advancedScoresButton", "scoreControls", "Scores"]), "Playwright covers compact comment and Refine score toggle");
 check(hasAll(testSpec, ["packetContractStatus", "datasetContractStatus", "Rows valid"]), "Playwright covers export contract status");
 check(
   hasAll(testSpec, ["Changing a pending upload stores only the submitted image", "imageStoreKeys", "first.png", "second.png"]),

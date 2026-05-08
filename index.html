@@ -165,6 +165,9 @@
               <button class="decision-button neutral" id="undoButton" type="button" disabled>
                 <strong>Undo</strong>
               </button>
+              <button class="decision-button comment" id="commentButton" type="button" aria-controls="signalPanel" aria-expanded="false">
+                <strong>Comment</strong>
+              </button>
               <button class="decision-button accept" id="acceptButton" type="button">
                 <strong>Nice</strong>
                 <span class="decision-key">Right</span>
@@ -173,7 +176,7 @@
 
             <div class="signal-panel" id="signalPanel" hidden>
               <div class="signal-panel-header">
-                <span>Signal tuning</span>
+                <span>Comment & tags</span>
                 <button class="mini-button advanced-toggle" id="advancedScoresButton" type="button" aria-controls="scoreControls" aria-expanded="false">Scores</button>
               </div>
 
@@ -181,7 +184,7 @@
 
               <label class="note-field">
                 <span>Decision note</span>
-                <textarea id="reviewNote" rows="3" placeholder="What made the decision happen"></textarea>
+                <textarea id="reviewNote" rows="3" placeholder="Optional: what made the choice obvious?"></textarea>
               </label>
 
               <div class="score-preview">
