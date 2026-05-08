@@ -210,6 +210,9 @@ const readme = await read("README.md");
 const completionAudit = await read("store/completion-audit.md");
 const audit = await read("store/public-launch-audit.md");
 const listing = await read("store/app-store-listing.md");
+const appStoreSubmission = await read("store/app-store-submission.md");
+const researchGuide = await read("store/research-and-cost-guide.md");
+const releaseChecklist = await read("store/release-checklist.md");
 const nativeHandoff = await read("store/native-wrapper-handoff.md");
 const backendHandoff = await read("store/backend-api-mcp-handoff.md");
 
@@ -551,6 +554,19 @@ check(readme.includes("signal strength"), "README describes signal strength outp
 check(!/public-beta candidate|lab-ready|should pass/i.test(readme), "README avoids beta status and ambiguous verdict wording");
 check(listing.includes("Human taste for AI work"), "store subtitle fits App Store limit");
 check(!listing.includes("Human taste signals for AI work"), "old over-limit store subtitle is absent");
+check(
+  hasAll(appStoreSubmission, ["99 USD per year", "25 USD one-time", "12 opted-in testers", "14 continuous days", "24-bit PNG feature graphic without alpha"]),
+  "app store submission prep documents current account, testing, and asset blockers"
+);
+check(
+  hasAll(researchGuide, ["Google Play closed testing for new personal accounts", "12 opted-in testers", "14 continuous days"]),
+  "cost guide flags Google Play closed-testing effort"
+);
+check(
+  hasAll(releaseChecklist, ["new Google Play personal developer account", "12 opted-in testers", "14 continuous days"]) &&
+    audit.includes("Google Play closed-testing production-access requirement"),
+  "release checklist and launch audit keep Google Play production-access blocker explicit"
+);
 check(
   hasAll(nativeHandoff, ["Capacitor", "com.agentmash.app", "webDir", "_site", "No native wrapper was created", "Do not add analytics SDKs"]),
   "native wrapper handoff keeps store-shell setup explicit"

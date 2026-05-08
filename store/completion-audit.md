@@ -198,6 +198,7 @@ These are still not done because they require user-owned accounts, money, public
 - Public deployment.
 - Public HTTPS/header/service-worker verification.
 - Apple Developer Program or Google Play Console account.
+- Google Play closed-testing production-access requirement if using a new personal developer account.
 - Native iOS or Android wrapper and signed build.
 - Store screenshots captured from the native wrapper.
 - App Review or Play review contact details.

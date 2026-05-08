@@ -229,6 +229,7 @@ Passed checks:
 
 - Apple Developer Program or Google Play Console account.
 - User-owned seller/developer identity.
+- Google Play closed-testing production-access requirement if using a new personal developer account.
 - Public support URL with real contact information.
 - Public privacy URL with developer identity and inquiry route.
 - Native iOS or Android wrapper and signed build.

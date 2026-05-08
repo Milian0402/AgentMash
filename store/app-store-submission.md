@@ -1,6 +1,6 @@
 # App Store Submission Prep
 
-Checked against official Apple and Google documentation on May 7, 2026. No account was created, no payment was made, nobody was contacted, and no app was submitted.
+Checked against official Apple and Google documentation on May 8, 2026. No account was created, no payment was made, nobody was contacted, and no app was submitted.
 
 ## Current Verdict
 
@@ -32,13 +32,13 @@ AgentMash is a local-first review tool for AI-generated websites, logos, copy, a
 
 Apple-specific requirements still owned by the user:
 
-- Apple Developer Program membership.
+- Apple Developer Program membership, currently listed by Apple as 99 USD per year where local currency is available.
 - Seller name or organization identity.
 - Public support URL with real contact information.
 - Public privacy policy URL.
 - App Review contact name, email, and phone.
 - Native iOS build uploaded through Xcode or Transporter.
-- Required App Store screenshots captured at accepted device sizes.
+- Required App Store screenshots captured at accepted device sizes. App Store Connect currently accepts one to ten JPEG, JPG, or PNG screenshots per device display size; the prepared iPhone drafts are planning assets, not a substitute for native-build captures.
 - Privacy label answers in App Store Connect.
 
 ## Google Play Draft
@@ -58,14 +58,15 @@ Apple-specific requirements still owned by the user:
 
 Google-specific requirements still owned by the user:
 
-- Google Play Console account.
+- Google Play Console account, currently listed by Google as a 25 USD one-time registration fee.
 - Verified developer identity and contact details.
 - Public developer email shown on the store listing.
 - Public privacy policy URL.
 - Android app bundle from a native wrapper.
+- If using a new Google Play personal developer account, closed testing with at least 12 opted-in testers for 14 continuous days before applying for production access.
 - Minimum two screenshots, with better results from at least four 1080px or larger screenshots.
-- 512 by 512 PNG app icon.
-- 1024 by 500 feature graphic.
+- 512 by 512 PNG app icon for the store listing.
+- 1024 by 500 JPEG or 24-bit PNG feature graphic without alpha.
 - Data safety answers in Play Console.
 
 ## Current Store Assets
@@ -95,11 +96,13 @@ The current screenshots are good for the website, README, PWA manifest, and priv
 ## Sources
 
 - Apple Developer Program pricing and enrollment: https://developer.apple.com/support/compare-memberships/
+- Apple Developer Program annual fee and enrollment requirements: https://developer.apple.com/help/account/membership/program-enrollment/
 - Apple App Store app information and subtitle limit: https://developer.apple.com/help/app-store-connect/reference/app-information/app-information
 - Apple platform version information, support URL, and review contact fields: https://developer.apple.com/help/app-store-connect/reference/app-review-information
 - Apple privacy details: https://developer.apple.com/app-store/app-privacy-details/
 - Apple screenshot specifications: https://developer.apple.com/help/app-store-connect/reference/screenshot-specifications/
 - Google Play account setup and registration fee: https://support.google.com/googleplay/android-developer/answer/6112435
+- Google Play personal account testing requirements: https://support.google.com/googleplay/android-developer/answer/14151465
 - Google Play required developer account information: https://support.google.com/googleplay/android-developer/answer/13628312
 - Google Play user data, privacy policy, and Data safety requirements: https://support.google.com/googleplay/android-developer/answer/9888076
 - Google Play preview assets and feature graphic requirements: https://support.google.com/googleplay/android-developer/answer/9866151

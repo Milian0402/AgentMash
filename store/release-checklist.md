@@ -114,6 +114,7 @@ Last local verification: May 8, 2026. No deployment, paid account, domain purcha
 - [ ] Read `store/native-wrapper-handoff.md`.
 - [ ] Decide iOS, Android, web-only, or both stores.
 - [ ] Create developer account only when ready to pay.
+- [ ] If using a new Google Play personal developer account, plan the 12 opted-in testers for 14 continuous days closed-testing requirement before production access.
 - [ ] Publish `privacy.html` and `support.html` at stable public URLs.
 - [ ] Add developer identity and support contact details.
 - [ ] Wrap the app in a native shell.

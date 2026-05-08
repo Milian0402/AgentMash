@@ -88,6 +88,7 @@ You can publish this as a static website for free on several hosts, but costs ca
 | --- | ---: | --- |
 | Apple Developer Program | $99/year | Required to distribute on the App Store. Source: https://developer.apple.com/support/enrollment/ |
 | Google Play Console | $25 one-time | Required to publish Android apps on Google Play. Source: https://support.google.com/googleplay/android-developer/answer/6112435 |
+| Google Play closed testing for new personal accounts | $0 direct platform fee | New personal developer accounts need at least 12 opted-in testers for 14 continuous days before applying for production access. Recruiting testers can still cost time or money. Source: https://support.google.com/googleplay/android-developer/answer/14151465 |
 | Apple screenshots | $0 if self-made | App Store Connect accepts 1 to 10 screenshots in JPEG/JPG/PNG at required device sizes. Source: https://developer.apple.com/help/app-store-connect/reference/screenshot-specifications/ |
 | Google Play screenshots and feature graphic | $0 if self-made | Google Play requires screenshots and a 1024 by 500 feature graphic for the store listing. Source: https://support.google.com/googleplay/android-developer/answer/9866151 |
 | Privacy policy hosting | $0 to paid | You can host `privacy.html` with the app. Legal review would cost money if you choose it. |
@@ -123,5 +124,6 @@ Still required before actual public submission:
 - Produce store-size PNG icons and screenshots.
 - Wrap as native iOS/Android app if submitting to App Store or Google Play.
 - Create developer accounts, which costs money.
+- For a new Google Play personal developer account, run the required closed test with at least 12 opted-in testers for 14 continuous days before production access.
 - Complete Apple privacy labels and Google Play Data safety forms.
 - Run device testing on real iPhone and Android hardware.
