@@ -198,6 +198,9 @@ test("Nice, Undo, and Nope produce a v2 feedback packet", async ({ page }) => {
   await expect(page.locator("#commentButton")).toHaveAttribute("aria-expanded", "true");
   await expect(page.locator("#reviewNote")).toBeFocused();
   await expect(page.locator("#tagRow")).toBeVisible();
+  await expect(page.getByLabel("Quick reason")).toBeVisible();
+  await page.locator("#commentReason").selectOption("Looks generic on first glance.");
+  await expect(page.getByLabel("Decision note")).toHaveValue("Looks generic on first glance.");
   await expect(page.getByLabel("Decision note")).toBeVisible();
   await expect(page.locator("#scoreControls")).toBeHidden();
   await expect(page.locator("#advancedScoresButton")).toHaveAttribute("aria-expanded", "false");

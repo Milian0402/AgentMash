@@ -159,18 +159,22 @@
 
             <div class="review-controls swipe-actions">
               <button class="decision-button reject" id="rejectButton" type="button">
+                <span class="decision-icon" aria-hidden="true">x</span>
                 <span class="decision-key">Left</span>
                 <strong>Nope</strong>
               </button>
               <button class="decision-button neutral" id="undoButton" type="button" disabled>
+                <span class="decision-icon" aria-hidden="true">U</span>
                 <strong>Undo</strong>
               </button>
               <button class="decision-button comment" id="commentButton" type="button" aria-controls="signalPanel" aria-expanded="false">
+                <span class="decision-icon" aria-hidden="true">+</span>
                 <strong>Comment</strong>
               </button>
               <button class="decision-button accept" id="acceptButton" type="button">
                 <strong>Nice</strong>
                 <span class="decision-key">Right</span>
+                <span class="decision-icon" aria-hidden="true">OK</span>
               </button>
             </div>
 
@@ -181,6 +185,19 @@
               </div>
 
               <div class="tag-row" id="tagRow" aria-label="Quick tags"></div>
+
+              <label class="quick-reason-field">
+                <span>Quick reason</span>
+                <select id="commentReason">
+                  <option value="">Choose a short comment</option>
+                  <option value="Feels clear on first glance.">Feels clear</option>
+                  <option value="Looks generic on first glance.">Looks generic</option>
+                  <option value="I would keep looking at this.">Keep looking</option>
+                  <option value="I do not trust it yet.">Trust issue</option>
+                  <option value="The visual feels off.">Visual off</option>
+                  <option value="The hook needs to be sharper.">Weak hook</option>
+                </select>
+              </label>
 
               <label class="note-field">
                 <span>Decision note</span>

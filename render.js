@@ -114,6 +114,7 @@ export const elements = {
   liveScore: document.querySelector("#liveScore"),
   liveGrade: document.querySelector("#liveGrade"),
   tagRow: document.querySelector("#tagRow"),
+  commentReason: document.querySelector("#commentReason"),
   reviewNote: document.querySelector("#reviewNote"),
   standardType: document.querySelector("#standardType"),
   rubricList: document.querySelector("#rubricList"),

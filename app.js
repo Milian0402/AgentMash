@@ -123,6 +123,7 @@ function decide(verdict) {
   });
 
   elements.reviewNote.value = "";
+  elements.commentReason.value = "";
   state.activeTags = [];
   state.draftScores = defaultScoresForNext(verdict, scores);
   state.lastPacketItemId = item.id;
@@ -192,6 +193,7 @@ function undoLastReview() {
   state.draftScores = normalizeScores(review.scores);
   state.activeTags = [...review.tags];
   elements.reviewNote.value = review.note;
+  elements.commentReason.value = "";
   saveState();
   render();
 }
@@ -245,6 +247,18 @@ function openCommentSheet() {
       elements.reviewNote.focus();
     }
   }, 0);
+}
+
+function applyQuickCommentReason() {
+  const reason = elements.commentReason.value.trim();
+  if (!reason) {
+    return;
+  }
+
+  const currentNote = elements.reviewNote.value.trim();
+  elements.reviewNote.value = currentNote ? `${currentNote}\n${reason}` : reason;
+  elements.commentReason.value = "";
+  openCommentSheet();
 }
 
 async function addArtifact(event) {
@@ -865,6 +879,7 @@ elements.agentDropFile.addEventListener("change", () => {
 });
 elements.refineButton.addEventListener("click", toggleRefinePanel);
 elements.commentButton.addEventListener("click", openCommentSheet);
+elements.commentReason.addEventListener("change", applyQuickCommentReason);
 elements.advancedScoresButton.addEventListener("click", toggleScoreControls);
 elements.detailsButton.addEventListener("click", openDetailSheet);
 elements.detailCloseButton.addEventListener("click", closeDetailSheet);

@@ -445,7 +445,7 @@ check(
   hasAll(appSurface, ["ALLOWED_IMAGE_TYPES", "MAX_IMAGE_BYTES", "safeImageData", "Choose a PNG, JPG, or WebP image"]),
   "image uploads are type and size constrained"
 );
-check(serviceWorker.includes('const CACHE_NAME = "agentmash-v42"'), "service worker cache is AgentMash scoped and current");
+check(serviceWorker.includes('const CACHE_NAME = "agentmash-v43"'), "service worker cache is AgentMash scoped and current");
 check(hasAll(serviceWorker, appShellFiles), "service worker app shell includes launch pages and icons");
 check(hasAll(headers, securityHeaders), "_headers defines security headers");
 check(hasAll(netlify, securityHeaders), "netlify config defines security headers");
@@ -546,7 +546,7 @@ check(
 check(hasAll(testSpec, ["application/x-ndjson", "rejected", "accepted"]), "Playwright covers normalized export packet contract");
 check(hasAll(testSpec, ["Rapid decisions are locked", "decisionTransition", "clippedFilters"]), "Playwright covers transition lock and mobile filter readability");
 check(hasAll(testSpec, ["Keyboard shortcuts support swipe and pairwise", "Control+Z", "Typing here should keep arrow keys in the note"]), "Playwright covers keyboard shortcut accessibility");
-check(hasAll(testSpec, ["commentButton", "reviewNote", "advancedScoresButton", "scoreControls", "Scores"]), "Playwright covers compact comment and Refine score toggle");
+check(hasAll(testSpec, ["commentButton", "commentReason", "reviewNote", "advancedScoresButton", "scoreControls", "Scores"]), "Playwright covers compact comment and Refine score toggle");
 check(hasAll(testSpec, ["packetContractStatus", "datasetContractStatus", "Rows valid"]), "Playwright covers export contract status");
 check(
   hasAll(testSpec, ["Changing a pending upload stores only the submitted image", "imageStoreKeys", "first.png", "second.png"]),
