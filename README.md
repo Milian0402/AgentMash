@@ -77,6 +77,12 @@ Preview the public package:
 npm run serve:build
 ```
 
+Refresh launch screenshots, iOS startup images, and draft store assets from the local app:
+
+```sh
+npm run refresh:assets
+```
+
 ## Launch Check
 
 ```sh

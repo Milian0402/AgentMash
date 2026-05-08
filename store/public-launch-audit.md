@@ -36,6 +36,7 @@ Make AgentMash good enough to launch publicly as a serious app.
 - Public build script packages `_site/` without internal launch docs, submission drafts, scripts, or repo metadata.
 - Public build packages `schemas/feedback.v2.json`, `schemas/intake.v1.json`, `schemas/api.v1.openapi.json`, `schemas/mcp-tools.v1.json`, and `schemas/examples/` so future integrators can inspect the machine-readable contracts and sample payloads.
 - `npm run ready:public` runs the full local quality gate and rebuilds `_site/` before the user connects hosting.
+- `npm run refresh:assets` captures public PWA screenshots, iOS startup images, and draft store assets locally through Playwright when the UI changes.
 - `npm run configure:public -- --url https://YOUR-PUBLIC-URL --support YOUR-SUPPORT-ROUTE` is ready to stamp final public URL and support metadata locally once the user chooses them.
 - The same final metadata command writes `robots.txt` with the public sitemap URL and writes `sitemap.xml` with public app, support, privacy, and terms URLs.
 - First public release order is explicit: configure final metadata, run `npm run ready:public`, deploy `_site/`, then run `npm run verify:public`.
@@ -137,12 +138,12 @@ Make AgentMash good enough to launch publicly as a serious app.
 - Desktop browser check at 1440 by 1000 showed no horizontal overflow.
 - Browser console showed zero errors during human review and add-artifact testing.
 - No third-party analytics, payments, telemetry, sockets, or API calls were found. The only network fetch is the service worker same-origin cache path.
-- Store, public PWA, iOS startup, and draft submission screenshots were refreshed from the current local app after the swipe-card visual refresh and Comment shortcut.
+- Store, public PWA, iOS startup, and draft submission screenshots were refreshed from the current local app after the card-dominant swipe layout and Comment shortcut refresh.
 - Manifest screenshots point to tracked screenshot assets.
 - Public manifest screenshots point to `assets/screenshots`.
 - `npm run check` builds `_site/` and verifies internal files are not packaged.
 - `_site/` includes all public app modules, public schema files, and `sw.js` caches those module and schema files.
-- `sw.js` cache name is `agentmash-v39` after the swipe-card visual refresh, Comment shortcut, screenshot refresh, privacy, launch-order, and public contract updates, so the offline app shell refreshes when this build is published.
+- `sw.js` cache name is `agentmash-v40` after the card-dominant swipe layout, Comment shortcut, screenshot refresh, privacy, launch-order, and public contract updates, so the offline app shell refreshes when this build is published.
 - Playwright e2e test passed: after service worker readiness, the app reloaded offline and rendered the AgentMash shell and swipe card.
 - Netlify and Vercel configs are checked for `npm run build` plus `_site/` output.
 - Apple touch icon is linked from `index.html`, cached by `sw.js`, and sized at 180 by 180.

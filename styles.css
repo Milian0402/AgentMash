@@ -44,7 +44,7 @@ body {
 
 body[data-dashboard="human"] {
   background:
-    linear-gradient(180deg, #fbfcff 0%, #f2f5fa 44%, #e9f0f7 100%);
+    linear-gradient(180deg, #fbfcff 0%, #f3f7fc 46%, #eef6f2 100%);
   background-size: auto;
 }
 
@@ -218,10 +218,10 @@ body[data-dashboard="human"] .topbar {
   position: sticky;
   top: 0;
   z-index: 20;
-  max-width: 680px;
-  min-height: 68px;
+  max-width: 760px;
+  min-height: 62px;
   margin: 0 auto;
-  padding: calc(12px + var(--safe-top)) 12px 8px;
+  padding: calc(10px + var(--safe-top)) 12px 6px;
   border-bottom: 0;
   background: transparent;
   backdrop-filter: none;
@@ -405,7 +405,7 @@ body[data-dashboard="human"] .dashboard-tab {
 }
 
 body[data-dashboard="human"] .workspace {
-  padding-top: 2px;
+  padding-top: 0;
 }
 
 .dashboard-view {
@@ -420,7 +420,7 @@ body[data-dashboard="human"] .workspace {
 }
 
 .human-dashboard > * {
-  width: min(100%, 560px);
+  width: min(100%, 660px);
 }
 
 .agent-dashboard {
@@ -469,7 +469,7 @@ body[data-dashboard="human"] .workspace {
 .first-look-stage .stage-header,
 .first-look-stage .signal-panel,
 .first-look-stage .review-controls {
-  width: min(100%, 560px);
+  width: min(100%, 660px);
 }
 
 .stage-header {
@@ -483,7 +483,7 @@ body[data-dashboard="human"] .workspace {
 }
 
 .first-look-stage .stage-header h2 {
-  font-size: 1.24rem;
+  font-size: 1.34rem;
   line-height: 1.05;
 }
 
@@ -761,15 +761,15 @@ body[data-dashboard="human"] .workspace {
 }
 
 .first-look-stage .deck-area {
-  min-height: clamp(550px, 70vh, 720px);
+  min-height: clamp(620px, 74vh, 790px);
 }
 
 .card-stack-shadow {
   position: absolute;
-  width: min(100%, 464px);
-  min-height: 600px;
-  border: 1px solid var(--line);
-  border-radius: 28px;
+  width: min(100%, 560px);
+  min-height: 690px;
+  border: 1px solid rgba(255, 255, 255, 0.78);
+  border-radius: 32px;
   background: rgba(255, 255, 255, 0.7);
   box-shadow: 0 14px 34px rgba(21, 25, 35, 0.1);
   pointer-events: none;
@@ -809,12 +809,12 @@ body[data-dashboard="human"] .workspace {
 }
 
 .first-look-stage .swipe-card {
-  width: min(100%, 464px);
-  height: clamp(560px, 68vh, 680px);
+  width: min(100%, 560px);
+  height: clamp(620px, 72vh, 760px);
   min-height: 0;
   display: block;
   border: 1px solid rgba(255, 255, 255, 0.72);
-  border-radius: 28px;
+  border-radius: 32px;
   box-shadow:
     0 34px 90px rgba(21, 25, 35, 0.24),
     0 2px 0 rgba(255, 255, 255, 0.84) inset;
@@ -1980,7 +1980,7 @@ body[data-decision-transition="true"] .decision-button {
 }
 
 .swipe-actions {
-  grid-template-columns: minmax(112px, 1fr) 72px 92px minmax(112px, 1fr);
+  grid-template-columns: minmax(128px, 1fr) 72px 108px minmax(128px, 1fr);
 }
 
 .first-look-stage .swipe-actions {
@@ -2070,7 +2070,6 @@ body[data-decision-transition="true"] .decision-button {
 .swipe-actions .decision-button.comment {
   background: #ffffff;
   color: var(--blue);
-  font-size: 0.9rem;
 }
 
 .swipe-actions .decision-button.comment.active,
@@ -2424,22 +2423,23 @@ body[data-decision-transition="true"] .decision-button {
     align-items: center;
     flex-direction: row;
     justify-content: space-between;
-    gap: 10px;
-    width: calc(100% - 20px);
-    padding: calc(10px + var(--safe-top)) 0 6px;
+    gap: 8px;
+    width: calc(100% - 16px);
+    min-height: 48px;
+    padding: calc(8px + var(--safe-top)) 0 4px;
   }
 
   body[data-dashboard="human"] .brand-lockup {
-    gap: 8px;
+    gap: 7px;
   }
 
   body[data-dashboard="human"] .app-icon {
-    width: 32px;
-    height: 32px;
+    width: 28px;
+    height: 28px;
   }
 
   body[data-dashboard="human"] .topbar h1 {
-    font-size: 1.22rem;
+    font-size: 1.06rem;
   }
 
   body[data-dashboard="human"] .topbar .eyebrow {
@@ -2448,19 +2448,20 @@ body[data-decision-transition="true"] .decision-button {
 
   body[data-dashboard="human"] .dashboard-switch {
     width: auto;
-    min-width: 156px;
-    grid-template-columns: repeat(2, minmax(72px, 1fr));
+    min-width: 144px;
+    grid-template-columns: repeat(2, minmax(66px, 1fr));
+    padding: 4px;
   }
 
   body[data-dashboard="human"] .dashboard-tab {
-    min-height: 32px;
-    padding: 0 8px;
+    min-height: 28px;
+    padding: 0 7px;
     font-size: 0;
   }
 
   body[data-dashboard="human"] .dashboard-tab::after {
     content: attr(data-short-label);
-    font-size: 0.74rem;
+    font-size: 0.7rem;
   }
 
   .icon-button {
@@ -2473,12 +2474,12 @@ body[data-decision-transition="true"] .decision-button {
   }
 
   body[data-dashboard="human"] .workspace {
-    padding: 4px 10px calc(18px + var(--safe-bottom));
+    padding: 2px 8px calc(16px + var(--safe-bottom));
   }
 
   .first-look-stage {
     padding: 0;
-    gap: 10px;
+    gap: 8px;
   }
 
   .review-stage {
@@ -2492,12 +2493,31 @@ body[data-decision-transition="true"] .decision-button {
   }
 
   .first-look-stage .stage-header {
+    display: grid;
+    grid-template-columns: auto 1fr auto auto;
     align-items: center;
-    flex-direction: row;
+    gap: 8px;
+    padding: 0 2px;
   }
 
-  .first-look-stage .stage-header h2 {
-    font-size: 1rem;
+  .first-look-stage .stage-header > div:first-child {
+    display: none;
+  }
+
+  .first-look-stage .stage-status {
+    grid-column: 1;
+    grid-row: 1;
+    justify-items: start;
+  }
+
+  .first-look-stage .stage-status span {
+    display: none;
+  }
+
+  .first-look-stage .stage-status strong {
+    min-height: 30px;
+    padding: 0 12px;
+    font-size: 0.84rem;
   }
 
   .keyboard-hints {
@@ -2510,11 +2530,24 @@ body[data-decision-transition="true"] .decision-button {
 
   body[data-dashboard="human"] .mobile-panel-toggle {
     display: inline-flex;
+    grid-column: 3;
+    grid-row: 1;
+    justify-self: end;
+  }
+
+  .first-look-stage .refine-toggle {
+    grid-column: 4;
+    grid-row: 1;
+    justify-self: end;
+    min-width: 88px;
   }
 
   .streak-counter {
-    order: 4;
+    grid-column: 1 / -1;
+    grid-row: 2;
     width: 100%;
+    min-height: 28px;
+    font-size: 0.68rem;
   }
 
   .deck-area {
@@ -2522,7 +2555,7 @@ body[data-decision-transition="true"] .decision-button {
   }
 
   .first-look-stage .deck-area {
-    min-height: min(64vh, 560px);
+    min-height: min(70vh, 590px);
   }
 
   .swipe-card {
@@ -2530,10 +2563,10 @@ body[data-decision-transition="true"] .decision-button {
   }
 
   .first-look-stage .swipe-card {
-    height: min(62vh, 540px);
+    height: min(68vh, 570px);
     min-height: 0;
     grid-template-rows: none;
-    border-radius: 24px;
+    border-radius: 26px;
   }
 
   .artifact-preview {
@@ -2551,13 +2584,13 @@ body[data-decision-transition="true"] .decision-button {
   }
 
   .card-stack-shadow {
-    min-height: min(60vh, 512px);
-    border-radius: 24px;
+    min-height: min(66vh, 542px);
+    border-radius: 26px;
   }
 
   .first-look-stage .card-body {
     gap: 8px;
-    padding: 76px 16px 16px;
+    padding: 92px 16px 104px;
   }
 
   .first-look-stage .card-body h3 {
@@ -2569,20 +2602,26 @@ body[data-decision-transition="true"] .decision-button {
   }
 
   .swipe-actions .decision-button {
-    min-height: 60px;
+    min-height: 58px;
+    padding: 7px;
   }
 
   .swipe-actions {
-    grid-template-columns: minmax(0, 1fr) 58px 78px minmax(0, 1fr);
+    grid-template-columns: minmax(0, 1fr) 54px 94px minmax(0, 1fr);
+    gap: 7px;
   }
 
-  .swipe-actions .decision-button {
-    padding: 8px;
+  .swipe-actions .decision-button strong {
+    font-size: 0.92rem;
+  }
+
+  .swipe-actions .decision-button.comment strong {
+    font-size: 0.84rem;
   }
 
   .first-look-stage .swipe-actions {
-    bottom: max(8px, var(--safe-bottom));
-    margin-top: -8px;
+    bottom: max(7px, var(--safe-bottom));
+    margin-top: -6px;
     padding: 6px;
   }
 
@@ -2663,7 +2702,7 @@ body[data-decision-transition="true"] .decision-button {
   }
 
   .first-look-stage .signal-panel {
-    bottom: calc(max(12px, var(--safe-bottom)) + 190px);
+    bottom: calc(max(12px, var(--safe-bottom)) + 212px);
     z-index: 60;
     max-height: min(46vh, 390px);
     border-radius: 18px;
@@ -2678,7 +2717,6 @@ body[data-decision-transition="true"] .decision-button {
   .score-grid,
   .score-preview,
   .storage-health-grid,
-  .review-controls,
   .agent-metrics,
   .agent-request-top,
   .agent-request-footer {
@@ -2688,10 +2726,6 @@ body[data-decision-transition="true"] .decision-button {
   .agent-request-top,
   .agent-request-footer {
     display: grid;
-  }
-
-  .swipe-actions {
-    grid-template-columns: minmax(0, 1fr) 58px 78px minmax(0, 1fr);
   }
 
   .site-visual {

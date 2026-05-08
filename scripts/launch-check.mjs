@@ -23,6 +23,7 @@ const requiredFiles = [
   "playwright.config.mjs",
   "tests/review-flow.spec.mjs",
   "scripts/build-site.mjs",
+  "scripts/refresh-launch-assets.mjs",
   "scripts/verify-public-url.mjs",
   "scripts/configure-public-launch.mjs",
   "scripts/check-configure-public.mjs",
@@ -201,6 +202,7 @@ const netlify = await read("netlify.toml");
 const pagesWorkflow = await read(".github/workflows/pages.yml");
 const playwrightConfig = await read("playwright.config.mjs");
 const testSpec = await read("tests/review-flow.spec.mjs");
+const refreshAssetsScript = await read("scripts/refresh-launch-assets.mjs");
 const verifyPublicScript = await read("scripts/verify-public-url.mjs");
 const configurePublicScript = await read("scripts/configure-public-launch.mjs");
 const configurePublicCheck = await read("scripts/check-configure-public.mjs");
@@ -443,7 +445,7 @@ check(
   hasAll(appSurface, ["ALLOWED_IMAGE_TYPES", "MAX_IMAGE_BYTES", "safeImageData", "Choose a PNG, JPG, or WebP image"]),
   "image uploads are type and size constrained"
 );
-check(serviceWorker.includes('const CACHE_NAME = "agentmash-v39"'), "service worker cache is AgentMash scoped and current");
+check(serviceWorker.includes('const CACHE_NAME = "agentmash-v40"'), "service worker cache is AgentMash scoped and current");
 check(hasAll(serviceWorker, appShellFiles), "service worker app shell includes launch pages and icons");
 check(hasAll(headers, securityHeaders), "_headers defines security headers");
 check(hasAll(netlify, securityHeaders), "netlify config defines security headers");
@@ -473,6 +475,7 @@ check(
 );
 check(hasAll(styles, ["safe-area-inset-top", "safe-area-inset-bottom", "--safe-bottom"]), "layout accounts for iOS safe areas");
 check(packageJson.scripts?.build === "node scripts/build-site.mjs", "package has local public build script");
+check(packageJson.scripts?.["refresh:assets"] === "node scripts/refresh-launch-assets.mjs", "package has local launch asset refresh script");
 check(packageJson.scripts?.["serve:build"] === "python3 -m http.server 5178 --directory _site", "package has build preview script");
 check(packageJson.scripts?.["ready:public"] === "npm run check && npm run build", "package has public readiness script");
 check(packageJson.scripts?.["verify:public"] === "node scripts/verify-public-url.mjs", "package has public URL verifier script");
@@ -485,6 +488,11 @@ check(
 check(packageJson.scripts?.check.includes("npm run test:e2e"), "package check runs Playwright e2e tests");
 check(packageJson.scripts?.check.includes("node --check scripts/verify-public-url.mjs"), "package check syntax-checks public URL verifier");
 check(packageJson.scripts?.check.includes("node --check scripts/configure-public-launch.mjs"), "package check syntax-checks public metadata configurator");
+check(
+  hasAll(packageJson.scripts?.check || "", ["node --check scripts/refresh-launch-assets.mjs"]) &&
+    hasAll(refreshAssetsScript, ["@playwright/test", "deviceScaleFactor: 3", "assets/startup/apple-iphone-6-9-human-review.png", "store/submission/google-phone-human-review.png"]),
+  "launch asset refresh script captures PWA, startup, and draft store assets locally"
+);
 check(packageJson.scripts?.check.includes("node --check scripts/check-configure-public.mjs"), "package check syntax-checks public metadata checker");
 check(packageJson.scripts?.check.includes("node --check scripts/check-public-url-verifier.mjs"), "package check syntax-checks public URL verifier smoke check");
 check(packageJson.scripts?.check.includes("npm run check:configure-public"), "package check verifies public metadata configurator");
@@ -581,7 +589,7 @@ check(
   "app store submission prep documents current account, testing, and asset blockers"
 );
 check(
-  hasAll(submissionReadme, ["May 8, 2026", "swipe-card visual refresh", "Comment shortcut"]),
+  hasAll(submissionReadme, ["May 8, 2026", "card-dominant swipe layout", "Comment shortcut"]),
   "draft submission asset README matches current swipe UI refresh"
 );
 check(

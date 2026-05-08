@@ -18,7 +18,7 @@ Make AgentMash good enough to launch publicly as a serious app, while staying in
 - The app code is split into native ES modules with a thin `app.js` entry.
 - The app has two clear dashboards: Human review and Export workspace.
 - Human review supports fast first-impression judgement through a swipe-card flow.
-- Human review has a polished card-first swipe UI with a larger visual card, cleaner action rail, and a one-tap Comment path.
+- Human review has a polished card-first swipe UI with a larger visual card, compact mobile chrome, cleaner action rail, and a one-tap Comment path.
 - Optional scoring, tags, and notes are hidden behind a `Refine` tap by default.
 - A visible `Comment` action opens the Refine sheet directly on the optional decision note.
 - `Refine` opens as a bottom sheet above the decision controls instead of a panel below the swipe buttons.
@@ -131,6 +131,7 @@ Make AgentMash good enough to launch publicly as a serious app, while staying in
 | Keep PWA install language metadata explicit. | `manifest.webmanifest` declares `lang: en-US` and `dir: ltr`; `scripts/launch-check.mjs` verifies both values. | Met locally |
 | Keep PWA install icons consistent with the manifest. | `assets/icons/app-icon-192.png`, `assets/icons/app-icon-512.png`, `assets/icons/app-icon-1024.png`, and `store/app-icon-1024.png` match their declared PNG sizes; `scripts/launch-check.mjs` verifies those dimensions. | Met locally |
 | Keep PWA screenshots consistent with the manifest. | Public and store mirror PWA screenshots are 390 by 844 and 1440 by 1000 PNGs, matching `manifest.webmanifest`; `scripts/launch-check.mjs` verifies those dimensions. | Met locally |
+| Keep launch assets repeatable after UI changes. | `scripts/refresh-launch-assets.mjs` serves the app locally and captures public screenshots, iOS startup images, and draft store assets with Playwright; `package.json` exposes it as `npm run refresh:assets`; `npm run check` syntax-checks and verifies the script. | Met locally |
 | Verify offline PWA behavior. | Playwright waits for the service worker, switches the browser context offline, reloads, and verifies the AgentMash app shell and swipe card still render. | Met locally |
 | Avoid publishing internal launch docs and submission drafts. | `npm run build` writes `_site/` with only public app files. GitHub Pages, Netlify, and Vercel configs publish `_site/`. `npm run check` verifies `store/`, `scripts/`, `.github`, docs, package metadata, and host config files are not packaged. | Met locally |
 | Keep PWA updates from sticking behind stale host cache. | `_headers`, `netlify.toml`, and `vercel.json` set `Cache-Control: no-cache` for `sw.js` and `manifest.webmanifest`; `scripts/launch-check.mjs` verifies those rules. | Met locally |
