@@ -7,6 +7,7 @@ Last local verification: May 7, 2026. No deployment, paid account, domain purcha
 - [x] Run `npm run check`.
 - [x] Run `npm run check:launch`.
 - [x] Run `npm run check:configure-public`.
+- [x] Run `npm run check:verify-public`.
 - [x] Syntax-check `app.js`, `state.js`, `packet.js`, `render.js`, `gestures.js`, `sw.js`, and launch scripts.
 - [x] Run Playwright e2e coverage through local HTTP with `npm run serve`.
 - [x] Run `npm run ready:public`.

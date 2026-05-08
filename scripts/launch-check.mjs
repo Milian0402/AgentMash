@@ -26,6 +26,7 @@ const requiredFiles = [
   "scripts/verify-public-url.mjs",
   "scripts/configure-public-launch.mjs",
   "scripts/check-configure-public.mjs",
+  "scripts/check-public-url-verifier.mjs",
   "schemas/feedback.v2.json",
   "store/completion-audit.md",
   "store/public-launch-audit.md",
@@ -183,6 +184,7 @@ const testSpec = await read("tests/review-flow.spec.mjs");
 const verifyPublicScript = await read("scripts/verify-public-url.mjs");
 const configurePublicScript = await read("scripts/configure-public-launch.mjs");
 const configurePublicCheck = await read("scripts/check-configure-public.mjs");
+const publicVerifierCheck = await read("scripts/check-public-url-verifier.mjs");
 const readme = await read("README.md");
 const completionAudit = await read("store/completion-audit.md");
 const audit = await read("store/public-launch-audit.md");
@@ -357,6 +359,7 @@ check(packageJson.scripts?.["serve:build"] === "python3 -m http.server 5178 --di
 check(packageJson.scripts?.["ready:public"] === "npm run check && npm run build", "package has public readiness script");
 check(packageJson.scripts?.["verify:public"] === "node scripts/verify-public-url.mjs", "package has public URL verifier script");
 check(packageJson.scripts?.["configure:public"] === "node scripts/configure-public-launch.mjs", "package has public launch metadata configurator script");
+check(packageJson.scripts?.["check:verify-public"] === "node scripts/check-public-url-verifier.mjs", "package has public URL verifier smoke check");
 check(
   packageJson.scripts?.["check:configure-public"] === "node scripts/check-configure-public.mjs",
   "package has public metadata write-path check"
@@ -365,7 +368,9 @@ check(packageJson.scripts?.check.includes("npm run test:e2e"), "package check ru
 check(packageJson.scripts?.check.includes("node --check scripts/verify-public-url.mjs"), "package check syntax-checks public URL verifier");
 check(packageJson.scripts?.check.includes("node --check scripts/configure-public-launch.mjs"), "package check syntax-checks public metadata configurator");
 check(packageJson.scripts?.check.includes("node --check scripts/check-configure-public.mjs"), "package check syntax-checks public metadata checker");
+check(packageJson.scripts?.check.includes("node --check scripts/check-public-url-verifier.mjs"), "package check syntax-checks public URL verifier smoke check");
 check(packageJson.scripts?.check.includes("npm run check:configure-public"), "package check verifies public metadata configurator");
+check(packageJson.scripts?.check.includes("npm run check:verify-public"), "package check smoke-tests public URL verifier locally");
 check(packageJson.scripts?.["test:e2e"] === "playwright test", "package has Playwright e2e script");
 check(packageJson.devDependencies?.["@playwright/test"], "Playwright is a dev dependency only");
 check(
@@ -380,6 +385,11 @@ check(
 check(
   hasAll(verifyPublicScript, ["canonical URL", "Open Graph URL", "Twitter URL", "Open Graph image", "Twitter image", "data-public-support-contact"]),
   "public URL verifier checks final URL, preview image, and support metadata"
+);
+check(
+  hasAll(publicVerifierCheck, ["createServer", "configurePublicLaunch", "verify-public-url.mjs", "127.0.0.1", "publicBuildEntries"]) &&
+    !/\b(stripe|paypal|posthog|sendBeacon|WebSocket)\b/i.test(publicVerifierCheck),
+  "public URL verifier smoke check serves a configured local public build"
 );
 check(
   hasAll(testSpec, ["Profile export and import roundtrip restores uploaded images", "readFile", "#importFile", "storedImageForKey"]),
