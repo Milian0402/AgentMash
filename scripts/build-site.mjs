@@ -14,6 +14,7 @@ export const publicBuildEntries = [
   "gestures.js",
   "manifest.webmanifest",
   "sw.js",
+  "schemas",
   "privacy.html",
   "support.html",
   "terms.html",

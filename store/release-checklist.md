@@ -12,6 +12,7 @@ Last local verification: May 8, 2026. No deployment, paid account, domain purcha
 - [x] Run Playwright e2e coverage through local HTTP with `npm run serve`.
 - [x] Run `npm run ready:public`.
 - [x] Confirm `_site/` includes public app files and native modules.
+- [x] Confirm `_site/` includes public JSON Schema contracts for feedback and intake.
 - [x] Confirm `_site/` excludes internal `store/`, `scripts/`, tests, repo metadata, package files, and host config files.
 - [x] Confirm GitHub Pages, Netlify, and Vercel configs use `_site/` as the publish or output directory.
 - [x] Confirm the service worker caches the public app shell, icons, screenshots, pages, and native modules.
@@ -85,6 +86,7 @@ Last local verification: May 8, 2026. No deployment, paid account, domain purcha
 - [ ] Confirm `privacy.html` is publicly reachable.
 - [ ] Confirm `terms.html` is publicly reachable.
 - [ ] Run `npm run verify:public -- https://YOUR-PUBLIC-URL`.
+- [ ] Confirm `/schemas/feedback.v2.json` and `/schemas/intake.v1.json` are publicly reachable.
 - [ ] Confirm security headers on the public host.
 - [ ] Confirm HTTPS.
 - [ ] Confirm service worker install and update behavior on the public host.

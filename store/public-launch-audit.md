@@ -32,6 +32,7 @@ Make AgentMash good enough to launch publicly as a serious app.
 - PWA manifest declares `en-US` language and left-to-right text direction for install surfaces.
 - PWA icon PNGs are verified at 192 by 192, 512 by 512, and 1024 by 1024, with the Apple touch icon verified at 180 by 180.
 - Public build script packages `_site/` without internal launch docs, submission drafts, scripts, or repo metadata.
+- Public build packages `schemas/feedback.v2.json` and `schemas/intake.v1.json` so future integrators can inspect the machine-readable contracts.
 - `npm run ready:public` runs the full local quality gate and rebuilds `_site/` before the user connects hosting.
 - `npm run configure:public -- --url https://YOUR-PUBLIC-URL --support YOUR-SUPPORT-ROUTE` is ready to stamp final public URL and support metadata locally once the user chooses them.
 - The same final metadata command writes `robots.txt` with the public sitemap URL and writes `sitemap.xml` with public app, support, privacy, and terms URLs.
@@ -70,6 +71,7 @@ Make AgentMash good enough to launch publicly as a serious app.
 - Dataset-mode return envelopes report `application/x-ndjson` for local JSONL exports.
 - `schemas/feedback.v2.json` documents the local packet contract for future validation.
 - `schemas/intake.v1.json` documents the local agent-drop contract for future backend, API, or MCP intake.
+- The public URL verifier fetches both schema URLs and confirms their `agentmash.feedback.v2` and `agentmash.intake.v1` contract metadata.
 - Export workspace shows local contract status badges for the active feedback packet and JSONL dataset rows.
 - Refine panel is hidden by default and closes after a decision, keeping the next card in the fast swipe loop.
 - Refine score sliders are hidden behind `Scores` until explicitly opened.
@@ -129,8 +131,8 @@ Make AgentMash good enough to launch publicly as a serious app.
 - Manifest screenshots point to tracked screenshot assets.
 - Public manifest screenshots point to `assets/screenshots`.
 - `npm run check` builds `_site/` and verifies internal files are not packaged.
-- `_site/` includes all public app modules and `sw.js` caches those module files.
-- `sw.js` cache name is `agentmash-v34` after public HTML metadata, manifest copy, CSP fallback, iOS startup image, and public support-copy changes, so the offline app shell refreshes when this build is published.
+- `_site/` includes all public app modules, public schema files, and `sw.js` caches those module and schema files.
+- `sw.js` cache name is `agentmash-v35` after adding public schema contracts to the app shell, so the offline app shell refreshes when this build is published.
 - Playwright e2e test passed: after service worker readiness, the app reloaded offline and rendered the AgentMash shell and swipe card.
 - Netlify and Vercel configs are checked for `npm run build` plus `_site/` output.
 - Apple touch icon is linked from `index.html`, cached by `sw.js`, and sized at 180 by 180.

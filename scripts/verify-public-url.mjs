@@ -156,6 +156,20 @@ async function checkNotPublic(base, path) {
   fail(`${path} should not be public; got ${response.status}`);
 }
 
+async function checkSchema(base, path, expectedConst, label) {
+  const response = await checkOk(base, path, label);
+  try {
+    const parsed = JSON.parse(response.body);
+    if (parsed.properties?.schema?.const === expectedConst) {
+      pass(`${label} has ${expectedConst} contract metadata`);
+    } else {
+      fail(`${label} does not expose ${expectedConst}`);
+    }
+  } catch {
+    fail(`${label} is not valid JSON`);
+  }
+}
+
 async function main() {
   const base = normalizeBase(input);
   if (base.protocol !== "https:" && !isLocalHost(base)) {
@@ -258,6 +272,8 @@ async function main() {
   }
 
   await checkOk(base, "/assets/icons/apple-touch-icon.png", "Apple touch icon");
+  await checkSchema(base, "/schemas/feedback.v2.json", "agentmash.feedback.v2", "feedback schema");
+  await checkSchema(base, "/schemas/intake.v1.json", "agentmash.intake.v1", "intake schema");
   await checkNotPublic(base, "/store/completion-audit.md");
   await checkNotPublic(base, "/package.json");
   await checkNotPublic(base, "/PUBLISHING.md");

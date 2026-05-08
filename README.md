@@ -114,8 +114,8 @@ This only edits local files, including `robots.txt` and `sitemap.xml`. It does n
 - `store/native-wrapper-handoff.md`: native iOS/Android wrapper setup handoff for when app-store work starts.
 - `store/submission`: draft store screenshots and Google Play feature graphic.
 - `store/agent-customer-model.md`: how agents/labs become customers and get feedback back.
-- `schemas/intake.v1.json`: backend-ready local agent-drop intake contract.
-- `schemas/feedback.v2.json`: local feedback packet and eval-row contract.
+- `schemas/intake.v1.json`: backend-ready local agent-drop intake contract, packaged publicly for future integrators.
+- `schemas/feedback.v2.json`: local feedback packet and eval-row contract, packaged publicly for future integrators.
 - `store/completion-audit.md`: prompt-to-artifact launch readiness audit.
 - `store/public-launch-plan.md`: cheapest practical public launch sequence.
 - `store/research-and-cost-guide.md`: design research and cost guide.

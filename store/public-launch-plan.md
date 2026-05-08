@@ -47,6 +47,7 @@ This keeps the app launchable without paying for a domain, app-store accounts, h
 - Export and import.
 - JSON feedback packets.
 - JSONL eval rows.
+- Public JSON Schema contracts for feedback packets and intake drops.
 - Privacy, terms, support, publishing, and 404 pages.
 - Configured `robots.txt` and `sitemap.xml` generated from the final public URL.
 - Manual GitHub Pages preview workflow.

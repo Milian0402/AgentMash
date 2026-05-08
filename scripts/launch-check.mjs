@@ -79,6 +79,8 @@ const appShellFiles = [
   "./render.js",
   "./gestures.js",
   "./manifest.webmanifest",
+  "./schemas/feedback.v2.json",
+  "./schemas/intake.v1.json",
   "./assets/app-icon.svg",
   "./assets/icons/app-icon-192.png",
   "./assets/icons/app-icon-512.png",
@@ -426,8 +428,8 @@ check(
   "public metadata checker exercises real write, idempotency, and dry-run paths"
 );
 check(
-  hasAll(verifyPublicScript, ["canonical URL", "Open Graph URL", "Twitter URL", "Open Graph image", "Twitter image", "data-public-support-contact", "robots file", "sitemap includes"]),
-  "public URL verifier checks final URL, preview image, support metadata, robots, and sitemap"
+  hasAll(verifyPublicScript, ["canonical URL", "Open Graph URL", "Twitter URL", "Open Graph image", "Twitter image", "data-public-support-contact", "robots file", "sitemap includes", "feedback schema", "intake schema"]),
+  "public URL verifier checks final URL, preview image, support metadata, robots, sitemap, and schemas"
 );
 check(
   hasAll(publicVerifierCheck, ["createServer", "configurePublicLaunch", "verify-public-url.mjs", "127.0.0.1", "publicBuildEntries", "application/xml"]) &&
