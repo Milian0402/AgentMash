@@ -440,6 +440,44 @@ test("Desktop launch screenshot keeps the full decision rail visible", async ({ 
   });
 });
 
+test("Dark mode keeps the review card and comment sheet readable", async ({ page }) => {
+  await page.emulateMedia({ colorScheme: "dark" });
+  await page.setViewportSize({ width: 390, height: 844 });
+  await resetApp(page);
+
+  await expect(page.locator("#swipeCard")).toBeVisible();
+  const cardContrast = await page.evaluate(() => {
+    const title = getComputedStyle(document.querySelector(".first-look-stage .site-copy-block strong")).color;
+    const nav = getComputedStyle(document.querySelector(".first-look-stage .site-nav")).color;
+    return { title, nav };
+  });
+
+  expect(cardContrast).toEqual({
+    title: "rgb(243, 245, 237)",
+    nav: "rgb(155, 210, 230)"
+  });
+
+  await page.getByRole("button", { name: "Comment" }).click();
+  await expect(page.locator("#signalPanel")).toBeVisible();
+  const sheetContrast = await page.locator("#signalPanel").evaluate((panel) => {
+    const panelStyle = getComputedStyle(panel);
+    const textareaStyle = getComputedStyle(document.querySelector("#reviewNote"));
+    return {
+      panelBackground: panelStyle.backgroundColor,
+      panelText: panelStyle.color,
+      textareaBackground: textareaStyle.backgroundColor,
+      textareaText: textareaStyle.color
+    };
+  });
+
+  expect(sheetContrast).toEqual({
+    panelBackground: "rgba(28, 33, 27, 0.96)",
+    panelText: "rgb(243, 245, 237)",
+    textareaBackground: "rgb(28, 33, 27)",
+    textareaText: "rgb(243, 245, 237)"
+  });
+});
+
 test("Keyboard shortcuts support swipe and pairwise without hijacking text entry", async ({ page }) => {
   await resetApp(page);
 

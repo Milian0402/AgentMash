@@ -3379,3 +3379,66 @@ body[data-decision-transition="true"] .decision-button {
     min-height: clamp(620px, 68vh, 680px);
   }
 }
+
+@media (prefers-color-scheme: dark) {
+  .first-look-stage .preview-website {
+    background:
+      linear-gradient(155deg, rgba(75, 43, 51, 0.72) 0%, transparent 36%),
+      linear-gradient(180deg, #252b24 0%, #182019 58%, #10140f 100%);
+  }
+
+  .first-look-stage .browser-bar,
+  .first-look-stage .site-proof-row span,
+  .first-look-stage .site-dashboard-top,
+  .first-look-stage .approval-row {
+    border-color: rgba(255, 255, 255, 0.1);
+    background: rgba(28, 33, 27, 0.86);
+  }
+
+  .first-look-stage .site-copy-block strong,
+  .first-look-stage .site-proof-row b,
+  .first-look-stage .approval-row b {
+    color: #f3f5ed;
+  }
+
+  .first-look-stage .site-copy-block p,
+  .first-look-stage .site-proof-row span,
+  .first-look-stage .approval-row,
+  .first-look-stage .browser-bar {
+    color: #aeb8a9;
+  }
+
+  .first-look-stage .site-nav {
+    background: rgba(120, 184, 209, 0.16);
+    color: #9bd2e6;
+  }
+
+  .first-look-stage .site-cta.secondary {
+    background: rgba(255, 255, 255, 0.1);
+    color: #d9e2d3;
+  }
+
+  .first-look-stage .site-visual {
+    border-color: rgba(255, 255, 255, 0.1);
+    background: rgba(28, 33, 27, 0.64);
+  }
+
+  .first-look-stage .signal-panel {
+    border-color: rgba(255, 255, 255, 0.1);
+    background: rgba(28, 33, 27, 0.96);
+    color: var(--ink);
+    box-shadow: 0 24px 70px rgba(0, 0, 0, 0.46);
+  }
+
+  .first-look-stage .signal-panel::before {
+    background: rgba(174, 184, 169, 0.44);
+  }
+
+  .first-look-stage .score-preview > div,
+  .first-look-stage .score-control,
+  .first-look-stage .note-field textarea {
+    border-color: var(--line);
+    background: var(--surface);
+    color: var(--ink);
+  }
+}
