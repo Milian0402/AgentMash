@@ -358,6 +358,29 @@ test("Rapid decisions are locked and mobile filter labels stay readable", async 
   await expect(page.locator(".site-footer")).toBeHidden();
   await page.getByRole("button", { name: "Deck" }).click();
   await expect(page.locator("#humanPanel")).toBeVisible();
+  await expect(page.getByRole("button", { name: "Start fresh" })).toBeVisible();
+  await expect(page.locator("#panelScrim")).toBeVisible();
+  const endlessButtonStyle = await page.locator("#endlessToggle").evaluate((button) => {
+    const style = getComputedStyle(button);
+    return {
+      minHeight: style.minHeight,
+      borderRadius: style.borderRadius,
+      fontWeight: style.fontWeight
+    };
+  });
+  expect(endlessButtonStyle).toEqual({
+    minHeight: "44px",
+    borderRadius: "8px",
+    fontWeight: "850"
+  });
+  await page.locator("#panelScrim").click({ position: { x: 4, y: 4 } });
+  await expect(page.locator("#humanPanel")).toBeHidden();
+  await page.getByRole("button", { name: "Deck" }).click();
+  await expect(page.locator("#humanPanel")).toBeVisible();
+  await page.keyboard.press("Escape");
+  await expect(page.locator("#humanPanel")).toBeHidden();
+  await page.getByRole("button", { name: "Deck" }).click();
+  await expect(page.locator("#humanPanel")).toBeVisible();
   await page.getByRole("button", { name: "Close" }).click();
   await expect(page.locator("#humanPanel")).toBeHidden();
 
@@ -423,6 +446,10 @@ test("Short mobile review screen keeps preview labels clear", async ({ page }) =
     const proofRows = [...document.querySelectorAll(".site-proof-row span")].map((row) => row.getBoundingClientRect());
     const actions = document.querySelector(".swipe-actions").getBoundingClientRect();
     const card = document.querySelector("#swipeCard").getBoundingClientRect();
+    const reject = document.querySelector("#rejectButton").getBoundingClientRect();
+    const accept = document.querySelector("#acceptButton").getBoundingClientRect();
+    const undo = document.querySelector("#undoButton").getBoundingClientRect();
+    const comment = document.querySelector("#commentButton").getBoundingClientRect();
     const separatedFrom = (target) => proofRows.every((row) => (
       row.bottom <= target.top - 4 ||
       row.top >= target.bottom + 4 ||
@@ -432,6 +459,7 @@ test("Short mobile review screen keeps preview labels clear", async ({ page }) =
 
     return {
       actionsBelowCard: actions.top >= card.bottom - 4,
+      primaryButtonsDominate: reject.width > undo.width && accept.width > comment.width,
       proofClearOfQuestion: separatedFrom(question),
       proofClearOfType: separatedFrom(type)
     };
@@ -439,6 +467,7 @@ test("Short mobile review screen keeps preview labels clear", async ({ page }) =
 
   expect(layout).toEqual({
     actionsBelowCard: true,
+    primaryButtonsDominate: true,
     proofClearOfQuestion: true,
     proofClearOfType: true
   });
@@ -452,15 +481,32 @@ test("Desktop launch screenshot keeps the full decision rail visible", async ({ 
   const layout = await page.evaluate(() => {
     const actions = document.querySelector(".swipe-actions").getBoundingClientRect();
     const card = document.querySelector("#swipeCard").getBoundingClientRect();
+    const buttons = [...document.querySelectorAll(".swipe-actions .decision-button")].map((button) => ({
+      left: button.getBoundingClientRect().left,
+      right: button.getBoundingClientRect().right
+    }));
+    const buttonsDoNotOverlap = buttons.every((button, index) => (
+      index === 0 || buttons[index - 1].right <= button.left - 2
+    ));
+    const labelsFit = [...document.querySelectorAll(".swipe-actions .decision-button strong, .swipe-actions .decision-key")]
+      .every((label) => {
+        const labelRect = label.getBoundingClientRect();
+        const buttonRect = label.closest(".decision-button").getBoundingClientRect();
+        return labelRect.left >= buttonRect.left && labelRect.right <= buttonRect.right;
+      });
     return {
       actionsClearOfCard: actions.top >= card.bottom + 8,
-      actionsFullyVisible: actions.bottom <= window.innerHeight - 8
+      actionsFullyVisible: actions.bottom <= window.innerHeight - 8,
+      buttonsDoNotOverlap,
+      labelsFit
     };
   });
 
   expect(layout).toEqual({
     actionsClearOfCard: true,
-    actionsFullyVisible: true
+    actionsFullyVisible: true,
+    buttonsDoNotOverlap: true,
+    labelsFit: true
   });
 });
 
@@ -736,6 +782,8 @@ test("Remix deck starts another local session without overwriting exports", asyn
 });
 
 test("Pairwise mode stores comparison rows without creating swipe reviews", async ({ page }) => {
+  test.setTimeout(60_000);
+  await page.emulateMedia({ reducedMotion: "reduce" });
   await page.setViewportSize({ width: 390, height: 844 });
   await resetApp(page);
 
@@ -763,9 +811,31 @@ test("Pairwise mode stores comparison rows without creating swipe reviews", asyn
 
   await page.getByRole("button", { name: "Export workspace" }).click();
   await expect(page.locator("#datasetStatus")).toHaveText("1 rows");
+  await expect(page.locator("#agentReadyPackets")).toHaveText("1");
+  await expect(page.locator("#agentPendingRequests")).toHaveText("2");
+  await expect(page.locator("#agentAvgConfidence")).toHaveText("100%");
+  await expect(page.locator("#agentRequestList")).toContainText("Compared");
+  await expect(page.locator("#agentSignalList")).toContainText("Pairwise / preference");
   let rows = await page.locator("#datasetPreview").evaluate((node) => node.textContent.trim().split("\n").map(JSON.parse));
   expect(rows[0].schema).toBe("agentmash.pairwise-row.v1");
   expect(rows[0].comparison.preferenceLabel).toBe("left_preferred");
+
+  const pairwiseBundleDownload = page.waitForEvent("download");
+  await page.locator("#downloadBundleButton").click();
+  const pairwiseBundlePath = await (await pairwiseBundleDownload).path();
+  const pairwiseBundle = JSON.parse(await readFile(pairwiseBundlePath, "utf8"));
+  expect(pairwiseBundle).toMatchObject({
+    schema: "agentmash.feedback-bundle.v1",
+    status: "ready",
+    summary: {
+      artifactCount: 4,
+      reviewedArtifacts: 2,
+      pendingArtifacts: 2,
+      packetCount: 0,
+      evalRowCount: 0,
+      pairwiseRowCount: 1
+    }
+  });
 
   await page.getByRole("button", { name: "Human review", exact: true }).click();
   await page.getByRole("button", { name: "Deck" }).click();
@@ -788,6 +858,29 @@ test("Pairwise mode stores comparison rows without creating swipe reviews", asyn
   expect(packet.humanSignal.verdict).toBe("accepted");
   expect(packet.pairwiseComparisons).toHaveLength(1);
   expect(packet.humanSignal.pairwisePreference).toHaveLength(1);
+
+  const bundleDownload = page.waitForEvent("download");
+  await page.locator("#downloadBundleButton").click();
+  const bundlePath = await (await bundleDownload).path();
+  const bundle = JSON.parse(await readFile(bundlePath, "utf8"));
+  expect(bundle).toMatchObject({
+    schema: "agentmash.feedback-bundle.v1",
+    status: "ready",
+    summary: {
+      artifactCount: 4,
+      reviewedArtifacts: 2,
+      pendingArtifacts: 2,
+      packetCount: 1,
+      evalRowCount: 1,
+      pairwiseRowCount: 1
+    }
+  });
+  expect(bundle.packets).toHaveLength(1);
+  expect(bundle.evalRows).toHaveLength(1);
+  expect(bundle.pairwiseRows).toHaveLength(1);
+  expect(bundle.packets[0].schema).toBe("agentmash.feedback.v2");
+  expect(bundle.evalRows[0].schema).toBe("agentmash.eval-row.v2");
+  expect(bundle.pairwiseRows[0].schema).toBe("agentmash.pairwise-row.v1");
 });
 
 test("Endless mode auto-loops one local variant at a time", async ({ page }) => {
@@ -867,6 +960,7 @@ test("Uploaded images are stored in IndexedDB instead of localStorage", async ({
   const storedImage = await storedImageForKey(page, uploadedItem.imageKey);
 
   expect(storedImage).toContain("data:image/png;base64,");
+  await expect.poll(() => page.locator(".first-look-stage .preview-image img").evaluate((image) => getComputedStyle(image).objectFit)).toBe("contain");
   await expect(page.locator("#imageStorageUsage")).toContainText("IndexedDB");
 });
 
@@ -1024,6 +1118,116 @@ test("Agent drop import validates payloads and creates backend-ready review pack
   const [row] = await page.locator("#datasetPreview").evaluate((node) => node.textContent.trim().split("\n").map(JSON.parse));
   expect(row.artifact.reviewContext).toEqual(importedItem.reviewContext);
   expect(row.agentUse.reviewContext).toEqual(importedItem.reviewContext);
+});
+
+test("API connection pulls queued artifacts and sends feedback bundles", async ({ page }) => {
+  await page.addInitScript(() => {
+    Object.defineProperty(navigator, "serviceWorker", { value: undefined });
+  });
+  await resetApp(page);
+  let sentBundle = null;
+
+  await page.route("**/v1/review-queue?**", async (route) => {
+    await route.fulfill({
+      status: 200,
+      contentType: "application/json",
+      body: JSON.stringify({
+        schema: "agentmash.review-queue.v1",
+        generatedAt: "2026-05-13T00:00:00.000Z",
+        count: 1,
+        artifacts: [
+          {
+            id: "api-product-001",
+            type: "product",
+            title: "API queued bottle render",
+            prompt: "Generated product image submitted through the API.",
+            body: "A small visual candidate queued for human judgement.",
+            question: "Does this API-submitted image earn trust?",
+            imageData: `data:image/png;base64,${tinyPngBase64}`,
+            agent: {
+              requesterType: "agent",
+              requesterName: "api-agent",
+              runId: "api-run-001",
+              goal: "Close the loop from agent submission to human feedback.",
+              returnMode: "json",
+              returnTarget: "api-feedback"
+            },
+            reviewContext: {
+              focus: "trust",
+              audience: "buyers",
+              stage: "prelaunch",
+              priority: "high",
+              notes: "Review this as a live API submission."
+            },
+            createdAt: "2026-05-13T00:00:00.000Z"
+          }
+        ],
+        limits: {
+          maxArtifactsPerRequest: 50,
+          maxImageBytes: 2500000,
+          allowedImageTypes: ["image/png", "image/jpeg", "image/webp"]
+        }
+      })
+    });
+  });
+
+  await page.route("**/v1/feedback", async (route) => {
+    sentBundle = route.request().postDataJSON();
+    await route.fulfill({
+      status: 202,
+      contentType: "application/json",
+      body: JSON.stringify({
+        schema: "agentmash.feedback-ack.v1",
+        status: "stored",
+        storedAt: "2026-05-13T00:00:00.000Z",
+        runIds: ["api-run-001"],
+        packetCount: 1,
+        evalRowCount: 1,
+        pairwiseRowCount: 0
+      })
+    });
+  });
+
+  await page.getByRole("button", { name: "Export workspace" }).click();
+  await expect(page.locator("#apiSyncStatus")).toHaveAttribute("role", "status");
+  await page.locator("#apiToken").fill("test-token");
+  await page.getByRole("button", { name: "Save API" }).click();
+  await expect(page.locator("#apiSyncStatus")).toContainText("API settings saved.");
+
+  await page.getByRole("button", { name: "Pull queue" }).click();
+  await expect(page.locator("#apiSyncStatus")).toContainText("Pulled 1 artifacts.");
+  await expect(page.locator("#artifactTitleLabel")).toContainText("API queued bottle render");
+
+  const storedProfile = await page.evaluate((key) => JSON.parse(localStorage.getItem(key)), storageKey);
+  expect(storedProfile.items[0]).toMatchObject({
+    id: "api-product-001",
+    imageData: "",
+    agent: {
+      requesterName: "api-agent",
+      runId: "api-run-001"
+    },
+    reviewContext: {
+      focus: "trust",
+      audience: "buyers",
+      stage: "prelaunch",
+      priority: "high",
+      notes: "Review this as a live API submission."
+    }
+  });
+  await expect.poll(() => storedImageForKey(page, storedProfile.items[0].imageKey)).toContain("data:image/png;base64,");
+
+  await page.getByRole("button", { name: /Nice/ }).click();
+  await expect.poll(() => reviewCount(page)).toBe(1);
+  await page.getByRole("button", { name: "Export workspace" }).click();
+  await page.getByRole("button", { name: "Send feedback" }).click();
+  await expect(page.locator("#apiSyncStatus")).toContainText("Sent 1 packets and 1 rows.");
+
+  expect(sentBundle).toMatchObject({
+    schema: "agentmash.feedback-bundle.v1",
+    status: "ready"
+  });
+  expect(sentBundle.packets.some((packet) => packet.request.runId === "api-run-001")).toBe(true);
+  expect(sentBundle.evalRows.some((row) => row.artifact.runId === "api-run-001")).toBe(true);
 });
 
 test("Profile export and import roundtrip restores uploaded images", async ({ page }) => {

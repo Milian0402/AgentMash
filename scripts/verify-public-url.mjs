@@ -1,7 +1,6 @@
 import http from "node:http";
 import https from "node:https";
 
-const input = process.argv[2];
 const maxBodyBytes = 3 * 1024 * 1024;
 const securityHeaders = [
   "content-security-policy",
@@ -14,6 +13,23 @@ const securityHeaders = [
 
 let failures = 0;
 let warnings = 0;
+
+function usage() {
+  return "usage: npm run verify:public -- --url https://your-domain.example";
+}
+
+function parseArgs(argv) {
+  if (argv.length === 1 && argv[0] !== "--url") {
+    return argv[0];
+  }
+
+  if (argv[0] === "--url" && argv[1] && argv.length === 2) {
+    return argv[1];
+  }
+
+  fail(usage());
+  process.exit(2);
+}
 
 function pass(message) {
   console.log(`ok - ${message}`);
@@ -176,15 +192,17 @@ async function checkOpenApiContract(base) {
     const parsed = JSON.parse(response.body);
     if (
       parsed.openapi === "3.1.0" &&
-      parsed["x-agentmash-status"] === "contract-only" &&
-      parsed["x-agentmash-no-live-server"] === true &&
-      parsed["x-agentmash-live-server-url"] === null &&
-      !parsed.servers?.length &&
+      parsed["x-agentmash-status"] === "implemented" &&
+      parsed["x-agentmash-runtime"] === "server/agentmash-api.mjs" &&
+      Array.isArray(parsed.servers) &&
       !response.body.includes("api.agentmash.example") &&
+      parsed.paths?.["/v1/health"]?.get &&
       parsed.paths?.["/v1/intake"]?.post &&
+      parsed.paths?.["/v1/review-queue"]?.get &&
+      parsed.paths?.["/v1/feedback"]?.post &&
       parsed.paths?.["/v1/feedback/{runId}"]?.get
     ) {
-      pass("API contract exposes contract-only future backend routes");
+      pass("API contract exposes implemented backend routes");
     } else {
       fail("API contract metadata or routes are incomplete");
     }
@@ -229,6 +247,7 @@ async function checkExample(base, path, expectedSchema, label) {
 }
 
 async function main() {
+  const input = parseArgs(process.argv.slice(2));
   const base = normalizeBase(input);
   if (base.protocol !== "https:" && !isLocalHost(base)) {
     fail("public URL should use HTTPS");
@@ -237,7 +256,7 @@ async function main() {
   }
 
   const home = await checkOk(base, "/", "home page");
-  if (home.body.includes("AgentMash") && home.body.includes('type="module" src="app.js"')) {
+  if (home.body.includes("AgentMash") && /type="module" src="app\.js(\?v=\d+)?"/.test(home.body)) {
     pass("home page renders the AgentMash app shell");
   } else {
     fail("home page does not look like the AgentMash app shell");
@@ -303,10 +322,17 @@ async function main() {
   const manifest = await checkOk(base, "/manifest.webmanifest", "web manifest");
   try {
     const parsed = JSON.parse(manifest.body);
-    if (parsed.name === "AgentMash" && parsed.start_url && parsed.icons?.length >= 3) {
+    const expectedAppPath = base.pathname;
+    if (
+      parsed.name === "AgentMash" &&
+      parsed.id === expectedAppPath &&
+      parsed.start_url === expectedAppPath &&
+      parsed.scope === expectedAppPath &&
+      parsed.icons?.length >= 3
+    ) {
       pass("web manifest has AgentMash app metadata");
     } else {
-      fail("web manifest metadata is incomplete");
+      fail("web manifest metadata is incomplete or not configured for the public URL");
     }
   } catch {
     fail("web manifest is not valid JSON");

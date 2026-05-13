@@ -6,6 +6,8 @@ const requiredFiles = [
   "index.html",
   "styles.css",
   "app.js",
+  "api-client.js",
+  "intake.js",
   "state.js",
   "packet.js",
   "render.js",
@@ -23,11 +25,15 @@ const requiredFiles = [
   "package-lock.json",
   "playwright.config.mjs",
   "tests/review-flow.spec.mjs",
+  "tests/api-smoke.mjs",
+  "server/agentmash-api.mjs",
   "scripts/build-site.mjs",
   "scripts/refresh-launch-assets.mjs",
   "scripts/verify-public-url.mjs",
   "scripts/configure-public-launch.mjs",
+  "scripts/prepare-public-build.mjs",
   "scripts/check-configure-public.mjs",
+  "scripts/check-prepare-public-build.mjs",
   "scripts/check-public-url-verifier.mjs",
   "schemas/feedback.v2.json",
   "schemas/intake.v1.json",
@@ -71,6 +77,13 @@ const requiredFiles = [
 ];
 
 const textFiles = requiredFiles.filter((file) => !file.endsWith(".png"));
+const fetchAllowedFiles = new Set([
+  "sw.js",
+  "api-client.js",
+  "server/agentmash-api.mjs",
+  "tests/api-smoke.mjs",
+  "tests/review-flow.spec.mjs"
+]);
 const htmlPages = [
   "index.html",
   "support.html",
@@ -83,6 +96,8 @@ const appShellFiles = [
   "./index.html",
   "./styles.css",
   "./app.js",
+  "./api-client.js",
+  "./intake.js",
   "./state.js",
   "./packet.js",
   "./render.js",
@@ -192,6 +207,8 @@ const support = htmlPageSources["support.html"];
 const privacy = htmlPageSources["privacy.html"];
 const terms = htmlPageSources["terms.html"];
 const app = await read("app.js");
+const apiClient = await read("api-client.js");
+const intakeModule = await read("intake.js");
 const stateModule = await read("state.js");
 const packetModule = await read("packet.js");
 const renderModule = await read("render.js");
@@ -204,10 +221,14 @@ const netlify = await read("netlify.toml");
 const pagesWorkflow = await read(".github/workflows/pages.yml");
 const playwrightConfig = await read("playwright.config.mjs");
 const testSpec = await read("tests/review-flow.spec.mjs");
+const apiSmokeTest = await read("tests/api-smoke.mjs");
+const apiServer = await read("server/agentmash-api.mjs");
 const refreshAssetsScript = await read("scripts/refresh-launch-assets.mjs");
 const verifyPublicScript = await read("scripts/verify-public-url.mjs");
 const configurePublicScript = await read("scripts/configure-public-launch.mjs");
+const preparePublicScript = await read("scripts/prepare-public-build.mjs");
 const configurePublicCheck = await read("scripts/check-configure-public.mjs");
+const preparePublicCheck = await read("scripts/check-prepare-public-build.mjs");
 const publicVerifierCheck = await read("scripts/check-public-url-verifier.mjs");
 const publishingNotes = await read("publishing.html");
 const publishingRunbook = await read("PUBLISHING.md");
@@ -285,12 +306,17 @@ check(index.includes('accept="image/png,image/jpeg,image/webp"') && !index.inclu
 check(hasAll(index, ["support.html", "privacy.html", "terms.html"]) && !index.includes("publishing.html"), "footer links only user-facing public pages");
 check(index.includes("Export workspace") && index.includes("Local export workspace"), "agent-facing surface is framed as local export workspace");
 check(!/Agent lab|Request Queue|Waiting on humans|Returned Signals|Retry queue|No agent requests/i.test(index), "export workspace avoids inbound-traffic wording");
+check(hasAll(index, ["API Connection", "apiBaseUrl", "apiToken", "Pull queue", "Send feedback"]), "export workspace exposes explicit API sync controls");
 check(index.includes("Export metadata") && index.includes("Export format"), "add artifact form uses local export wording");
 check(!/Webhook when online|Polling endpoint|Return target|Add Artifact Request|Requester details/i.test(index), "public intake avoids unavailable network-return wording");
-check(index.includes('type="module" src="app.js"'), "index loads native ES module entry");
+check(/type="module" src="app\.js(\?v=\d+)?"/.test(index), "index loads native ES module entry");
 check(
   hasAll(packageJson.scripts?.check || "", ["node --check state.js", "node --check packet.js", "node --check render.js", "node --check gestures.js"]),
   "package check syntax-checks app modules"
+);
+check(
+  Boolean(packageJson.scripts?.["serve:api"] && packageJson.scripts?.["test:api"]),
+  "package exposes API server and API smoke test scripts"
 );
 check(
   hasAll(playwrightConfig, ["webServer", "npm run serve", "http://127.0.0.1:5177/"]),
@@ -379,6 +405,20 @@ check(
     !/\b(fetch|XMLHttpRequest|sendBeacon|WebSocket)\b/i.test(appSurface),
   "agent drop import stays local and normalizes backend-ready payloads"
 );
+check(
+  hasAll(intakeModule, ["validateIntakePayload", "normalizeIntakeArtifact", "MAX_IMAGE_BYTES", "agentmash.review-queue.v1"]),
+  "shared intake module backs both local import and API intake"
+);
+check(
+  hasAll(apiClient, ["pullReviewQueue", "publishFeedbackBundle", "agentmash.api-config.v1"]) &&
+    hasAll(app, ["pullApiQueue", "pushApiFeedback", "queuePayloadToIntake"]),
+  "browser API client pulls queued artifacts and sends feedback bundles only from explicit controls"
+);
+check(
+  hasAll(apiServer, ["createAgentMashServer", "/v1/intake", "/v1/review-queue", "/v1/feedback", "artifacts", "AGENTMASH_API_TOKEN"]) &&
+    hasAll(apiSmokeTest, ["api-smoke-token", "/v1/intake", "/v1/review-queue", "/v1/feedback/api-smoke-run", "/v1/artifacts/api-smoke-artifact"]),
+  "API server and smoke test cover the live agent feedback loop"
+);
 check(hasAll(testSpec, ["Agent drop rejected:", "bad-agent-drop.json", "artifacts[0].type"]), "Playwright covers invalid agent-drop rejection");
 check(hasAll(packetModule, ["reviewContext", "validateReviewContext"]), "feedback packets carry backend-ready review context");
 check(
@@ -411,22 +451,24 @@ check(
 );
 check(
   apiContract.openapi === "3.1.0"
-    && apiContract["x-agentmash-status"] === "contract-only"
-    && apiContract["x-agentmash-no-live-server"] === true
-    && apiContract["x-agentmash-live-server-url"] === null
-    && !apiContract.servers?.length
+    && apiContract["x-agentmash-status"] === "implemented"
+    && apiContract["x-agentmash-runtime"] === "server/agentmash-api.mjs"
+    && Array.isArray(apiContract.servers)
     && hasAll(JSON.stringify(apiContract["x-agentmash-example-files"]), [
       "/schemas/examples/intake.v1.json",
       "/schemas/examples/intake-ack.v1.json",
       "/schemas/examples/feedback-bundle.v1.json"
     ])
+    && Boolean(apiContract.paths?.["/v1/health"]?.get)
     && Boolean(apiContract.paths?.["/v1/intake"]?.post)
+    && Boolean(apiContract.paths?.["/v1/review-queue"]?.get)
+    && Boolean(apiContract.paths?.["/v1/feedback"]?.post)
     && Boolean(apiContract.paths?.["/v1/feedback/{runId}"]?.get)
     && Boolean(apiContract.paths?.["/v1/artifacts/{artifactId}"]?.delete)
     && JSON.stringify(apiContract).includes("./intake.v1.json")
     && JSON.stringify(apiContract).includes("./feedback.v2.json")
     && !JSON.stringify(apiContract).includes("api.agentmash.example"),
-  "future backend OpenAPI contract is explicit and contract-only"
+  "backend OpenAPI contract describes the implemented API loop"
 );
 check(
   mcpContract.schema === "agentmash.mcp-tools.v1"
@@ -469,7 +511,10 @@ check(
     && feedbackBundleExample.packets?.[0]?.humanSignal?.signalStrength === 0.79
     && feedbackBundleExample.packets?.[0]?.humanSignal?.reviewProvenance?.inputMethod === "swipe"
     && feedbackBundleExample.evalRows?.[0]?.humanSignal?.reviewProvenance?.decisionLatencyMs === 1360
-    && feedbackBundleExample.evalRows?.[0]?.schema === "agentmash.eval-row.v2",
+    && feedbackBundleExample.evalRows?.[0]?.schema === "agentmash.eval-row.v2"
+    && feedbackBundleExample.summary?.packetCount === 1
+    && feedbackBundleExample.summary?.evalRowCount === 1
+    && feedbackBundleExample.summary?.pairwiseRowCount === 0,
   "feedback bundle example gives a realistic future response"
 );
 check(!appSurface.includes("confidenceFor") && !appSurface.includes(".confidence"), "app output no longer uses confidence field");
@@ -486,7 +531,7 @@ check(
   hasAll(appSurface, ["ALLOWED_IMAGE_TYPES", "MAX_IMAGE_BYTES", "safeImageData", "Choose a PNG, JPG, or WebP image"]),
   "image uploads are type and size constrained"
 );
-check(serviceWorker.includes('const CACHE_NAME = "agentmash-v56"'), "service worker cache is AgentMash scoped and current");
+check(serviceWorker.includes('const CACHE_NAME = "agentmash-v60"'), "service worker cache is AgentMash scoped and current");
 check(hasAll(serviceWorker, appShellFiles), "service worker app shell includes launch pages and icons");
 check(hasAll(headers, securityHeaders), "_headers defines security headers");
 check(hasAll(netlify, securityHeaders), "netlify config defines security headers");
@@ -500,8 +545,8 @@ check(
     JSON.stringify(vercel).includes('"value":"no-cache"'),
   "vercel keeps service worker and manifest update-friendly"
 );
-check(netlify.includes('command = "npm run build"') && netlify.includes('publish = "_site"'), "netlify publishes public build output");
-check(vercel.buildCommand === "npm run build" && vercel.outputDirectory === buildDir, "vercel publishes public build output");
+check(netlify.includes('command = "npm run prepare:public"') && netlify.includes('publish = "_site"'), "netlify publishes configured public build output");
+check(vercel.buildCommand === "npm run prepare:public" && vercel.outputDirectory === buildDir, "vercel publishes configured public build output");
 check(headers.includes("connect-src 'self'") && headers.includes("form-action 'self'"), "CSP blocks outside connections and forms");
 check(headers.includes("payment=()"), "permissions policy blocks payment permission");
 check(
@@ -521,14 +566,20 @@ check(packageJson.scripts?.["serve:build"] === "python3 -m http.server 5178 --di
 check(packageJson.scripts?.["ready:public"] === "npm run check && npm run build", "package has public readiness script");
 check(packageJson.scripts?.["verify:public"] === "node scripts/verify-public-url.mjs", "package has public URL verifier script");
 check(packageJson.scripts?.["configure:public"] === "node scripts/configure-public-launch.mjs", "package has public launch metadata configurator script");
+check(packageJson.scripts?.["prepare:public"] === "node scripts/prepare-public-build.mjs", "package has configured public build script");
 check(packageJson.scripts?.["check:verify-public"] === "node scripts/check-public-url-verifier.mjs", "package has public URL verifier smoke check");
 check(
   packageJson.scripts?.["check:configure-public"] === "node scripts/check-configure-public.mjs",
   "package has public metadata write-path check"
 );
+check(
+  packageJson.scripts?.["check:prepare-public"] === "node scripts/check-prepare-public-build.mjs",
+  "package has configured public build check"
+);
 check(packageJson.scripts?.check.includes("npm run test:e2e"), "package check runs Playwright e2e tests");
 check(packageJson.scripts?.check.includes("node --check scripts/verify-public-url.mjs"), "package check syntax-checks public URL verifier");
 check(packageJson.scripts?.check.includes("node --check scripts/configure-public-launch.mjs"), "package check syntax-checks public metadata configurator");
+check(packageJson.scripts?.check.includes("node --check scripts/prepare-public-build.mjs"), "package check syntax-checks configured public build script");
 check(
   hasAll(packageJson.scripts?.check || "", ["node --check scripts/refresh-launch-assets.mjs"]) &&
     hasAll(refreshAssetsScript, [
@@ -542,8 +593,10 @@ check(
   "launch asset refresh script captures PWA, startup, and draft store assets locally"
 );
 check(packageJson.scripts?.check.includes("node --check scripts/check-configure-public.mjs"), "package check syntax-checks public metadata checker");
+check(packageJson.scripts?.check.includes("node --check scripts/check-prepare-public-build.mjs"), "package check syntax-checks configured public build checker");
 check(packageJson.scripts?.check.includes("node --check scripts/check-public-url-verifier.mjs"), "package check syntax-checks public URL verifier smoke check");
 check(packageJson.scripts?.check.includes("npm run check:configure-public"), "package check verifies public metadata configurator");
+check(packageJson.scripts?.check.includes("npm run check:prepare-public"), "package check verifies configured public build preparation");
 check(packageJson.scripts?.check.includes("npm run check:verify-public"), "package check smoke-tests public URL verifier locally");
 check(packageJson.scripts?.["test:e2e"] === "playwright test", "package has Playwright e2e script");
 check(packageJson.devDependencies?.["@playwright/test"], "Playwright is a dev dependency only");
@@ -559,10 +612,27 @@ check(
     "Missing --support",
     "YOUR-SUPPORT-ROUTE",
     "sitemap.xml",
-    "robots.txt"
+    "robots.txt",
+    "manifest.webmanifest",
+    "start_url",
+    "scope"
   ]) &&
     !/\b(fetch|XMLHttpRequest|sendBeacon|WebSocket)\b/i.test(configurePublicScript),
-  "public metadata configurator is local-only and covers URL/support launch fields"
+  "public metadata configurator is local-only and covers URL/support/PWA launch fields"
+);
+check(
+  hasAll(preparePublicScript, [
+    "buildSite",
+    "configurePublicLaunch",
+    "outputDir",
+    "AGENTMASH_PUBLIC_URL",
+    "AGENTMASH_SUPPORT_ROUTE",
+    "Missing --url",
+    "Missing --support",
+    "No public deployment"
+  ]) &&
+    !/\b(fetch|XMLHttpRequest|sendBeacon|WebSocket)\b/i.test(preparePublicScript),
+  "configured public build script prepares final metadata without network hooks"
 );
 check(
   hasAll(configurePublicCheck, [
@@ -574,16 +644,28 @@ check(
     "rejects missing support route",
     "rejects placeholder support route",
     "writes public sitemap URLs",
-    "stamps sitemap URL in robots"
+    "stamps sitemap URL in robots",
+    "stamps stable PWA install identity"
   ]),
   "public metadata checker exercises real write, idempotency, and dry-run paths"
 );
 check(
-  hasAll(verifyPublicScript, ["canonical URL", "Open Graph URL", "Twitter URL", "Open Graph image", "Twitter image", "data-public-support-contact", "robots file", "sitemap includes", "feedback schema", "intake schema", "API contract", "MCP tool contract", "intake example", "feedback bundle example"]),
+  hasAll(preparePublicCheck, [
+    "mkdtemp",
+    "preparePublicBuild",
+    "leaves source manifest untouched",
+    "stamps stable PWA identity into build manifest",
+    "stamps public preview image in build",
+    "stamps robots sitemap in build"
+  ]),
+  "configured public build checker exercises final build metadata"
+);
+check(
+  hasAll(verifyPublicScript, ["--url", "canonical URL", "Open Graph URL", "Twitter URL", "Open Graph image", "Twitter image", "data-public-support-contact", "robots file", "sitemap includes", "expectedAppPath", "feedback schema", "intake schema", "API contract", "MCP tool contract", "intake example", "feedback bundle example"]),
   "public URL verifier checks final URL, preview image, support metadata, robots, sitemap, schemas, future contracts, and examples"
 );
 check(
-  hasAll(publicVerifierCheck, ["createServer", "configurePublicLaunch", "verify-public-url.mjs", "127.0.0.1", "publicBuildEntries", "application/xml"]) &&
+  hasAll(publicVerifierCheck, ["createServer", "configurePublicLaunch", "verify-public-url.mjs", "--url", "127.0.0.1", "publicBuildEntries", "application/xml"]) &&
     !/\b(stripe|paypal|posthog|sendBeacon|WebSocket)\b/i.test(publicVerifierCheck),
   "public URL verifier smoke check serves a configured local public build"
 );
@@ -612,7 +694,10 @@ check(
   hasAll(testSpec, ["Install prompt is visible from the human review screen", "__agentmashInstallPrompted", "#installButton"]),
   "Playwright covers human-screen install prompt"
 );
-check(pagesWorkflow.includes("npm run build"), "GitHub Pages workflow uses public build script");
+check(
+  hasAll(pagesWorkflow, ["workflow_dispatch", "public_url", "support_route", "npm run prepare:public", "PUBLIC_URL", "SUPPORT_ROUTE"]),
+  "GitHub Pages workflow prepares configured public build from manual inputs"
+);
 check(!pagesWorkflow.includes(" store"), "GitHub Pages workflow does not copy internal store docs directly");
 check(readme.includes("store/public-launch-audit.md"), "README links public launch audit");
 check(readme.includes("store/completion-audit.md"), "README links completion audit");
@@ -624,7 +709,7 @@ check(
     "quick-reason dropdown",
     "agentmash.feedback.v2",
     "signalStrength",
-    "agentmash-v56",
+    "agentmash-v59",
     "No public deployment was performed",
     "No domain was bought",
     "No paid service",
@@ -698,9 +783,8 @@ check(
   "native wrapper handoff keeps store-shell setup explicit"
 );
 check(
-  hasAll(backendHandoff, ["schemas/api.v1.openapi.json", "schemas/mcp-tools.v1.json", "contract handoff", "Needs User Action Later"]) &&
-    !/\b(fetch|XMLHttpRequest|sendBeacon|WebSocket)\b/i.test(backendHandoff),
-  "backend handoff documents future API and MCP without runtime networking"
+  hasAll(backendHandoff, ["server/agentmash-api.mjs", "POST /v1/intake", "GET /v1/review-queue", "POST /v1/feedback", "Future MCP Shape"]),
+  "backend handoff documents implemented API and remaining MCP work"
 );
 
 for (const [file, size] of Object.entries(submissionPngSizes)) {
@@ -738,7 +822,7 @@ check(!publicBuildEntries.includes("publishing.html"), "public build excludes in
 check(!/\bbeta\b|public-beta candidate/i.test(publishingNotes), "internal publishing notes avoid beta-candidate wording");
 check(!/mailto:|tel:|XMLHttpRequest|sendBeacon|WebSocket|stripe|paypal|posthog|sentry/i.test(launchSurfaceText), "no contact, payment, analytics, or socket hooks");
 
-for (const file of textFiles.filter((file) => file !== "sw.js")) {
+for (const file of textFiles.filter((file) => !fetchAllowedFiles.has(file))) {
   const content = await read(file);
   check(!/\bfetch\s*\(/.test(content), `${file} does not fetch`);
 }
@@ -754,7 +838,7 @@ for (const page of htmlPages) {
       content.includes('name="theme-color" media="(prefers-color-scheme: dark)"'),
     `${page} has light and dark theme-color metadata`
   );
-  check(content.includes('href="styles.css"'), `${page} loads shared styles`);
+  check(/href="styles\.css(\?v=\d+)?"/.test(content), `${page} loads shared styles`);
   check(content.includes('rel="icon"') && content.includes("assets/app-icon.svg"), `${page} links favicon`);
   check(content.includes('rel="apple-touch-icon"') && content.includes("assets/icons/apple-touch-icon.png"), `${page} links Apple touch icon`);
 }

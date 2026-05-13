@@ -163,7 +163,7 @@
     },
     "feedbackBundle": {
       "type": "object",
-      "required": ["schema", "runId", "status", "packets", "evalRows", "pairwiseRows"],
+      "required": ["schema", "runId", "status", "summary", "packets", "evalRows", "pairwiseRows"],
       "properties": {
         "schema": {
           "const": "agentmash.feedback-bundle.v1"
@@ -172,11 +172,14 @@
           "type": "string"
         },
         "status": {
-          "enum": ["pending", "partial", "ready", "not_found"]
+          "enum": ["empty", "pending", "partial", "ready", "not_found"]
         },
         "generatedAt": {
           "type": "string",
           "format": "date-time"
+        },
+        "summary": {
+          "$ref": "#/$defs/feedbackBundleSummary"
         },
         "packets": {
           "type": "array",
@@ -198,6 +201,58 @@
         },
         "nextCursor": {
           "type": "string"
+        }
+      },
+      "additionalProperties": false
+    },
+    "feedbackBundleSummary": {
+      "type": "object",
+      "required": [
+        "artifactCount",
+        "reviewedArtifacts",
+        "pendingArtifacts",
+        "packetCount",
+        "evalRowCount",
+        "pairwiseRowCount",
+        "runIds",
+        "reviewers"
+      ],
+      "properties": {
+        "artifactCount": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "reviewedArtifacts": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "pendingArtifacts": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "packetCount": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "evalRowCount": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "pairwiseRowCount": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "runIds": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "reviewers": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
         }
       },
       "additionalProperties": false

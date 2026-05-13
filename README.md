@@ -1,6 +1,6 @@
 # AgentMash
 
-A local-first swipe app for turning fast human judgement on AI-generated websites, logos, copy, and product images into structured feedback packets.
+A local-first swipe app plus optional same-origin API for turning fast human judgement on AI-generated websites, logos, copy, and product images into structured feedback packets.
 
 Status: private launch-prep build. The app has not been deployed, listed, sold, or submitted to an app store.
 
@@ -37,15 +37,17 @@ Details live in `store/review-system.md`.
 
 ## Agent Customers
 
-The app models agents and labs as future customers that need human first-impression judgement on generated artifacts. The local build creates a JSON feedback packet and a JSONL eval row after each swipe. No backend or live return channel exists in this version; users copy or download local exports.
+The app models agents and labs as customers that need human first-impression judgement on generated artifacts. The browser app creates a JSON feedback packet and a JSONL eval row after each swipe. It can still run fully local, or it can connect to the included API server to pull queued agent submissions and send reviewed feedback bundles back.
 
-The repo now includes `schemas/intake.v1.json` for local agent-drop imports plus contract-only OpenAPI and MCP handoff files for a future backend. Those contracts are prepared locally only; there is still no server, auth, billing, or live agent pipeline.
+The repo includes `schemas/intake.v1.json` for local agent-drop imports and live API intake, `schemas/api.v1.openapi.json` for the implemented HTTP API, and `schemas/mcp-tools.v1.json` as a contract-only MCP handoff.
 
 Details live in `store/agent-customer-model.md`.
 
 ## Local-First Use
 
-The app does not send data anywhere. Profile data is stored in `localStorage`, while uploaded image bytes live in IndexedDB for the browser that opens it. Exported JSON files are ignored by git through `.gitignore`.
+The app does not send data anywhere by default. Profile data is stored in `localStorage`, while uploaded image bytes live in IndexedDB for the browser that opens it. Exported JSON files and local API storage are ignored by git through `.gitignore`.
+
+When the reviewer enters an API token and uses `Pull queue` or `Send feedback`, the app calls the configured same-origin AgentMash API server.
 
 ## Run
 
@@ -56,6 +58,22 @@ npm run serve
 Then visit `http://localhost:5177`.
 
 Native ES modules are used, so use the local server instead of opening `index.html` directly.
+
+## Run With API
+
+```sh
+npm run serve:api
+```
+
+Then visit `http://localhost:5179`. For local development, the server prints a dev bearer token. For production, set `AGENTMASH_API_TOKEN` and serve the app through this server or a same-origin reverse proxy.
+
+Core endpoints:
+
+- `POST /v1/intake`: agents submit `agentmash.intake.v1` artifacts with optional PNG, JPG, or WebP data URLs.
+- `GET /v1/review-queue`: the reviewer app pulls queued artifacts into the swipe deck.
+- `POST /v1/feedback`: the reviewer app publishes `agentmash.feedback-bundle.v1` after reviews.
+- `GET /v1/feedback/{runId}`: agents fetch ready or pending feedback for their run.
+- `DELETE /v1/artifacts/{artifactId}`: delete submitted artifact metadata and stored image data.
 
 ## Check
 
@@ -125,10 +143,11 @@ Then run `npm run ready:public` again and only deploy the rebuilt `_site/` direc
 - `store/native-wrapper-handoff.md`: native iOS/Android wrapper setup handoff for when app-store work starts.
 - `store/submission`: draft store screenshots and Google Play feature graphic.
 - `store/agent-customer-model.md`: how agents/labs become customers and get feedback back.
-- `store/backend-api-mcp-handoff.md`: future backend, API, and MCP handoff plan.
+- `server/agentmash-api.mjs`: same-origin API server for agent intake, review queue, feedback return, and deletion.
+- `store/backend-api-mcp-handoff.md`: backend API and MCP handoff notes.
 - `schemas/intake.v1.json`: backend-ready local agent-drop intake contract, packaged publicly for future integrators.
 - `schemas/feedback.v2.json`: local feedback packet and eval-row contract, packaged publicly for future integrators.
-- `schemas/api.v1.openapi.json`: contract-only OpenAPI draft for a future backend.
+- `schemas/api.v1.openapi.json`: OpenAPI contract for the included backend.
 - `schemas/mcp-tools.v1.json`: contract-only MCP tool draft for a future server.
 - `schemas/examples`: public sample intake, acknowledgement, and feedback bundle payloads.
 - `store/completion-audit.md`: prompt-to-artifact launch readiness audit.
@@ -144,5 +163,5 @@ Then run `npm run ready:public` again and only deploy the rebuilt `_site/` direc
 - No public support inbox has been added.
 - No app-store developer account has been created.
 - No native iOS or Android wrapper has been created. A handoff plan exists in `store/native-wrapper-handoff.md`.
-- No billing, auth, or backend exists for agent customers.
-- No MCP server or API endpoint exists yet; only the future-compatible contracts exist locally.
+- No billing, accounts, hosted production database, or public support operation exists yet.
+- No MCP server exists yet; the MCP file remains a contract draft.

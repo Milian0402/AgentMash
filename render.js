@@ -19,7 +19,7 @@ import {
   state,
   typeLabel,
   typeRubrics
-} from "./state.js";
+} from "./state.js?v=60";
 import {
   buildEvalRows,
   buildFeedbackPacket,
@@ -32,7 +32,7 @@ import {
   signalStrengthFor,
   validateExportRows,
   validateFeedbackPacket
-} from "./packet.js";
+} from "./packet.js?v=60";
 
 export const elements = {
   dashboardSwitch: document.querySelector("#dashboardSwitch"),
@@ -138,6 +138,14 @@ export const elements = {
   datasetPreview: document.querySelector("#datasetPreview"),
   copyDatasetButton: document.querySelector("#copyDatasetButton"),
   downloadDatasetButton: document.querySelector("#downloadDatasetButton"),
+  copyBundleButton: document.querySelector("#copyBundleButton"),
+  downloadBundleButton: document.querySelector("#downloadBundleButton"),
+  apiBaseUrl: document.querySelector("#apiBaseUrl"),
+  apiToken: document.querySelector("#apiToken"),
+  saveApiConfigButton: document.querySelector("#saveApiConfigButton"),
+  pullApiQueueButton: document.querySelector("#pullApiQueueButton"),
+  pushApiFeedbackButton: document.querySelector("#pushApiFeedbackButton"),
+  apiSyncStatus: document.querySelector("#apiSyncStatus"),
   agentUseList: document.querySelector("#agentUseList"),
   agentSignalList: document.querySelector("#agentSignalList"),
   historyList: document.querySelector("#historyList"),
@@ -147,10 +155,12 @@ export const elements = {
   copyPacketButton: document.querySelector("#copyPacketButton"),
   downloadPacketButton: document.querySelector("#downloadPacketButton"),
   storageStatus: document.querySelector("#storageStatus"),
+  panelScrim: document.querySelector("#panelScrim"),
   importButton: document.querySelector("#importButton"),
   importFile: document.querySelector("#importFile"),
   exportButton: document.querySelector("#exportButton"),
   resetButton: document.querySelector("#resetButton"),
+  humanResetButton: document.querySelector("#humanResetButton"),
   installButton: document.querySelector("#installButton"),
   reviewerSaveStatus: document.querySelector("#reviewerSaveStatus")
 };
@@ -266,7 +276,9 @@ export function render() {
   renderMetrics();
   renderStorageHealth();
   renderHistory();
-  renderAgentDashboard();
+  if (state.dashboard === "agent") {
+    renderAgentDashboard();
+  }
   renderLiveScore();
   if (isPairwise) {
     resetReviewPanels();
@@ -276,7 +288,9 @@ export function render() {
 
   if (isPairwise) {
     renderPairwise(pairwisePair, filtered);
-    renderFeedbackPacket(packetItemForRender(null));
+    if (state.dashboard === "agent") {
+      renderFeedbackPacket(packetItemForRender(null));
+    }
     saveState();
     return;
   }
@@ -299,7 +313,9 @@ export function render() {
     isDetailSheetOpen = false;
     renderCompletionSummary(filtered);
     saveState();
-    renderFeedbackPacket(packetItemForRender(null));
+    if (state.dashboard === "agent") {
+      renderFeedbackPacket(packetItemForRender(null));
+    }
     return;
   }
 
@@ -323,7 +339,9 @@ export function render() {
   elements.swipeBadge.textContent = "";
   elements.swipeCard.classList.remove("swipe-nice", "swipe-pass", "is-dragging");
   clearSwipeIntent();
-  renderFeedbackPacket(packetItemForRender(activeItem));
+  if (state.dashboard === "agent") {
+    renderFeedbackPacket(packetItemForRender(activeItem));
+  }
   saveState();
 }
 
@@ -806,12 +824,15 @@ export function renderHistory() {
 
 export function renderAgentDashboard() {
   const reviewByItem = new Map(state.reviews.map((review) => [review.itemId, review]));
-  const readyCount = state.reviews.length;
-  const pendingCount = state.items.filter((item) => !reviewByItem.has(item.id)).length;
+  const comparisonCountByItem = pairwiseComparisonCountByItem();
   const evalRows = buildEvalRows();
-  const exportRows = [...evalRows, ...buildPairwiseRows()];
-  const avgSignalStrength = evalRows.length
-    ? Math.round(evalRows.reduce((sum, row) => sum + row.humanSignal.signalStrength, 0) / evalRows.length * 100)
+  const pairwiseRows = buildPairwiseRows();
+  const exportRows = [...evalRows, ...pairwiseRows];
+  const signaledItemIds = agentSignalItemIds();
+  const readyCount = exportRows.length;
+  const pendingCount = state.items.filter((item) => !signaledItemIds.has(item.id)).length;
+  const avgSignalStrength = exportRows.length
+    ? Math.round(exportRows.reduce((sum, row) => sum + rowSignalStrength(row), 0) / exportRows.length * 100)
     : null;
 
   elements.agentTotalRequests.textContent = `${state.items.length} artifacts`;
@@ -832,8 +853,10 @@ export function renderAgentDashboard() {
 
   requests.forEach((item) => {
     const review = reviewByItem.get(item.id);
+    const comparisonCount = comparisonCountByItem.get(item.id) || 0;
+    const hasSignal = Boolean(review || comparisonCount);
     const row = document.createElement("article");
-    row.className = `agent-request${review ? " ready" : ""}`;
+    row.className = `agent-request${hasSignal ? " ready" : ""}`;
 
     const top = document.createElement("div");
     top.className = "agent-request-top";
@@ -846,25 +869,34 @@ export function renderAgentDashboard() {
     title.append(name, meta);
 
     const status = document.createElement("span");
-    status.className = `count-pill${review ? " ready-pill" : ""}`;
-    status.textContent = review ? "Ready" : "Unjudged";
+    status.className = `count-pill${hasSignal ? " ready-pill" : ""}`;
+    status.textContent = review ? "Ready" : comparisonCount ? "Compared" : "Unjudged";
     top.append(title, status);
 
     const signal = document.createElement("p");
     signal.textContent = review
       ? `${review.verdict === "nice" ? "Nice" : "Nope"} at ${review.score}. ${repairInstructionFor(item, review)}`
+      : comparisonCount
+        ? `${comparisonCount} pairwise ${comparisonCount === 1 ? "signal" : "signals"} captured. Export bundle includes relative preference data.`
       : item.agent.goal || "Swipe this artifact to unlock export data.";
 
-    if (review) {
+    if (hasSignal) {
       const chips = document.createElement("div");
       chips.className = "signal-chip-row";
-      [
+      const values = review ? [
         `label: ${preferenceLabelFor(review)}`,
         `signal: ${Math.round(signalStrengthFor(review) * 100)}%`,
         `use: ${recommendedActionFor(review)}`,
         `focus: ${item.reviewContext.focus}`,
         `audience: ${item.reviewContext.audience}`
-      ].forEach((value) => {
+      ] : [
+        "label: pairwise_preference",
+        `signal: ${comparisonCount} comparison${comparisonCount === 1 ? "" : "s"}`,
+        "use: ranking_signal",
+        `focus: ${item.reviewContext.focus}`,
+        `audience: ${item.reviewContext.audience}`
+      ];
+      values.forEach((value) => {
         const chip = document.createElement("span");
         chip.className = "signal-chip";
         chip.textContent = value;
@@ -898,10 +930,39 @@ export function renderAgentDashboard() {
   renderAgentSignals(reviewByItem);
 }
 
+function rowSignalStrength(row) {
+  return row.humanSignal?.signalStrength || row.agentUse?.signalStrength || 0;
+}
+
+function agentSignalItemIds() {
+  const ids = new Set(state.reviews.map((review) => review.itemId).filter(Boolean));
+  state.pairwiseComparisons.forEach((comparison) => {
+    [
+      comparison.leftItemId,
+      comparison.rightItemId,
+      comparison.winnerItemId,
+      comparison.loserItemId
+    ].filter(Boolean).forEach((id) => ids.add(id));
+  });
+  return ids;
+}
+
+function pairwiseComparisonCountByItem() {
+  const counts = new Map();
+  state.pairwiseComparisons.forEach((comparison) => {
+    [comparison.leftItemId, comparison.rightItemId].filter(Boolean).forEach((id) => {
+      counts.set(id, (counts.get(id) || 0) + 1);
+    });
+  });
+  return counts;
+}
+
 export function renderDatasetPreview(evalRows) {
   elements.datasetStatus.textContent = `${evalRows.length} rows`;
   elements.copyDatasetButton.disabled = evalRows.length === 0;
   elements.downloadDatasetButton.disabled = evalRows.length === 0;
+  elements.copyBundleButton.disabled = evalRows.length === 0;
+  elements.downloadBundleButton.disabled = evalRows.length === 0;
   const contract = validateExportRows(evalRows);
   renderContractStatus(
     elements.datasetContractStatus,
@@ -911,7 +972,7 @@ export function renderDatasetPreview(evalRows) {
   );
 
   if (!evalRows.length) {
-    elements.datasetPreview.textContent = "No export rows yet. Swipe at least one artifact to create JSONL eval data.";
+    elements.datasetPreview.textContent = "No export rows yet. Swipe or compare at least one artifact to create local export data.";
     return;
   }
 
@@ -955,7 +1016,18 @@ export function renderAgentUsePanel(evalRows) {
 
 export function renderAgentSignals(reviewByItem) {
   elements.agentSignalList.replaceChildren();
-  const recent = [...state.reviews].reverse().slice(0, 8);
+  const recent = [
+    ...state.reviews.map((review) => ({
+      type: "swipe",
+      createdAt: review.createdAt,
+      review
+    })),
+    ...state.pairwiseComparisons.map((comparison) => ({
+      type: "pairwise",
+      createdAt: comparison.createdAt,
+      comparison
+    }))
+  ].sort((a, b) => b.createdAt.localeCompare(a.createdAt)).slice(0, 8);
 
   if (!recent.length) {
     const empty = document.createElement("p");
@@ -965,14 +1037,34 @@ export function renderAgentSignals(reviewByItem) {
     return;
   }
 
-  recent.forEach((review) => {
+  recent.forEach((signal) => {
+    const row = document.createElement("article");
+    row.className = "signal-item";
+
+    if (signal.type === "pairwise") {
+      const { comparison } = signal;
+      const winner = state.items.find((item) => item.id === comparison.winnerItemId);
+      const loser = state.items.find((item) => item.id === comparison.loserItemId);
+      if (!winner || !loser) {
+        return;
+      }
+
+      const verdict = document.createElement("strong");
+      verdict.textContent = "Pairwise / preference";
+
+      const detail = document.createElement("p");
+      detail.textContent = `${winner.title} over ${loser.title}`;
+
+      row.append(verdict, detail);
+      elements.agentSignalList.append(row);
+      return;
+    }
+
+    const review = signal.review;
     const item = state.items.find((candidate) => candidate.id === review.itemId);
     if (!item || !reviewByItem.has(item.id)) {
       return;
     }
-
-    const row = document.createElement("article");
-    row.className = "signal-item";
 
     const verdict = document.createElement("strong");
     verdict.textContent = `${review.verdict === "nice" ? "Nice" : "Nope"} / ${review.score}`;

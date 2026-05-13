@@ -5,7 +5,7 @@ import {
   scoreDimensions,
   state,
   typeRubrics
-} from "./state.js";
+} from "./state.js?v=60";
 
 export function buildEvalRows() {
   return state.reviews
@@ -81,6 +81,62 @@ export function artifactSummary(item) {
 
 export function buildExportRows() {
   return [...buildEvalRows(), ...buildPairwiseRows()];
+}
+
+export function buildFeedbackBundle() {
+  const packets = state.reviews
+    .map((review) => {
+      const item = state.items.find((candidate) => candidate.id === review.itemId);
+      return item ? buildFeedbackPacket(item, review) : null;
+    })
+    .filter(Boolean);
+  const evalRows = buildEvalRows();
+  const pairwiseRows = buildPairwiseRows();
+  const reviewedItemIds = feedbackSignalItemIds();
+  const runIds = [...new Set([
+    ...packets.map((packet) => packet.request.runId),
+    ...pairwiseRows.flatMap((row) => [row.comparison.left.runId, row.comparison.right.runId])
+  ].filter(Boolean))].sort();
+
+  return {
+    schema: "agentmash.feedback-bundle.v1",
+    runId: runIds.length === 1 ? runIds[0] : "local-mixed-run",
+    status: packets.length || pairwiseRows.length ? "ready" : "empty",
+    generatedAt: new Date().toISOString(),
+    summary: {
+      artifactCount: state.items.length,
+      reviewedArtifacts: reviewedItemIds.size,
+      pendingArtifacts: Math.max(0, state.items.length - reviewedItemIds.size),
+      packetCount: packets.length,
+      evalRowCount: evalRows.length,
+      pairwiseRowCount: pairwiseRows.length,
+      runIds,
+      reviewers: feedbackSignalReviewers()
+    },
+    packets,
+    evalRows,
+    pairwiseRows
+  };
+}
+
+function feedbackSignalItemIds() {
+  const ids = new Set(state.reviews.map((review) => review.itemId).filter(Boolean));
+  state.pairwiseComparisons.forEach((comparison) => {
+    [
+      comparison.leftItemId,
+      comparison.rightItemId,
+      comparison.winnerItemId,
+      comparison.loserItemId
+    ].filter(Boolean).forEach((id) => ids.add(id));
+  });
+  return ids;
+}
+
+function feedbackSignalReviewers() {
+  return [...new Set([
+    ...state.reviews.map((review) => review.reviewer),
+    ...state.pairwiseComparisons.map((comparison) => comparison.reviewer)
+  ].filter(Boolean))].sort();
 }
 
 export function signalCoverage(evalRows) {

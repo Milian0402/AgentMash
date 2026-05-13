@@ -1,75 +1,63 @@
 # Backend API and MCP Handoff
 
-This is a contract handoff for the future online version. The current AgentMash app remains local-first and does not deploy a backend, expose an MCP server, create accounts, contact anyone, or spend money.
+AgentMash now includes a small same-origin HTTP API server in `server/agentmash-api.mjs`. The browser app still works local-first by default, but reviewers can connect it to this API from the Export workspace.
 
-## Contract Files
+## Implemented API Files
 
-- `schemas/intake.v1.json`: artifact submission payload already used by local agent-drop import.
+- `server/agentmash-api.mjs`: built-in Node server that serves the PWA and `/v1` API routes.
+- `intake.js`: shared intake validation and normalization helpers.
+- `api-client.js`: browser client for pulling queued artifacts and publishing feedback bundles.
+- `schemas/intake.v1.json`: artifact submission payload used by local imports and live API intake.
 - `schemas/feedback.v2.json`: ready, pending, and empty feedback packet contract.
-- `schemas/api.v1.openapi.json`: OpenAPI 3.1 draft for a future backend.
-- `schemas/mcp-tools.v1.json`: MCP tool contract draft for a future server.
+- `schemas/api.v1.openapi.json`: OpenAPI 3.1 contract for the implemented backend.
+- `schemas/mcp-tools.v1.json`: MCP tool contract draft for a future MCP server.
 - `schemas/examples/intake.v1.json`: sample artifact submission.
-- `schemas/examples/intake-ack.v1.json`: sample future intake acknowledgement.
-- `schemas/examples/feedback-bundle.v1.json`: sample future feedback bundle response.
+- `schemas/examples/intake-ack.v1.json`: sample intake acknowledgement.
+- `schemas/examples/feedback-bundle.v1.json`: sample feedback bundle response.
 
-The public static build packages these files so a future integrator can inspect the contract before a real server exists. The OpenAPI file intentionally has no `servers` entry and sets `x-agentmash-live-server-url` to `null` so it cannot be mistaken for a deployed endpoint.
+## Implemented Backend Shape
 
-## Future Backend Shape
+The smallest useful agent loop is now present:
 
-The smallest useful backend has three routes:
+- `POST /v1/intake`: validates `agentmash.intake.v1`, stores accepted artifacts, stores image data separately, and returns `agentmash.intake-ack.v1`.
+- `GET /v1/review-queue`: returns queued artifacts for the human reviewer app, including image data when requested.
+- `POST /v1/feedback`: stores `agentmash.feedback-bundle.v1` after the reviewer sends ready feedback.
+- `GET /v1/feedback/{runId}`: returns ready or pending feedback packets, eval rows, and pairwise rows for an agent run.
+- `DELETE /v1/artifacts/{artifactId}`: removes submitted artifact metadata and related image data after bearer-token auth.
+- `GET /v1/health`: exposes API health and intake limits.
 
-- `POST /v1/intake`: validate `agentmash.intake.v1`, store accepted artifacts, and return `agentmash.intake-ack.v1`.
-- `GET /v1/feedback/{runId}`: return `agentmash.feedback-bundle.v1` with ready feedback packets, eval rows, and pairwise rows.
-- `DELETE /v1/artifacts/{artifactId}`: remove a submitted artifact and related image bytes after auth and ownership checks.
+Run locally:
 
-Do not add these routes to the public app until the user has chosen hosting, authentication, deletion rules, retention, support coverage, and public terms.
+```sh
+npm run serve:api
+```
+
+Production must set `AGENTMASH_API_TOKEN`. Local development uses `agentmash-local-dev-token` only when no token is provided.
+
+## Data Boundaries
+
+- Human reviewer: swipes, adds notes, exports local files, or explicitly pulls/sends API data.
+- Agent or lab: submits artifacts only through authenticated API calls.
+- Backend: validates payloads, stores artifact metadata, stores image data under `.agentmash-api/images`, exposes deletion, and returns feedback bundles.
+
+The browser app does not auto-sync. A reviewer has to use `Pull queue` or `Send feedback`.
 
 ## Future MCP Shape
 
-The MCP contract mirrors the API:
+The MCP contract mirrors the API but is still contract-only:
 
 - `agentmash.submit_artifacts`: input is `agentmash.intake.v1`, output is `agentmash.intake-ack.v1`.
 - `agentmash.get_feedback_bundle`: input is `runId`, optional `limit`, and optional `includeImageData`; output is `agentmash.feedback-bundle.v1`.
 - `agentmash.request_deletion`: input is `artifactId`, optional `runId`, and optional reason; output is `agentmash.deletion-ack.v1`.
 
-The current MCP tools specification describes tools with `name`, optional `title`, `description`, `inputSchema`, optional `outputSchema`, and annotations. It also says structured tool results should conform to `outputSchema` when provided. Source: https://modelcontextprotocol.io/specification/2025-11-25/server/tools
+Add the MCP server only after the HTTP API behavior is stable.
 
-## Data Boundaries
+## Remaining Product Work
 
-The app should stay explicit about who owns each data movement:
-
-- Human reviewer: swipes, adds notes, exports or imports local files.
-- Agent or lab: submits artifacts only after a future authenticated backend exists.
-- Backend: validates payloads, stores artifacts, stores image bytes, exposes deletion, and returns feedback bundles.
-
-The current runtime intentionally avoids network calls, sockets, analytics, payments, and third-party SDKs. The future backend should keep that separation: the static app can stay usable offline, while online submission is added only after consent and account boundaries exist.
-
-## First Backend Build Order
-
-1. Implement schema validation for `agentmash.intake.v1`.
-2. Store text metadata and image bytes separately.
-3. Add deletion by artifact ID before inviting outside submitters.
-4. Add `POST /v1/intake` with rate limits and max image size checks.
-5. Add `GET /v1/feedback/{runId}` after reviewed packets are stored.
-6. Add MCP tools only after the API behavior is stable.
-7. Add public documentation and support copy only after the server exists.
-
-## App Integration Later
-
-The current UI should not promise live intake yet. When the backend exists, add a connected mode behind explicit setup:
-
-- Keep local import/export as the default fallback.
-- Let users choose a workspace or account before any upload.
-- Show exactly what will be uploaded before sending artifacts or image bytes.
-- Keep the same `reviewContext`, `signalStrength`, packet, eval-row, and pairwise-row fields.
-- Run the existing Playwright suite plus new tests for auth failure, payload validation, offline fallback, deletion, and export consistency.
-
-## Needs User Action Later
-
-- Hosting provider or server runtime.
-- Domain or subdomain.
-- Authentication and account model.
-- Retention and deletion policy.
+- Production hosting provider or server runtime.
+- Domain or same-origin reverse proxy.
+- Account model beyond one bearer token.
+- Storage retention policy and audit logging.
 - Public support route or inbox.
-- Public privacy and terms updates for server-side storage.
-- App Store data safety updates if the native wrapper starts sending data to a server.
+- Public privacy and terms updates for any hosted service.
+- Billing, quotas, and customer workspaces if this becomes a paid lab product.

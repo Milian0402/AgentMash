@@ -1,6 +1,6 @@
 {
   "schema": "agentmash.submission-assets.v1",
-  "refreshedAt": "2026-05-08",
+  "refreshedAt": "2026-05-09",
   "generatedBy": "npm run refresh:assets",
   "source": "local PWA Human review screen",
   "draftOnly": true,

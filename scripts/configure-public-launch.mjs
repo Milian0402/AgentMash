@@ -4,6 +4,7 @@ import { fileURLToPath } from "node:url";
 
 const pageNames = {
   index: "index.html",
+  manifest: "manifest.webmanifest",
   privacy: "privacy.html",
   robots: "robots.txt",
   sitemap: "sitemap.xml",
@@ -195,6 +196,17 @@ function configureRobots(publicUrl) {
   ].join("\n");
 }
 
+function configureManifest(source, publicUrl) {
+  const manifest = JSON.parse(source);
+  const appPath = publicUrl.pathname;
+  return `${JSON.stringify({
+    ...manifest,
+    id: appPath,
+    start_url: appPath,
+    scope: appPath
+  }, null, 2)}\n`;
+}
+
 function configureSitemap(publicUrl) {
   const urls = ["", "support.html", "privacy.html", "terms.html"].map((path) => sitemapUrl(publicUrl, path));
   return [
@@ -223,6 +235,7 @@ export async function configurePublicLaunch({ dryRun = false, root = ".", suppor
 
   const files = {
     [pageNames.index]: configureIndex(await readFile(join(root, pageNames.index), "utf8"), publicUrl),
+    [pageNames.manifest]: configureManifest(await readFile(join(root, pageNames.manifest), "utf8"), publicUrl),
     [pageNames.support]: configureSupport(await readFile(join(root, pageNames.support), "utf8"), trimmedSupport),
     [pageNames.privacy]: configurePrivacy(await readFile(join(root, pageNames.privacy), "utf8"), trimmedSupport),
     [pageNames.robots]: configureRobots(publicUrl),

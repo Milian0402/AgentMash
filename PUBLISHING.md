@@ -22,10 +22,12 @@ No deployment, paid account, domain purchase, app-store submission, or human out
 
 These can be free at small scale, but always confirm limits before enabling them.
 
-- GitHub Pages: good first preview choice because the repo is already on GitHub. The included workflow is manual so it does not consume Actions minutes unless started. GitHub Pages does not apply the custom security header configs in this repo.
+- Cloudflare Pages: cheapest serious default for the first public web/PWA test. `_headers` is ready for static hosting and security headers, and a `pages.dev` URL avoids buying a domain.
 - Netlify: `netlify.toml` runs `npm run build`, publishes `_site/`, and applies security headers.
 - Vercel: `vercel.json` runs `npm run build`, publishes `_site/`, and applies security headers.
-- Cloudflare Pages: `_headers` is ready for static hosting and security headers.
+- GitHub Pages: useful first preview because the repo is already on GitHub. The included workflow is manual so it does not consume Actions minutes unless started. GitHub Pages does not apply the custom security header configs in this repo.
+
+Cheapest recommendation: use Cloudflare Pages Free first, keep the free subdomain until the app proves worth a permanent custom domain, then pay only for a domain or tier upgrade when there is a concrete reason.
 
 ## Things That Can Cost Money
 

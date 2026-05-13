@@ -3,6 +3,16 @@
   "runId": "run-2026-05-08-001",
   "status": "ready",
   "generatedAt": "2026-05-08T09:40:00.000Z",
+  "summary": {
+    "artifactCount": 1,
+    "reviewedArtifacts": 1,
+    "pendingArtifacts": 0,
+    "packetCount": 1,
+    "evalRowCount": 1,
+    "pairwiseRowCount": 0,
+    "runIds": ["run-2026-05-08-001"],
+    "reviewers": ["local-reviewer"]
+  },
   "packets": [
     {
       "schema": "agentmash.feedback.v2",

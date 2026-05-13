@@ -1,6 +1,6 @@
 # Public Launch Audit
 
-Checked on May 8, 2026. No deployment, paid account, domain purchase, app-store submission, or human outreach has been performed.
+Checked on May 10, 2026. No deployment, paid account, domain purchase, app-store submission, or human outreach has been performed.
 
 ## Objective
 
@@ -23,6 +23,8 @@ Make AgentMash good enough to launch publicly as a serious app.
 - Decisions use supported vibration patterns and a quiet local WebAudio tick for tactile feedback.
 - Title, prompt, requester line, and artifact detail are hidden behind a `Details` sheet by default so the card stays focused on one visual object.
 - Export workspace collects ready packets, JSON downloads, and JSONL eval rows from local review data.
+- Export workspace can also copy or download a self-contained `agentmash.feedback-bundle.v1` JSON bundle with ready packets, eval rows, pairwise rows, run IDs, and summary counts for future API/MCP consumers.
+- Pairwise preference rows now count as ready export signals in the Export workspace metrics, artifact judged counts, signal list, and feedback bundle summaries.
 - Add Artifact is reachable from the human dashboard and returns to the swipe deck after submit.
 - On mobile Human review, deck/profile/storage controls are tucked behind a `Deck` sheet so the first viewport stays focused on the swipe loop.
 - Artifact intake uses local export wording and only offers JSON packet or eval dataset export formats, avoiding unavailable webhook or polling choices.
@@ -196,7 +198,8 @@ Make AgentMash good enough to launch publicly as a serious app.
 - Playwright e2e test passed: completing the deck after a Nice judgement renders a survived-count keeper summary with the surviving artifact.
 - Playwright e2e test passed: Remix deck doubles local items from 4 to 8, creates tagline, mark-only, first-line, and cutout variants, keeps the original 4 reviews, adds a fifth review on the next swipe, preserves unique reviewed item IDs, exports variant metadata, and shows 5 JSONL rows.
 - Playwright e2e test passed: Endless mode creates one local loop card after deck completion, records it as a normal v2 review on swipe, then creates only one next loop card.
-- Playwright e2e test passed: Pairwise mode records a comparison without creating a swipe review, exports `agentmash.pairwise-row.v1`, then keeps normal v2 packets and rows working after returning to Swipe mode.
+- Playwright e2e test passed: Pairwise mode records a comparison without creating a swipe review, exports `agentmash.pairwise-row.v1`, marks two artifacts as judged by pairwise signal, updates Export workspace metrics, then keeps normal v2 packets and rows working after returning to Swipe mode.
+- Playwright e2e test passed: feedback bundle download works for pairwise-only data and after combined Pairwise and Swipe review, with one ready v2 packet, one eval row, one pairwise row, and matching summary counts.
 - Playwright e2e test passed: mobile Pairwise mode scrolls the review stage into view after switching modes.
 - Playwright e2e test passed: mobile Human review starts with the lower control panel and footer hidden, opens the `Deck` sheet, and closes it again.
 - Playwright e2e test passed: partial legacy reviews without grade or recommendation load, normalize, and export as valid v2 packets.

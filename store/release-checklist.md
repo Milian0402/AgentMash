@@ -1,6 +1,6 @@
 # Release Checklist
 
-Last local verification: May 8, 2026. No deployment, paid account, domain purchase, app-store submission, or human outreach has been performed.
+Last local verification: May 10, 2026. No deployment, paid account, domain purchase, app-store submission, or human outreach has been performed.
 
 ## Verified Locally
 
@@ -62,6 +62,8 @@ Last local verification: May 8, 2026. No deployment, paid account, domain purcha
 - [x] Confirm `schemas/api.v1.openapi.json` does not expose a fake live server URL.
 - [x] Confirm `schemas/mcp-tools.v1.json` documents contract-only future MCP tools.
 - [x] Confirm `schemas/examples` documents sample intake, acknowledgement, and feedback bundle payloads.
+- [x] Confirm runtime feedback bundles and future API/MCP contracts expose the same summary counts and empty/ready status vocabulary.
+- [x] Confirm pairwise-only preference data counts as ready export signal data in workspace metrics and feedback bundle summaries.
 - [x] Confirm v2 packet validation requires `submittedAt` and image envelope metadata is exported when available.
 - [x] Confirm legacy imported reviews without grade or recommendation still load.
 - [x] Confirm native wrapper handoff exists without installing native dependencies.

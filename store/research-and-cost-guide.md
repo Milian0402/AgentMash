@@ -1,6 +1,6 @@
 # Research And Cost Guide
 
-This guide is based on public documentation checked on May 8, 2026. No accounts were created, nobody was contacted, and no paid action was taken.
+This guide is based on public documentation checked on May 10, 2026. No accounts were created, nobody was contacted, and no paid action was taken.
 
 ## What Makes This App Look Nice
 
@@ -13,8 +13,8 @@ Design principles used in the current build:
 - Visible buttons mirror the gesture so the app still works when the swipe is missed.
 - Large controls and clear labels, not color alone.
 - Immediate drag feedback: the card moves, the stamp appears, and the matching action button changes state before release.
-- Sticky thumb controls on the human review screen so the main choice stays reachable on phones.
-- A compact signal panel below the card so scoring, tags, and notes do not compete with the first-glance decision.
+- Thumb controls on the human review screen so the main choice stays reachable on phones.
+- A bottom-sheet Refine panel so comments, tags, and scores do not compete with the first-glance decision.
 - A restrained palette with green for keep, red for reject, blue for neutral focus, and warm paper backgrounds.
 - Dense side panels on desktop, stacked task flow on mobile.
 - Uploads render in the card directly so real generated websites, logos, copy, and product images can be judged.
@@ -39,7 +39,7 @@ The human review screen should feel like a consumer phone app, while avoiding la
 - Thumb first: the three decision buttons stay reachable near the bottom of the first viewport.
 - Gesture plus buttons: swiping is fast, buttons are explicit, and undo remains available.
 - First glance before explanation: the image or mock preview comes before rubrics and notes.
-- Optional detail after the swipe: scoring controls stay below the card so lazy human judgement is not slowed down.
+- Optional detail after the swipe: comments, tags, and scoring stay behind Refine so lazy human judgement is not slowed down.
 - Stronger feedback: drag tilt, badge state, button state, and light vibration where the device supports it.
 
 ## AI Lab And Agent Data Shape Research
@@ -70,23 +70,44 @@ Local product implication:
 
 ### Website Publishing
 
-You can publish this as a static website for free on several hosts, but costs can appear when traffic grows or you want a custom domain.
+Cheapest serious default: use a free static host subdomain first, probably Cloudflare Pages on a `pages.dev` URL. Do not buy a domain until the public web/PWA test feels worth naming permanently.
+
+Why Cloudflare Pages is the stingy default for this app:
+
+- The app is static. Cloudflare Pages says static asset requests are free and unlimited on free and paid plans. Source: https://developers.cloudflare.com/pages/functions/pricing/
+- The repo already includes `_headers`, which Cloudflare Pages understands for security headers.
+- Cloudflare Pages Free limits are far above this repo's current needs: 500 builds per month, 20,000 files per site, 25 MiB max single asset, and 100 custom domains per project. Source: https://developers.cloudflare.com/pages/platform/limits/
+- Cloudflare's product page says Pages plans include unlimited sites, seats, requests, and bandwidth. Source: https://www.cloudflare.com/developer-platform/products/pages/
+
+Vercel and Netlify are still good choices if their workflow feels better. The practical difference is mostly billing model and convenience, not app capability.
 
 | Item | Likely cost | Notes |
 | --- | ---: | --- |
-| Static hosting on Netlify Free | $0 | Netlify lists a Free plan with custom domains and SSL. Source: https://www.netlify.com/pricing/ |
-| Static hosting on Vercel Hobby | $0 | Vercel lists a free Hobby tier and paid Pro from $20/month. Source: https://vercel.com/pricing |
-| Cloudflare Pages | $0 base path | Cloudflare has free developer platform options, but add-ons can cost money. Source: https://www.cloudflare.com/pricing/ |
-| Custom domain through Cloudflare Registrar | Starting at $7.85 | Cloudflare says it sells domains at registry cost with no markup. Source: https://www.cloudflare.com/pricing/ |
-| Custom domain through Squarespace | Often around $20/year for common TLDs | Squarespace says common TLDs like .com and .org are $20/year, while other TLDs vary. Source: https://support.squarespace.com/hc/en-us/articles/205812208-Squarespace-domains-FAQ |
-| Paid monitoring or analytics | $0 to $20+/month | Not needed for the current private app. Add only if you want production monitoring. |
-| Email for support | $0 to paid | App stores usually expect a support contact. A custom domain mailbox may cost money. |
+| Cloudflare Pages Free | $0 | Best cheap first pick for this static PWA. Needs user action: create/connect the project and deploy `_site` or connect the repo. |
+| Vercel Hobby | $0 | Vercel lists Hobby as free, with automatic CI/CD, HTTPS, CDN, 100 GB Fast Data Transfer, and usage limits. Source: https://vercel.com/pricing and https://vercel.com/docs/plans/hobby |
+| Vercel Pro | $20/month plus usage | Needs user action. Worth considering only for team collaboration, higher included usage, spend management, or faster builds. Source: https://vercel.com/pricing |
+| Netlify Free | $0 | Netlify lists Free at $0 with custom domains and SSL, plus a 300 credit monthly limit. Source: https://www.netlify.com/pricing/ |
+| Netlify Personal | $9/month | Needs user action. Worth considering only for more credits, observability, or priority email support. Source: https://www.netlify.com/pricing/ |
+| GitHub Pages | $0 possible | Good for a first preview, but weaker for this launch because GitHub Pages will not apply this repo's security header configs and GitHub says Pages is not intended as free hosting for commercial SaaS. Source: https://docs.github.com/en/pages/getting-started-with-github-pages/github-pages-limits |
+| Custom domain through Cloudflare Registrar | Varies by TLD | Needs user action. Cloudflare says it charges registry/ICANN cost with no markup and includes DNSSEC/WHOIS redaction. Source: https://developers.cloudflare.com/registrar/ |
+| Custom domain through Squarespace | Varies by TLD | Needs user action. Squarespace says domain pricing depends on TLD and must be checked on its domain search page. Source: https://support.squarespace.com/hc/en-us/articles/205812318-Registering-Squarespace-domains |
+| Paid monitoring or analytics | $0 to paid | Not needed for the current local-first app. Add only after real public traffic creates a support need. |
+| Email for support | $0 to paid | Needs user action. App stores and public users need a reachable support route; a custom-domain mailbox can cost money. |
+
+Cheap decision:
+
+1. Start with Cloudflare Pages Free on a `pages.dev` URL.
+2. Run `npm run configure:public -- --url https://YOUR-PAGES-URL --support YOUR-SUPPORT-ROUTE`.
+3. Run `npm run ready:public`.
+4. Deploy `_site`.
+5. Run `npm run verify:public -- https://YOUR-PAGES-URL`.
+6. Buy a domain only after the app earns a permanent name and support commitment.
 
 ### App Stores
 
 | Item | Likely cost | Notes |
 | --- | ---: | --- |
-| Apple Developer Program | $99/year | Required to distribute on the App Store. Source: https://developer.apple.com/support/enrollment/ |
+| Apple Developer Program | $99/year | Needs user action. Required to distribute on the App Store. Source: https://developer.apple.com/programs/ |
 | Google Play Console | $25 one-time | Required to publish Android apps on Google Play. Source: https://support.google.com/googleplay/android-developer/answer/6112435 |
 | Google Play closed testing for new personal accounts | $0 direct platform fee | New personal developer accounts need at least 12 opted-in testers for 14 continuous days before applying for production access. Recruiting testers can still cost time or money. Source: https://support.google.com/googleplay/android-developer/answer/14151465 |
 | Apple screenshots | $0 if self-made | App Store Connect accepts 1 to 10 screenshots in JPEG/JPG/PNG at required device sizes. Source: https://developer.apple.com/help/app-store-connect/reference/screenshot-specifications/ |

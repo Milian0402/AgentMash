@@ -1,11 +1,11 @@
 import {
   getActiveItem,
   state
-} from "./state.js";
+} from "./state.js?v=60";
 import {
   clearSwipeIntent,
   elements
-} from "./render.js";
+} from "./render.js?v=60";
 
 let dragState = null;
 let audioContext = null;

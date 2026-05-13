@@ -46,7 +46,7 @@
       href="assets/startup/apple-iphone-6-5-human-review.png"
       media="(device-width: 414px) and (device-height: 896px) and (-webkit-device-pixel-ratio: 3)"
     />
-    <link rel="stylesheet" href="styles.css" />
+    <link rel="stylesheet" href="styles.css?v=60" />
   </head>
   <body>
     <div class="app-shell">
@@ -80,6 +80,7 @@
       </header>
 
       <p class="storage-status" id="storageStatus" role="status" aria-live="polite" hidden></p>
+      <button class="panel-scrim" id="panelScrim" type="button" aria-label="Dismiss review controls" hidden></button>
 
       <main class="workspace">
         <section class="dashboard-view human-dashboard" id="humanDashboard" data-dashboard-view="human">
@@ -164,23 +165,23 @@
             </div>
 
             <div class="review-controls swipe-actions">
-              <button class="decision-button reject" id="rejectButton" type="button">
-                <span class="decision-icon" aria-hidden="true">x</span>
+              <button class="decision-button reject" id="rejectButton" type="button" aria-label="Nope">
+                <span class="decision-icon" aria-hidden="true">&times;</span>
                 <span class="decision-key">Left</span>
                 <strong>Nope</strong>
               </button>
-              <button class="decision-button neutral" id="undoButton" type="button" disabled>
-                <span class="decision-icon" aria-hidden="true">U</span>
+              <button class="decision-button neutral" id="undoButton" type="button" aria-label="Undo" disabled>
+                <span class="decision-icon" aria-hidden="true">&#8634;</span>
                 <strong>Undo</strong>
               </button>
-              <button class="decision-button comment" id="commentButton" type="button" aria-controls="signalPanel" aria-expanded="false">
+              <button class="decision-button comment" id="commentButton" type="button" aria-label="Comment" aria-controls="signalPanel" aria-expanded="false">
                 <span class="decision-icon" aria-hidden="true">+</span>
                 <strong>Comment</strong>
               </button>
-              <button class="decision-button accept" id="acceptButton" type="button">
+              <button class="decision-button accept" id="acceptButton" type="button" aria-label="Nice">
                 <strong>Nice</strong>
                 <span class="decision-key">Right</span>
-                <span class="decision-icon" aria-hidden="true">OK</span>
+                <span class="decision-icon" aria-hidden="true">&#10003;</span>
               </button>
             </div>
 
@@ -258,7 +259,10 @@
                 <button type="button" data-filter="copy" class="segment">Copy</button>
                 <button type="button" data-filter="product" class="segment">Product</button>
               </div>
-              <button class="primary-button full" id="humanAddButton" type="button">Add artifact</button>
+              <div class="deck-action-grid">
+                <button class="primary-button full" id="humanAddButton" type="button">Add artifact</button>
+                <button class="secondary-button full" id="humanResetButton" type="button">Start fresh</button>
+              </div>
             </section>
 
             <section class="section-block">
@@ -339,6 +343,29 @@
               </div>
             </div>
 
+            <section class="section-block api-sync-block">
+              <div class="section-title-row">
+                <h2>API Connection</h2>
+                <span class="count-pill">Optional</span>
+              </div>
+              <div class="api-config-grid">
+                <label>
+                  <span>API URL</span>
+                  <input id="apiBaseUrl" type="url" placeholder="Same origin" />
+                </label>
+                <label>
+                  <span>Bearer token</span>
+                  <input id="apiToken" type="password" autocomplete="off" placeholder="agentmash-local-dev-token" />
+                </label>
+              </div>
+              <div class="packet-actions api-actions">
+                <button class="icon-button" id="saveApiConfigButton" type="button">Save API</button>
+                <button class="icon-button" id="pullApiQueueButton" type="button">Pull queue</button>
+                <button class="icon-button" id="pushApiFeedbackButton" type="button">Send feedback</button>
+              </div>
+              <p id="apiSyncStatus" class="help-text" role="status" aria-live="polite">Use a same-origin AgentMash API server to receive agent submissions and return reviewed bundles.</p>
+            </section>
+
             <div class="section-block">
               <div class="section-title-row">
                 <h2>Export Items</h2>
@@ -359,6 +386,8 @@
               <div class="packet-actions">
                 <button class="icon-button" id="copyDatasetButton" type="button">Copy JSONL</button>
                 <button class="icon-button" id="downloadDatasetButton" type="button">JSONL</button>
+                <button class="icon-button" id="copyBundleButton" type="button">Copy bundle</button>
+                <button class="icon-button" id="downloadBundleButton" type="button">Bundle JSON</button>
               </div>
             </div>
           </section>
@@ -528,6 +557,6 @@
       </footer>
     </div>
 
-    <script type="module" src="app.js"></script>
+    <script type="module" src="app.js?v=60"></script>
   </body>
 </html>

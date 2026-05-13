@@ -3,7 +3,7 @@ import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { configurePublicLaunch } from "./configure-public-launch.mjs";
 
-const pages = ["index.html", "support.html", "privacy.html"];
+const pages = ["index.html", "manifest.webmanifest", "support.html", "privacy.html"];
 const generatedFiles = ["robots.txt", "sitemap.xml"];
 const configuredFiles = [...pages, ...generatedFiles];
 const publicUrl = "https://agentmash.example/app/";
@@ -76,6 +76,11 @@ async function main() {
         '<meta name="twitter:image" content="https://agentmash.example/app/assets/icons/app-icon-1024.png" />'
       ]),
       "configure public stamps final URL and preview image metadata"
+    );
+    const manifest = JSON.parse(configured["manifest.webmanifest"]);
+    check(
+      manifest.id === "/app/" && manifest.start_url === "/app/" && manifest.scope === "/app/",
+      "configure public stamps stable PWA install identity"
     );
     check(
       hasAll(configured["support.html"], ["data-public-support-contact", escapedSupport]) &&

@@ -1,6 +1,6 @@
 # Public Launch Plan
 
-Checked on May 8, 2026. No deployment, paid account, domain purchase, app-store submission, or human outreach has been performed.
+Checked on May 10, 2026. No deployment, paid account, domain purchase, app-store submission, or human outreach has been performed.
 
 ## Launch Positioning
 
@@ -26,10 +26,11 @@ Do not frame the current build as:
 The cheapest serious path is:
 
 1. Launch the web/PWA version first on a free static host.
-2. Use the hosted privacy and support pages as the canonical public URLs.
-3. Run a small real-user test before buying app-store accounts.
-4. Package for iOS or Android only if mobile install demand is real.
-5. Add hosted lab features only after there is actual demand for submitted jobs, return channels, and shared accounts.
+2. Use Cloudflare Pages Free on a `pages.dev` URL unless another host is clearly easier for the first deploy.
+3. Use the hosted privacy and support pages as the canonical public URLs.
+4. Run a small real-user test before buying app-store accounts.
+5. Package for iOS or Android only if mobile install demand is real.
+6. Add hosted lab features only after there is actual demand for submitted jobs, return channels, and shared accounts.
 
 This keeps the app launchable without paying for a domain, app-store accounts, hosted storage, or support tooling too early.
 

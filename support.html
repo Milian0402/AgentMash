@@ -19,13 +19,13 @@
     <link rel="manifest" href="manifest.webmanifest" />
     <link rel="icon" href="assets/app-icon.svg" />
     <link rel="apple-touch-icon" sizes="180x180" href="assets/icons/apple-touch-icon.png" />
-    <link rel="stylesheet" href="styles.css" />
+    <link rel="stylesheet" href="styles.css?v=60" />
   </head>
   <body>
     <main class="legal-page">
       <img class="app-icon" src="assets/app-icon.svg" alt="" width="54" height="54" />
       <h1>Support</h1>
-      <p>AgentMash keeps reviews, notes, images, and feedback packets in the browser unless you export them.</p>
+      <p>AgentMash keeps reviews, notes, images, and feedback packets in the browser unless you export them or use an API sync action.</p>
       <p>Current build: AgentMash v0.3.0.</p>
 
       <h2>Back Up Your Profile</h2>
@@ -38,18 +38,22 @@
       <h2>Import And Export</h2>
       <p>Import replaces the current local profile in this browser. Exported AgentMash profile files include review data and uploaded image bytes so they can be restored on another browser that supports IndexedDB.</p>
 
+      <h2>API Connection</h2>
+      <p>The Export workspace can pull queued artifacts from a same-origin AgentMash API server and send reviewed feedback bundles back. Use the token configured for that server. Leave the API URL blank when the app is served by the same server.</p>
+
       <h2>Common Fixes</h2>
       <p>If the deck looks stale, refresh the page once. If a profile fails to import, confirm the file came from AgentMash export and has not been edited by another tool.</p>
       <p>For image uploads, use PNG, JPG, or WebP files under 2.5 MB so the local browser profile stays reliable.</p>
 
       <h2>Delete Local Data</h2>
       <p>Reset profile clears local review data and uploaded image bytes for this browser. Clearing browser site data or uninstalling the PWA also removes local AgentMash data from that device.</p>
+      <p>Server-side API artifacts are deleted with the authenticated deletion endpoint on the API server.</p>
 
       <h2>Diagnostics</h2>
       <p>The app does not send diagnostics automatically. Keep an exported profile backup and the details below ready when troubleshooting a release.</p>
 
       <h2>What To Include</h2>
-      <p>Include the browser, device, build version, the action you tried, and whether the issue affected local storage, import, export, or feedback packets.</p>
+      <p>Include the browser, device, build version, the action you tried, and whether the issue affected local storage, import, export, API sync, or feedback packets.</p>
 
       <p><a href="index.html">Back to app</a></p>
     </main>

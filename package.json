@@ -11,16 +11,20 @@
   "license": "UNLICENSED",
   "scripts": {
     "serve": "python3 -m http.server 5177",
+    "serve:api": "node server/agentmash-api.mjs",
     "serve:build": "python3 -m http.server 5178 --directory _site",
     "build": "node scripts/build-site.mjs",
     "refresh:assets": "node scripts/refresh-launch-assets.mjs",
-    "check": "node --check app.js && node --check state.js && node --check packet.js && node --check render.js && node --check gestures.js && node --check sw.js && node --check scripts/build-site.mjs && node --check scripts/refresh-launch-assets.mjs && node --check scripts/launch-check.mjs && node --check scripts/verify-public-url.mjs && node --check scripts/configure-public-launch.mjs && node --check scripts/check-configure-public.mjs && node --check scripts/check-public-url-verifier.mjs && npm run check:launch && npm run check:configure-public && npm run check:verify-public && npm run test:e2e",
+    "check": "node --check app.js && node --check state.js && node --check intake.js && node --check api-client.js && node --check packet.js && node --check render.js && node --check gestures.js && node --check sw.js && node --check server/agentmash-api.mjs && node --check scripts/build-site.mjs && node --check scripts/refresh-launch-assets.mjs && node --check scripts/launch-check.mjs && node --check scripts/verify-public-url.mjs && node --check scripts/configure-public-launch.mjs && node --check scripts/prepare-public-build.mjs && node --check scripts/check-configure-public.mjs && node --check scripts/check-prepare-public-build.mjs && node --check scripts/check-public-url-verifier.mjs && npm run check:launch && npm run check:configure-public && npm run check:prepare-public && npm run check:verify-public && npm run test:api && npm run test:e2e",
     "check:launch": "node scripts/launch-check.mjs",
     "check:configure-public": "node scripts/check-configure-public.mjs",
+    "check:prepare-public": "node scripts/check-prepare-public-build.mjs",
     "check:verify-public": "node scripts/check-public-url-verifier.mjs",
     "configure:public": "node scripts/configure-public-launch.mjs",
+    "prepare:public": "node scripts/prepare-public-build.mjs",
     "ready:public": "npm run check && npm run build",
     "verify:public": "node scripts/verify-public-url.mjs",
+    "test:api": "node tests/api-smoke.mjs",
     "test:e2e": "playwright test"
   },
   "devDependencies": {

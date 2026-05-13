@@ -1,5 +1,5 @@
 [build]
-  command = "npm run build"
+  command = "npm run prepare:public"
   publish = "_site"
 
 [[headers]]
@@ -11,6 +11,7 @@
     Permissions-Policy = "camera=(), microphone=(), geolocation=(), payment=()"
     Cross-Origin-Opener-Policy = "same-origin"
     Content-Security-Policy = "default-src 'self'; img-src 'self' data: blob:; script-src 'self'; style-src 'self'; manifest-src 'self'; worker-src 'self'; connect-src 'self'; object-src 'none'; base-uri 'self'; form-action 'self'; frame-ancestors 'none'"
+    Cache-Control = "no-cache"
 
 [[headers]]
   for = "/sw.js"

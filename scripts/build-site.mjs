@@ -8,6 +8,8 @@ export const publicBuildEntries = [
   "index.html",
   "styles.css",
   "app.js",
+  "api-client.js",
+  "intake.js",
   "state.js",
   "packet.js",
   "render.js",
@@ -34,6 +36,7 @@ export const blockedBuildEntries = [
   "node_modules",
   "playwright.config.mjs",
   "scripts",
+  "server",
   "store",
   "tests",
   "test-results",
@@ -48,19 +51,19 @@ export const blockedBuildEntries = [
   "vercel.json"
 ];
 
-export async function buildSite({ silent = false } = {}) {
-  await rm(buildDir, { recursive: true, force: true });
-  await mkdir(buildDir, { recursive: true });
+export async function buildSite({ outputDir = buildDir, silent = false } = {}) {
+  await rm(outputDir, { recursive: true, force: true });
+  await mkdir(outputDir, { recursive: true });
   let copiedEntries = 0;
 
   for (const entry of publicBuildEntries) {
-    await cp(entry, join(buildDir, entry), { recursive: true });
+    await cp(entry, join(outputDir, entry), { recursive: true });
     copiedEntries += 1;
   }
 
   for (const entry of optionalPublicBuildEntries) {
     try {
-      await cp(entry, join(buildDir, entry), { recursive: true });
+      await cp(entry, join(outputDir, entry), { recursive: true });
       copiedEntries += 1;
     } catch (error) {
       if (error.code !== "ENOENT") {
@@ -70,7 +73,7 @@ export async function buildSite({ silent = false } = {}) {
   }
 
   if (!silent) {
-    console.log(`Built ${buildDir} with ${copiedEntries} public entries.`);
+    console.log(`Built ${outputDir} with ${copiedEntries} public entries.`);
   }
 }
 

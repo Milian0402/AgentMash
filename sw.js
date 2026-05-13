@@ -1,13 +1,15 @@
-const CACHE_NAME = "agentmash-v56";
+const CACHE_NAME = "agentmash-v60";
 const APP_SHELL = [
   "./",
   "./index.html",
-  "./styles.css",
-  "./app.js",
-  "./state.js",
-  "./packet.js",
-  "./render.js",
-  "./gestures.js",
+  "./styles.css?v=60",
+  "./app.js?v=60",
+  "./api-client.js?v=60",
+  "./intake.js?v=60",
+  "./state.js?v=60",
+  "./packet.js?v=60",
+  "./render.js?v=60",
+  "./gestures.js?v=60",
   "./manifest.webmanifest",
   "./schemas/feedback.v2.json",
   "./schemas/intake.v1.json",

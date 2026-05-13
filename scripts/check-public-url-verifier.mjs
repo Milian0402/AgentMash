@@ -73,7 +73,7 @@ function serve(root) {
 
 function runVerifier(url) {
   return new Promise((resolve, reject) => {
-    const child = spawn(process.execPath, ["scripts/verify-public-url.mjs", url], {
+    const child = spawn(process.execPath, ["scripts/verify-public-url.mjs", "--url", url], {
       cwd: process.cwd(),
       stdio: ["ignore", "pipe", "pipe"]
     });

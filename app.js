@@ -2,7 +2,6 @@ import {
   ALLOWED_IMAGE_TYPES,
   APP_VERSION,
   MAX_IMAGE_BYTES,
-  audienceOptions,
   artifactTypes,
   calculateScore,
   clearImageStore,
@@ -10,7 +9,6 @@ import {
   configureStorageStatus,
   createId,
   createShortId,
-  decisionStageOptions,
   defaultQuestion,
   defaultScores,
   defaultScoresForNext,
@@ -25,10 +23,8 @@ import {
   normalizeScores,
   normalizeState,
   persistInlineImages,
-  priorityOptions,
   recommendationFor,
   replaceState,
-  reviewFocusOptions,
   safeImageData,
   sampleItems,
   saveState,
@@ -37,7 +33,9 @@ import {
   state,
   variantForRemix,
   writeImageData
-} from "./state.js";
+} from "./state.js?v=60";
+import { loadApiConfig, publishFeedbackBundle, pullReviewQueue, saveApiConfig } from "./api-client.js?v=60";
+import { payloadArtifacts, validateIntakePayload } from "./intake.js?v=60";
 import {
   activePacket,
   closeDetailSheet,
@@ -54,9 +52,9 @@ import {
   showReviewerSaveStatus,
   toggleScoreControls,
   toggleRefinePanel
-} from "./render.js";
-import { buildExportRows } from "./packet.js";
-import { installGestureHandlers, pulseDevice } from "./gestures.js";
+} from "./render.js?v=60";
+import { buildExportRows, buildFeedbackBundle } from "./packet.js?v=60";
+import { installGestureHandlers, pulseDevice } from "./gestures.js?v=60";
 
 let pendingImageData = "";
 let deferredInstallPrompt = null;
@@ -70,6 +68,7 @@ let timedItemStartedAt = Date.now();
 function setMobilePanelOpen(isOpen) {
   document.body.dataset.mobilePanelOpen = isOpen ? "true" : "false";
   elements.mobilePanelToggle.setAttribute("aria-expanded", isOpen ? "true" : "false");
+  elements.panelScrim.hidden = !isOpen;
 }
 
 function startDecisionTimer(itemId = getActiveItem()?.id || "") {
@@ -363,102 +362,8 @@ function resetArtifactFormDefaults() {
   elements.reviewPriority.value = "normal";
 }
 
-function payloadArtifacts(payload) {
-  if (Array.isArray(payload?.artifacts)) {
-    return payload.artifacts;
-  }
-  return [];
-}
-
 function validateAgentDropPayload(payload) {
-  const errors = [];
-  if (!payload || typeof payload !== "object" || Array.isArray(payload)) {
-    return ["payload must be an agentmash.intake.v1 object"];
-  }
-
-  if (payload.schema !== "agentmash.intake.v1") {
-    errors.push("schema must be agentmash.intake.v1");
-  }
-
-  if (!Array.isArray(payload.artifacts) || payload.artifacts.length === 0) {
-    errors.push("artifacts must include at least one artifact");
-  }
-
-  validateSource(payload.source, errors, "source");
-  validateReviewContextInput(payload.reviewContext, errors, "reviewContext");
-
-  payloadArtifacts(payload).forEach((artifact, index) => {
-    const path = `artifacts[${index}]`;
-    if (!artifact || typeof artifact !== "object" || Array.isArray(artifact)) {
-      errors.push(`${path} must be an object`);
-      return;
-    }
-
-    if (!artifactTypes.includes(artifact.type)) {
-      errors.push(`${path}.type must be website, logo, copy, or product`);
-    }
-    if (!isNonEmptyString(artifact.title)) {
-      errors.push(`${path}.title is required`);
-    }
-
-    validateSource(artifact.agent, errors, `${path}.agent`);
-    validateReviewContextInput(artifact.reviewContext || artifact.context, errors, `${path}.reviewContext`);
-    validateImageDataUrl(artifact.imageData, errors, `${path}.imageData`);
-    validateImageDataUrl(artifact.image?.dataUrl, errors, `${path}.image.dataUrl`);
-  });
-
-  return errors;
-}
-
-function validateSource(source, errors, path) {
-  if (source === undefined) {
-    return;
-  }
-  if (!source || typeof source !== "object" || Array.isArray(source)) {
-    errors.push(`${path} must be an object`);
-    return;
-  }
-  if (source.requesterType !== undefined && !["agent", "lab", "team"].includes(source.requesterType)) {
-    errors.push(`${path}.requesterType must be agent, lab, or team`);
-  }
-  if (source.returnMode !== undefined && !["json", "dataset"].includes(source.returnMode)) {
-    errors.push(`${path}.returnMode must be json or dataset`);
-  }
-}
-
-function validateReviewContextInput(context, errors, path) {
-  if (context === undefined) {
-    return;
-  }
-  if (!context || typeof context !== "object" || Array.isArray(context)) {
-    errors.push(`${path} must be an object`);
-    return;
-  }
-  if (context.focus !== undefined && !reviewFocusOptions.includes(context.focus)) {
-    errors.push(`${path}.focus is not supported`);
-  }
-  if (context.audience !== undefined && !audienceOptions.includes(context.audience)) {
-    errors.push(`${path}.audience is not supported`);
-  }
-  if (context.stage !== undefined && !decisionStageOptions.includes(context.stage)) {
-    errors.push(`${path}.stage is not supported`);
-  }
-  if (context.priority !== undefined && !priorityOptions.includes(context.priority)) {
-    errors.push(`${path}.priority is not supported`);
-  }
-}
-
-function validateImageDataUrl(value, errors, path) {
-  if (value === undefined || value === "") {
-    return;
-  }
-  if (typeof value !== "string" || !safeImageData(value)) {
-    errors.push(`${path} must be a PNG, JPG, or WebP data URL`);
-  }
-}
-
-function isNonEmptyString(value) {
-  return typeof value === "string" && value.trim().length > 0;
+  return validateIntakePayload(payload);
 }
 
 function normalizeAgentDropItem(rawArtifact, payload = {}) {
@@ -486,52 +391,76 @@ function normalizeAgentDropItem(rawArtifact, payload = {}) {
   });
 }
 
+async function importAgentDropPayload(payload, {
+  skipExisting = false,
+  statusElement = elements.agentDropStatus,
+  successLabel = "Imported"
+} = {}) {
+  const validationErrors = validateAgentDropPayload(payload);
+  if (validationErrors.length) {
+    statusElement.textContent = `Agent drop rejected: ${validationErrors.slice(0, 3).join("; ")}.`;
+    return 0;
+  }
+
+  const existingIds = new Set(state.items.map((item) => item.id));
+  const artifacts = payloadArtifacts(payload)
+    .filter((artifact) => artifact && typeof artifact === "object")
+    .map((artifact) => normalizeAgentDropItem(artifact, payload))
+    .filter((item) => !skipExisting || !existingIds.has(item.id));
+
+  if (!artifacts.length) {
+    statusElement.textContent = skipExisting
+      ? "No new artifacts found in that API queue."
+      : "No artifacts found in that JSON file.";
+    return 0;
+  }
+
+  let imageFailures = 0;
+  await Promise.all(artifacts.map(async (item) => {
+    if (!item.imageData) {
+      return;
+    }
+    try {
+      await writeImageData(item.imageKey, item.imageData);
+    } catch {
+      item.imageKey = "";
+      item.imageData = "";
+      imageFailures += 1;
+    }
+  }));
+
+  state.items = [...artifacts, ...state.items];
+  state.filter = artifacts[0].type;
+  state.currentItemId = artifacts[0].id;
+  state.lastPacketItemId = null;
+  state.dashboard = "human";
+  saveState();
+  statusElement.textContent = imageFailures
+    ? `${successLabel} ${artifacts.length} artifacts. ${imageFailures} image${imageFailures === 1 ? "" : "s"} could not be stored.`
+    : `${successLabel} ${artifacts.length} artifacts${successLabel === "Imported" ? " from agent drop" : ""}.`;
+  render();
+  return artifacts.length;
+}
+
 async function importAgentDrop(file) {
   elements.agentDropStatus.textContent = "Reading agent drop...";
   try {
     const payload = JSON.parse(await file.text());
-    const validationErrors = validateAgentDropPayload(payload);
-    if (validationErrors.length) {
-      elements.agentDropStatus.textContent = `Agent drop rejected: ${validationErrors.slice(0, 3).join("; ")}.`;
-      return;
-    }
-
-    const artifacts = payloadArtifacts(payload)
-      .filter((artifact) => artifact && typeof artifact === "object")
-      .map((artifact) => normalizeAgentDropItem(artifact, payload));
-
-    if (!artifacts.length) {
-      elements.agentDropStatus.textContent = "No artifacts found in that JSON file.";
-      return;
-    }
-
-    let imageFailures = 0;
-    await Promise.all(artifacts.map(async (item) => {
-      if (!item.imageData) {
-        return;
-      }
-      try {
-        await writeImageData(item.imageKey, item.imageData);
-      } catch {
-        item.imageKey = "";
-        item.imageData = "";
-        imageFailures += 1;
-      }
-    }));
-
-    state.items = [...artifacts, ...state.items];
-    state.filter = artifacts[0].type;
-    state.currentItemId = artifacts[0].id;
-    state.lastPacketItemId = null;
-    state.dashboard = "human";
-    saveState();
-    elements.agentDropStatus.textContent = imageFailures
-      ? `Imported ${artifacts.length} artifacts. ${imageFailures} image${imageFailures === 1 ? "" : "s"} could not be stored.`
-      : `Imported ${artifacts.length} artifacts from agent drop.`;
-    render();
+    await importAgentDropPayload(payload);
   } catch {
     elements.agentDropStatus.textContent = "Could not import that agent drop JSON file.";
   }
+}
+
+function queuePayloadToIntake(queue) {
+  if (queue?.schema === "agentmash.intake.v1") {
+    return queue;
+  }
+  return {
+    schema: "agentmash.intake.v1",
+    source: queue?.source || {},
+    artifacts: Array.isArray(queue?.artifacts) ? queue.artifacts : []
+  };
 }
 
 function remixCurrentDeck() {
@@ -676,6 +605,24 @@ async function copyDataset() {
   elements.datasetStatus.textContent = (await copyText(text)) ? "Copied" : "Copy unavailable";
 }
 
+async function bundleJson() {
+  try {
+    await hydrateStateImages();
+  } catch {
+    setStorageStatus("Some saved images could not be included in this feedback bundle.");
+  }
+  return JSON.stringify(buildFeedbackBundle(), null, 2);
+}
+
+async function copyBundle() {
+  const bundle = buildFeedbackBundle();
+  if (bundle.status === "empty") {
+    return;
+  }
+  const text = await bundleJson();
+  elements.datasetStatus.textContent = (await copyText(text)) ? "Bundle copied" : "Copy unavailable";
+}
+
 async function copyText(text) {
   if (navigator.clipboard && window.isSecureContext) {
     try {
@@ -721,6 +668,83 @@ function downloadDataset() {
   link.click();
   link.remove();
   URL.revokeObjectURL(url);
+}
+
+async function downloadBundle() {
+  const bundle = buildFeedbackBundle();
+  if (bundle.status === "empty") {
+    return;
+  }
+
+  const text = await bundleJson();
+  const blob = new Blob([`${text}\n`], { type: "application/json" });
+  const url = URL.createObjectURL(blob);
+  const link = document.createElement("a");
+  link.href = url;
+  link.download = `agentmash-feedback-bundle-${new Date().toISOString().slice(0, 10)}.json`;
+  document.body.append(link);
+  link.click();
+  link.remove();
+  URL.revokeObjectURL(url);
+}
+
+function loadApiSettingsIntoForm() {
+  const config = loadApiConfig();
+  elements.apiBaseUrl.value = config.baseUrl;
+  elements.apiToken.value = config.token;
+}
+
+function apiConfigFromForm() {
+  return {
+    baseUrl: elements.apiBaseUrl.value.trim(),
+    token: elements.apiToken.value.trim()
+  };
+}
+
+function saveApiSettings() {
+  saveApiConfig(apiConfigFromForm());
+  elements.apiSyncStatus.textContent = "API settings saved.";
+}
+
+async function pullApiQueue() {
+  elements.apiSyncStatus.textContent = "Pulling API queue...";
+  try {
+    const config = saveApiConfig(apiConfigFromForm());
+    const queue = await pullReviewQueue(config);
+    const count = await importAgentDropPayload(queuePayloadToIntake(queue), {
+      skipExisting: true,
+      statusElement: elements.apiSyncStatus,
+      successLabel: "Pulled"
+    });
+    if (count > 0) {
+      elements.agentDropStatus.textContent = `Pulled ${count} API artifacts into the review deck.`;
+    }
+  } catch (error) {
+    elements.apiSyncStatus.textContent = `API pull failed: ${error.message}`;
+  }
+}
+
+async function pushApiFeedback() {
+  const bundle = buildFeedbackBundle();
+  if (bundle.status === "empty") {
+    elements.apiSyncStatus.textContent = "No feedback is ready to send.";
+    return;
+  }
+
+  elements.apiSyncStatus.textContent = "Sending feedback bundle...";
+  try {
+    await hydrateStateImages();
+  } catch {
+    setStorageStatus("Some saved images could not be included in this API feedback bundle.");
+  }
+
+  try {
+    const config = saveApiConfig(apiConfigFromForm());
+    const ack = await publishFeedbackBundle(config, buildFeedbackBundle());
+    elements.apiSyncStatus.textContent = `Sent ${ack.packetCount || 0} packets and ${ack.evalRowCount || 0} rows.`;
+  } catch (error) {
+    elements.apiSyncStatus.textContent = `API send failed: ${error.message}`;
+  }
 }
 
 function importProfile(file) {
@@ -828,6 +852,7 @@ configureRenderActions({
   toggleTag,
   onActiveItemRendered: startDecisionTimer
 });
+loadApiSettingsIntoForm();
 
 elements.dashboardSwitch.addEventListener("click", (event) => {
   const button = event.target.closest("button[data-dashboard]");
@@ -895,6 +920,7 @@ elements.mobilePanelToggle.addEventListener("click", () => {
   setMobilePanelOpen(document.body.dataset.mobilePanelOpen !== "true");
 });
 elements.mobilePanelClose.addEventListener("click", () => setMobilePanelOpen(false));
+elements.panelScrim.addEventListener("click", () => setMobilePanelOpen(false));
 elements.humanAddButton.addEventListener("click", openAddArtifactPanel);
 elements.emptyRemixButton.addEventListener("click", remixCurrentDeck);
 elements.emptyAddButton.addEventListener("click", openAddArtifactPanel);
@@ -928,6 +954,11 @@ elements.copyPacketButton.addEventListener("click", copyPacket);
 elements.downloadPacketButton.addEventListener("click", downloadPacket);
 elements.copyDatasetButton.addEventListener("click", copyDataset);
 elements.downloadDatasetButton.addEventListener("click", downloadDataset);
+elements.copyBundleButton.addEventListener("click", copyBundle);
+elements.downloadBundleButton.addEventListener("click", downloadBundle);
+elements.saveApiConfigButton.addEventListener("click", saveApiSettings);
+elements.pullApiQueueButton.addEventListener("click", pullApiQueue);
+elements.pushApiFeedbackButton.addEventListener("click", pushApiFeedback);
 elements.importButton.addEventListener("click", () => elements.importFile.click());
 elements.importFile.addEventListener("change", () => {
   const [file] = elements.importFile.files;
@@ -938,6 +969,14 @@ elements.importFile.addEventListener("change", () => {
 });
 elements.exportButton.addEventListener("click", exportProfile);
 elements.resetButton.addEventListener("click", resetProfile);
+elements.humanResetButton.addEventListener("click", resetProfile);
+
+window.addEventListener("keydown", (event) => {
+  if (event.key === "Escape" && document.body.dataset.mobilePanelOpen === "true") {
+    event.preventDefault();
+    setMobilePanelOpen(false);
+  }
+});
 
 installGestureHandlers({
   decide,

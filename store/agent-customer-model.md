@@ -1,6 +1,6 @@
 # Agent Customer Model
 
-If this app were online, the paying customer would likely be an agent builder, lab, or product team that needs cheap human first-impression feedback before using generated assets downstream.
+The paying customer is likely an agent builder, lab, or product team that needs cheap human first-impression feedback before using generated assets downstream.
 
 ## Why Agents Would Buy It
 
@@ -13,7 +13,7 @@ Agents can generate many websites, logos, copy variants, and product images. The
 
 The value is not deep critique. The value is the immediate lazy human reaction that predicts whether a normal viewer will bounce.
 
-## Future Online Flow
+## API Flow
 
 1. Agent submits artifacts using the same shape as `schemas/intake.v1.json`.
 2. AgentMash puts it into a human swipe deck.
@@ -23,17 +23,19 @@ The value is not deep critique. The value is the immediate lazy human reaction t
 6. AgentMash returns a JSON feedback packet, a JSONL eval row, and optional pairwise JSONL rows.
 7. The agent uses that data to keep, retry, repair, reject, rank, or add the output to an eval set.
 
-## Local Return Channels
+## Return Channels
 
 - Local agent drop: user imports an `agentmash.intake.v1` JSON file through `Import drop`.
 - JSON packet: user copies or downloads the feedback.
 - Dataset row: lab collects judgements as labelled eval rows.
+- API queue: agent submits artifacts to `POST /v1/intake`, the reviewer pulls them with `GET /v1/review-queue`, and the reviewer sends results with `POST /v1/feedback`.
+- API feedback: agent fetches results with `GET /v1/feedback/{runId}`.
 
-Webhook and polling channels are deferred until there is authentication, server storage, deletion policy, and support coverage.
+Webhook and polling channels are still deferred. The implemented return path is explicit fetch by run ID.
 
-## Backend-Ready Intake Contract
+## API Intake Contract
 
-The current build does not have a backend. It does have a local intake contract that a backend, API endpoint, or MCP tool can reuse later.
+The current build has a local intake contract and an included same-origin API server that both use the same payload.
 
 Schema file: `schemas/intake.v1.json`
 
@@ -70,19 +72,21 @@ Schema file: `schemas/intake.v1.json`
 }
 ```
 
-The local app imports this JSON file, normalizes each artifact, moves image bytes into IndexedDB, keeps text state in `localStorage`, and sends the user back to the Human review deck. It performs no network action.
+The local app imports this JSON file, normalizes each artifact, moves image bytes into IndexedDB, keeps text state in `localStorage`, and sends the user back to the Human review deck. With API sync, the reviewer explicitly pulls the same shape from `GET /v1/review-queue`.
 
-Later backend shape:
+Implemented backend shape:
 
-- API: `POST /v1/intake` can accept the same `agentmash.intake.v1` payload and return accepted artifact IDs plus validation status.
-- API: `GET /v1/feedback/{runId}` can return ready feedback packets, JSONL eval rows, and pairwise rows.
-- API: `DELETE /v1/artifacts/{artifactId}` can remove submitted artifacts and related image bytes after auth and ownership checks.
+- API: `POST /v1/intake` accepts the same `agentmash.intake.v1` payload and returns accepted artifact IDs plus validation status.
+- API: `GET /v1/review-queue` returns queued artifacts for the reviewer app.
+- API: `POST /v1/feedback` stores reviewed feedback bundles from the app.
+- API: `GET /v1/feedback/{runId}` returns ready or pending feedback packets, JSONL eval rows, and pairwise rows.
+- API: `DELETE /v1/artifacts/{artifactId}` removes submitted artifacts and related image bytes after auth.
 - MCP: a future tool such as `agentmash.submit_artifacts` can use `schemas/intake.v1.json` as its `inputSchema`, and return structured content with accepted IDs, rejected rows, and validation errors.
-- Security: do not expose either path until auth, user consent, uploaded-file limits, storage retention, deletion, rate limits, and support coverage exist.
+- Security: production must set `AGENTMASH_API_TOKEN`; account-level auth, rate limits, retention rules, and hosted support are still product work.
 
 Contract handoff files:
 
-- `schemas/api.v1.openapi.json`: OpenAPI 3.1 draft with future intake, feedback-bundle, and deletion routes.
+- `schemas/api.v1.openapi.json`: OpenAPI 3.1 contract with intake, review queue, feedback write/read, health, and deletion routes.
 - `schemas/mcp-tools.v1.json`: MCP tool draft with `agentmash.submit_artifacts`, `agentmash.get_feedback_bundle`, and `agentmash.request_deletion`.
 - `store/backend-api-mcp-handoff.md`: implementation order and user-owned launch actions for a future backend.
 
