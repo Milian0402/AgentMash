@@ -21,6 +21,24 @@ async function reviewCount(page) {
   }, storageKey);
 }
 
+async function waitForDecisionTransition(page) {
+  await expect.poll(() => page.locator("body").evaluate((body) => body.dataset.decisionTransition || "false")).toBe("false");
+}
+
+async function clickDecision(page, name, expectedCount) {
+  await waitForDecisionTransition(page);
+  await page.getByRole("button", { name }).click();
+  await expect.poll(() => reviewCount(page)).toBe(expectedCount);
+  await waitForDecisionTransition(page);
+}
+
+async function pressDecisionKey(page, key, expectedCount) {
+  await waitForDecisionTransition(page);
+  await page.keyboard.press(key);
+  await expect.poll(() => reviewCount(page)).toBe(expectedCount);
+  await waitForDecisionTransition(page);
+}
+
 async function itemCount(page) {
   return page.evaluate((key) => {
     const profile = JSON.parse(localStorage.getItem(key));
@@ -729,12 +747,10 @@ test("Legacy imported reviews without grade or recommendation still load", async
 test("Deck completion shows keepers instead of dead air", async ({ page }) => {
   await resetApp(page);
 
-  await page.getByRole("button", { name: /Nice/ }).click();
-  await expect.poll(() => reviewCount(page)).toBe(1);
+  await clickDecision(page, /Nice/, 1);
 
   for (const count of [2, 3, 4]) {
-    await page.getByRole("button", { name: /Nope/ }).click();
-    await expect.poll(() => reviewCount(page)).toBe(count);
+    await clickDecision(page, /Nope/, count);
   }
 
   await expect(page.locator("#emptyState")).toBeVisible();
@@ -749,8 +765,7 @@ test("Remix deck starts another local session without overwriting exports", asyn
   await resetApp(page);
 
   for (const count of [1, 2, 3, 4]) {
-    await page.getByRole("button", { name: /Nice/ }).click();
-    await expect.poll(() => reviewCount(page)).toBe(count);
+    await clickDecision(page, /Nice/, count);
   }
 
   await page.getByRole("button", { name: "Remix 4 cards" }).click();
@@ -766,8 +781,7 @@ test("Remix deck starts another local session without overwriting exports", asyn
     "cutout"
   ]);
 
-  await page.getByRole("button", { name: /Nope/ }).click();
-  await expect.poll(() => reviewCount(page)).toBe(5);
+  await clickDecision(page, /Nope/, 5);
 
   profile = await page.evaluate((key) => JSON.parse(localStorage.getItem(key)), storageKey);
   const reviewedItemIds = profile.reviews.map((review) => review.itemId);
@@ -890,8 +904,7 @@ test("Endless mode auto-loops one local variant at a time", async ({ page }) => 
   await expect(page.getByRole("button", { name: "Endless on" })).toBeVisible();
 
   for (const count of [1, 2, 3, 4]) {
-    await page.getByRole("button", { name: /Nice/ }).click();
-    await expect.poll(() => reviewCount(page)).toBe(count);
+    await clickDecision(page, /Nice/, count);
   }
 
   await expect(page.locator("#swipeCard")).toBeVisible();
@@ -906,8 +919,7 @@ test("Endless mode auto-loops one local variant at a time", async ({ page }) => 
   });
   expect(profile.items[0].agent.runId).toMatch(/^loop-/);
 
-  await page.getByRole("button", { name: /Nice/ }).click();
-  await expect.poll(() => reviewCount(page)).toBe(5);
+  await clickDecision(page, /Nice/, 5);
 
   await expect.poll(() => itemCount(page)).toBe(6);
   profile = await page.evaluate((key) => JSON.parse(localStorage.getItem(key)), storageKey);
@@ -1296,8 +1308,7 @@ test("Stress profile handles 500 items, 250 reviews, and 100 more swipes", async
   await expect(page.locator("#storageStatus")).toBeHidden();
 
   for (let index = 0; index < 100; index += 1) {
-    await page.keyboard.press(index % 2 === 0 ? "ArrowRight" : "ArrowLeft");
-    await expect.poll(() => reviewCount(page), { timeout: 1_500 }).toBe(251 + index);
+    await pressDecisionKey(page, index % 2 === 0 ? "ArrowRight" : "ArrowLeft", 251 + index);
     await expect(page.locator("#acceptButton")).toBeEnabled();
   }
 

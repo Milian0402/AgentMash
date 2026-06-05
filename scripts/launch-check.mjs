@@ -322,6 +322,7 @@ check(
   hasAll(playwrightConfig, ["webServer", "npm run serve", "http://127.0.0.1:5177/"]),
   "Playwright serves native modules over local HTTP"
 );
+check(!playwrightConfig.includes('channel: "chrome"'), "Playwright uses bundled Chromium instead of system Chrome");
 check(
   index.includes("refineButton") && index.includes("commentButton") && index.includes("closeRefineButton") && index.includes('id="signalPanel" hidden'),
   "rubric and note panel is hidden behind Refine and the Comment shortcut by default, with an explicit Done control"
@@ -561,6 +562,37 @@ check(
 );
 check(hasAll(styles, ["safe-area-inset-top", "safe-area-inset-bottom", "--safe-bottom"]), "layout accounts for iOS safe areas");
 check(packageJson.scripts?.build === "node scripts/build-site.mjs", "package has local public build script");
+check(packageJson.scripts?.["ios:sync"] === "npm run build && npx cap sync ios", "package has iOS sync script");
+check(
+  hasAll(packageJson.scripts?.["ios:build:sim"] || "", [
+    "npm run ios:sync",
+    "-sdk iphonesimulator",
+    "generic/platform=iOS Simulator",
+    "CODE_SIGNING_ALLOWED=NO"
+  ]),
+  "package has unsigned iOS simulator build script"
+);
+check(
+  hasAll(packageJson.scripts?.["ios:build:device"] || "", [
+    "npm run ios:sync",
+    "-configuration Release",
+    "-sdk iphoneos",
+    "generic/platform=iOS",
+    "CODE_SIGNING_ALLOWED=NO"
+  ]),
+  "package has unsigned iPhoneOS Release build script"
+);
+check(
+  hasAll(packageJson.scripts?.["ios:archive:unsigned"] || "", [
+    "npm run ios:sync",
+    "xcodebuild archive",
+    "-configuration Release",
+    "generic/platform=iOS",
+    "-archivePath ios/App/build/AgentMash-unsigned.xcarchive",
+    "CODE_SIGNING_ALLOWED=NO"
+  ]),
+  "package has unsigned iOS archive script"
+);
 check(packageJson.scripts?.["refresh:assets"] === "node scripts/refresh-launch-assets.mjs", "package has local launch asset refresh script");
 check(packageJson.scripts?.["serve:build"] === "python3 -m http.server 5178 --directory _site", "package has build preview script");
 check(packageJson.scripts?.["ready:public"] === "npm run check && npm run build", "package has public readiness script");
@@ -779,7 +811,7 @@ check(
   "release checklist and launch audit keep Google Play production-access blocker explicit"
 );
 check(
-  hasAll(nativeHandoff, ["Capacitor", "com.agentmash.app", "webDir", "_site", "No native wrapper was created", "Do not add analytics SDKs"]),
+  hasAll(nativeHandoff, ["Capacitor", "com.agentmash.app", "webDir", "_site", "The iOS native wrapper now exists", "npm run ios:build:sim", "npm run ios:build:device", "npm run ios:archive:unsigned", "Do not add analytics SDKs"]),
   "native wrapper handoff keeps store-shell setup explicit"
 );
 check(

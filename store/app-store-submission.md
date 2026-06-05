@@ -1,14 +1,14 @@
 # App Store Submission Prep
 
-Checked against official Apple and Google documentation on May 8, 2026. No account was created, no payment was made, nobody was contacted, and no app was submitted.
+Checked against official Apple and Google documentation on June 5, 2026. No account was created, no payment was made, nobody was contacted, and no app was submitted.
 
 ## Current Verdict
 
-AgentMash is close to public web launch readiness. It is not yet App Store or Google Play ready because store distribution requires user-owned accounts, verified identity/contact details, public support and privacy URLs, a native build, and store review submission.
+AgentMash now has a local iOS wrapper that builds and launches on Simulator. It is not yet App Store or Google Play ready because store distribution still requires user-owned accounts, verified identity/contact details, public support and privacy URLs, signed archives, store screenshots from native builds, and store review submission.
 
-The local codebase is prepared for that path: product name, icon, manifest, screenshots, privacy copy, terms, support page, store listing copy, launch audit, and launch checks are present.
+The local codebase is prepared for that path: product name, icon, manifest, screenshots, privacy copy, terms, support page, store listing copy, launch audit, launch checks, Capacitor config, and an iOS native project are present.
 
-Native shell setup is intentionally not installed yet. `store/native-wrapper-handoff.md` records the recommended Capacitor path, bundle IDs, commands, and v1 native rules for when the user decides to add iOS or Android project files.
+`store/native-wrapper-handoff.md` records the current iOS wrapper status, verification evidence, v1 native rules, and deferred Android/store handoff steps.
 
 ## Apple App Store Draft
 
@@ -19,7 +19,7 @@ Native shell setup is intentionally not installed yet. `store/native-wrapper-han
 - Privacy Policy URL: `https://YOUR-DOMAIN/privacy.html`
 - Support URL: `https://YOUR-DOMAIN/support.html`
 - Marketing URL: `https://YOUR-DOMAIN/`
-- Bundle ID draft: `com.agentmash.app`
+- Bundle ID: `com.agentmash.app`
 - SKU draft: `agentmash-2026`
 - Copyright draft: `2026 YOUR LEGAL NAME OR ENTITY`
 - Price: Free for first launch unless there is a real paid support and billing plan.
@@ -37,9 +37,21 @@ Apple-specific requirements still owned by the user:
 - Public support URL with real contact information.
 - Public privacy policy URL.
 - App Review contact name, email, and phone.
-- Native iOS build uploaded through Xcode or Transporter.
+- Signed native iOS archive uploaded through Xcode or Transporter. The local unsigned Simulator build, unsigned iPhoneOS Release build, and unsigned archive check already pass.
 - Required App Store screenshots captured at accepted device sizes. App Store Connect currently accepts one to ten JPEG, JPG, or PNG screenshots per device display size; the prepared iPhone drafts are planning assets, not a substitute for native-build captures.
 - Privacy label answers in App Store Connect.
+
+Local iOS evidence:
+
+- `ios/App/App.xcodeproj` exists.
+- `capacitor.config.json` uses `com.agentmash.app`, `AgentMash`, and `_site`.
+- `ios/App/App/PrivacyInfo.xcprivacy` declares no tracking and no collected data.
+- `ios/App/App/Info.plist` sets `ITSAppUsesNonExemptEncryption` to `false`.
+- `npm run ios:sync` passed.
+- `npm run ios:build:sim` passed.
+- `npm run ios:build:device` passed for the unsigned iPhoneOS Release target.
+- `npm run ios:archive:unsigned` passed as a pre-signing archive check.
+- XcodeBuildMCP built, installed, launched, and screenshotted AgentMash on an iPhone 17 Pro simulator running iOS 26.5.
 
 ## Google Play Draft
 

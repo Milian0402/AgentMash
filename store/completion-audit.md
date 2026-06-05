@@ -182,8 +182,8 @@ Make AgentMash good enough to launch publicly as a serious app, while staying in
 | Add Playwright regression coverage. | `tests/review-flow.spec.mjs` is wired through `npm run check`, uses `npm run serve` for native modules, and covers Nice, Undo, Nope, Comment-to-note, keyboard shortcuts, rapid duplicate decision locking, mobile filter readability, compact Refine score toggle, export contract badges, Undo preserving the active deck, v2 packet shape, normalized export verdicts, dataset return format, backend-ready agent-drop import, Keepers completion state, Remix repeat sessions with variant metadata, Endless auto-looping, Pairwise comparison export, pairwise-only bundle export and metrics, human-screen install prompt, empty Export workspace state, IndexedDB image persistence, pending upload submit-only storage, profile image export/import, offline app-shell loading, and the 500-item stress path. | Met locally |
 | Use simulated local user feedback constructively. | Local subagent personas reviewed mobile swiping, export/lab data shape, launch QA, and visual polish without contacting anyone. Their concrete findings led to the public-page icon fix, Undo deck regression fix, export contract hardening, refreshed screenshots, hidden internal publishing notes, and mobile Refine/Pairwise flow fixes. | Met locally |
 | Keep mobile swipe loop focused. | `index.html`, `styles.css`, `app.js`, and `render.js` move the lower human dashboard controls behind a mobile `Deck` sheet and hide the footer in the Human review phone layout. Playwright verifies the panel starts hidden and can be opened/closed. | Met locally |
-| Make it closer to App Store or Google Play readiness without paid setup. | `store/app-store-listing.md`, `store/app-store-submission.md`, `store/privacy-data-safety-draft.md`, and refreshed `store/submission` draft assets generated from the current swipe-card UI. | Met locally |
-| Prepare native wrapper handoff without changing the zero-dep app. | `store/native-wrapper-handoff.md` names Capacitor as the later shell path, records `com.agentmash.app`, `_site`, setup commands, native v1 privacy rules, and verification steps. No native project or package was installed. | Met locally |
+| Make it closer to App Store or Google Play readiness without paid setup. | `store/app-store-listing.md`, `store/app-store-submission.md`, `store/privacy-data-safety-draft.md`, refreshed `store/submission` draft assets, and the local Capacitor iOS wrapper are present. | Met locally |
+| Add the iOS native wrapper without changing the local-first product model. | `capacitor.config.json`, `ios/App/App.xcodeproj`, `ios/App/App/Info.plist`, `ios/App/App/PrivacyInfo.xcprivacy`, and `ios/App/App/public` package the `_site` app as `com.agentmash.app`. `npm run ios:sync`, Xcode simulator build, unsigned iPhoneOS Release build, unsigned archive check, and XcodeBuildMCP launch/screenshot verification passed. No developer account, signed archive, Android wrapper, or store submission was created. | Met locally |
 | Verify core behavior, not just files. | Real browser smoke and screenshot checks on `http://127.0.0.1:5177` passed: title, refreshed human dashboard, Comment sheet, note save, Nice, Undo, Nope, Export workspace, ready packet, JSONL preview, packet JSON, and download buttons. Console errors: 0. | Met locally |
 | Keep repo-facing launch docs serious. | `README.md` and `PUBLISHING.md` describe the current state as private launch prep, avoid beta-candidate status, and avoid ambiguous `should pass` left-swipe wording. `npm run check` verifies the README guard. | Met locally |
 | Keep the repo private. | `gh repo view Milian0402/AgentMash` showed `visibility: PRIVATE`. | Met locally |
@@ -191,6 +191,12 @@ Make AgentMash good enough to launch publicly as a serious app, while staying in
 ## Verification Commands
 
 - `npm run check`
+- `npm run ios:sync`
+- Xcode simulator build for `ios/App/App.xcodeproj`
+- Unsigned iPhoneOS Release build for `ios/App/App.xcodeproj`
+- Unsigned archive check for `ios/App/App.xcodeproj`
+- XcodeBuildMCP build/run/screenshot on iPhone 17 Pro simulator
+- `plutil -lint ios/App/App/Info.plist ios/App/App/PrivacyInfo.xcprivacy`
 - `npm run check:configure-public`
 - `npm run check:verify-public`
 - `npm run ready:public`
@@ -213,8 +219,9 @@ These are still not done because they require user-owned accounts, money, public
 - Public HTTPS/header/service-worker verification.
 - Apple Developer Program or Google Play Console account.
 - Google Play closed-testing production-access requirement if using a new personal developer account.
-- Native iOS or Android wrapper and signed build.
-- Store screenshots captured from the native wrapper.
+- Signed iOS archive.
+- Android wrapper and signed Android app bundle, if Google Play is wanted.
+- Store screenshots captured from the native iOS build.
 - App Review or Play review contact details.
 - Legal/privacy review for paid or hosted use.
 

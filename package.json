@@ -14,6 +14,10 @@
     "serve:api": "node server/agentmash-api.mjs",
     "serve:build": "python3 -m http.server 5178 --directory _site",
     "build": "node scripts/build-site.mjs",
+    "ios:sync": "npm run build && npx cap sync ios",
+    "ios:build:sim": "npm run ios:sync && xcodebuild -project ios/App/App.xcodeproj -scheme App -configuration Debug -sdk iphonesimulator -destination 'generic/platform=iOS Simulator' CODE_SIGNING_ALLOWED=NO build",
+    "ios:build:device": "npm run ios:sync && xcodebuild -project ios/App/App.xcodeproj -scheme App -configuration Release -sdk iphoneos -destination 'generic/platform=iOS' CODE_SIGNING_ALLOWED=NO build",
+    "ios:archive:unsigned": "npm run ios:sync && xcodebuild archive -project ios/App/App.xcodeproj -scheme App -configuration Release -destination 'generic/platform=iOS' -archivePath ios/App/build/AgentMash-unsigned.xcarchive CODE_SIGNING_ALLOWED=NO",
     "refresh:assets": "node scripts/refresh-launch-assets.mjs",
     "check": "node --check app.js && node --check state.js && node --check intake.js && node --check api-client.js && node --check packet.js && node --check render.js && node --check gestures.js && node --check sw.js && node --check server/agentmash-api.mjs && node --check scripts/build-site.mjs && node --check scripts/refresh-launch-assets.mjs && node --check scripts/launch-check.mjs && node --check scripts/verify-public-url.mjs && node --check scripts/configure-public-launch.mjs && node --check scripts/prepare-public-build.mjs && node --check scripts/check-configure-public.mjs && node --check scripts/check-prepare-public-build.mjs && node --check scripts/check-public-url-verifier.mjs && npm run check:launch && npm run check:configure-public && npm run check:prepare-public && npm run check:verify-public && npm run test:api && npm run test:e2e",
     "check:launch": "node scripts/launch-check.mjs",
@@ -28,6 +32,11 @@
     "test:e2e": "playwright test"
   },
   "devDependencies": {
+    "@capacitor/cli": "^8.4.0",
     "@playwright/test": "^1.59.1"
+  },
+  "dependencies": {
+    "@capacitor/core": "^8.4.0",
+    "@capacitor/ios": "^8.4.0"
   }
 }

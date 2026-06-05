@@ -2,6 +2,15 @@ name: Publish static site to GitHub Pages
 
 on:
   workflow_dispatch:
+    inputs:
+      public_url:
+        description: Final public app URL, including any path prefix
+        required: true
+        type: string
+      support_route:
+        description: Public support route shown on support and privacy pages
+        required: true
+        type: string
 
 permissions:
   contents: read
@@ -24,7 +33,10 @@ jobs:
       - name: Configure Pages
         uses: actions/configure-pages@v5
       - name: Prepare static site
-        run: npm run build
+        env:
+          PUBLIC_URL: ${{ inputs.public_url }}
+          SUPPORT_ROUTE: ${{ inputs.support_route }}
+        run: npm run prepare:public -- --url "$PUBLIC_URL" --support "$SUPPORT_ROUTE"
       - name: Upload static files
         uses: actions/upload-pages-artifact@v3
         with:

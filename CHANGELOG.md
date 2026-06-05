@@ -4,6 +4,9 @@ AgentMash uses this file as a private release history for local launch-prep buil
 
 ## 0.3.0 - 2026-05-08
 
+- Added a Capacitor iOS wrapper under `ios/` for `com.agentmash.app`, with `npm run ios:sync`, `npm run ios:build:sim`, `npm run ios:build:device`, and `npm run ios:archive:unsigned` helper scripts.
+- Added native iOS app metadata: AgentMash bundle display name, v0.3.0 marketing version, build 3, non-exempt encryption flag, app privacy manifest, app icon, and branded launch assets.
+- Verified the iOS wrapper with Xcode simulator, unsigned iPhoneOS Release, and unsigned archive checks, plus XcodeBuildMCP build/run/screenshot on iPhone 17 Pro, iOS 26.5.
 - Reworked Human review around a card-first swipe loop with compact mobile chrome, stronger card shadows, a cleaner decision rail, a visible momentum counter, Keepers completion, Remix sessions, Endless mode, and Pairwise mode.
 - Added the `Comment` shortcut and quick-reason dropdown so reviewers can add optional rationale without leaving the fast swipe flow.
 - Split the app into native ES modules: `app.js`, `state.js`, `packet.js`, `render.js`, and `gestures.js`, while keeping the no-build runtime model.
@@ -35,4 +38,4 @@ Remaining user-owned launch actions:
 - Run `npm run ready:public` after configuration.
 - Deploy the rebuilt `_site/` directory through a chosen host.
 - Verify the deployed URL with `npm run verify:public -- --url https://YOUR-PUBLIC-URL`.
-- Create any app-store developer accounts, native wrapper builds, store listings, domain, and support channel when ready.
+- Create any app-store developer accounts, signed native archives, store listings, domain, and support channel when ready.

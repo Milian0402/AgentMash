@@ -1,6 +1,6 @@
 # Release Checklist
 
-Last local verification: May 10, 2026. No deployment, paid account, domain purchase, app-store submission, or human outreach has been performed.
+Last local verification: June 5, 2026. No deployment, paid account, domain purchase, app-store submission, or human outreach has been performed.
 
 ## Verified Locally
 
@@ -66,7 +66,13 @@ Last local verification: May 10, 2026. No deployment, paid account, domain purch
 - [x] Confirm pairwise-only preference data counts as ready export signal data in workspace metrics and feedback bundle summaries.
 - [x] Confirm v2 packet validation requires `submittedAt` and image envelope metadata is exported when available.
 - [x] Confirm legacy imported reviews without grade or recommendation still load.
-- [x] Confirm native wrapper handoff exists without installing native dependencies.
+- [x] Confirm Capacitor iOS wrapper exists.
+- [x] Run `npm run ios:sync`.
+- [x] Build the iOS Simulator target with Xcode.
+- [x] Build the unsigned iPhoneOS Release target with Xcode.
+- [x] Create an unsigned local iOS archive as a pre-signing check.
+- [x] Launch the iOS wrapper on Simulator and confirm AgentMash renders with safe-area spacing.
+- [x] Confirm `Info.plist` and `PrivacyInfo.xcprivacy` parse.
 - [x] Confirm empty Export workspace metrics show zero items, zero rows, and no stale average signal.
 - [x] Confirm no console errors in local smoke testing.
 - [x] Confirm app icons load in the manifest.
@@ -123,16 +129,18 @@ Last local verification: May 10, 2026. No deployment, paid account, domain purch
 - [ ] Read `store/app-store-submission.md`.
 - [ ] Read `store/privacy-data-safety-draft.md`.
 - [ ] Read `store/native-wrapper-handoff.md`.
-- [ ] Decide iOS, Android, web-only, or both stores.
+- [ ] Decide iOS App Store, Android/Google Play, web-only, or both stores.
 - [ ] Create developer account only when ready to pay.
 - [ ] If using a new Google Play personal developer account, plan the 12 opted-in testers for 14 continuous days closed-testing requirement before production access.
 - [ ] Publish `privacy.html` and `support.html` at stable public URLs.
 - [ ] Add developer identity and support contact details.
-- [ ] Wrap the app in a native shell.
-- [ ] Generate the final platform icon set from `store/app-icon-1024.png`.
+- [ ] Set Apple signing team and provisioning in Xcode.
+- [ ] Create the Android wrapper if Google Play is still wanted.
+- [ ] Generate or verify final platform icon sets from `store/app-icon-1024.png`.
 - [ ] Capture store screenshots from the native build, not only the PWA preview.
 - [ ] Replace draft assets in `store/submission` with screenshots from the final native build.
 - [ ] Fill Apple privacy labels and Google Play Data safety forms.
 - [ ] Add App Review or Play review contact details.
 - [ ] Run real iPhone and Android device tests.
+- [ ] Archive and upload the signed iOS build through Xcode or Transporter.
 - [ ] Submit for review.

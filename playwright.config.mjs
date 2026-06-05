@@ -13,7 +13,6 @@ export default defineConfig({
     timeout: 10_000
   },
   use: {
-    channel: "chrome",
     trace: "retain-on-failure"
   }
 });

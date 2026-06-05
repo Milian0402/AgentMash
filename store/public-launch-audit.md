@@ -107,14 +107,14 @@ Make AgentMash good enough to launch publicly as a serious app.
 - Export workspace zero-item and zero-review states are covered by Playwright and show zero ready exports, zero unjudged items, no average signal, empty packet status, and zero dataset rows.
 - Agent-facing surface was reframed as a local export workspace, removing inbound-traffic wording such as request queue, waiting on humans, returned signals, and retry queue.
 - Store listing, App Store submission prep, and privacy/data safety drafts are present.
-- Native wrapper handoff is documented for a later Capacitor iOS/Android shell without installing native dependencies.
+- Capacitor iOS wrapper is present and verified locally; Android remains deferred.
 - Draft store submission image assets are present in `store/submission`.
 - App data stays local unless the user imports, exports, copies, or downloads it.
 
 ## Verification Evidence
 
-- `npm run check` passes.
-- `npm run ready:public` passes and rebuilds `_site/` after the full local quality gate.
+- `npm run check` passed, including syntax checks, launch/config/public/API gates, API smoke coverage, and 22 Playwright tests.
+- The current targeted web gates also pass: `npm run check:launch`, `npm run check:configure-public`, `npm run check:prepare-public`, `npm run check:verify-public`, `npm run test:api`, and `npm run test:e2e`.
 - `npm run check:configure-public` runs the final public URL/support metadata command against temporary copies, verifies the written metadata, verifies sitemap and robots output, verifies idempotency, verifies dry-run does not mutate files, and verifies blank or placeholder support routes are rejected.
 - `npm run check:verify-public` serves a configured temporary public build on localhost and runs the same public URL verifier that will be used after hosting exists.
 - `npm run check:launch` passes.
@@ -128,6 +128,12 @@ Make AgentMash good enough to launch publicly as a serious app.
 - `npm run check` verifies public PWA screenshot PNG dimensions match the manifest-declared 390 by 844 and 1440 by 1000 sizes.
 - `npm run check` verifies `_headers`, Netlify, and Vercel keep the service worker and manifest update-friendly with `Cache-Control: no-cache`.
 - `npm run check` syntax-checks the live public URL verifier without contacting any host.
+- `npm run ios:sync` builds `_site` and syncs it into `ios/App/App/public`.
+- Xcode simulator build passed for `ios/App/App.xcodeproj`, scheme `App`, bundle ID `com.agentmash.app`.
+- Unsigned iPhoneOS Release build passed for `ios/App/App.xcodeproj`, scheme `App`, bundle ID `com.agentmash.app`.
+- Unsigned local archive passed for `ios/App/App.xcodeproj`, scheme `App`, bundle ID `com.agentmash.app`.
+- XcodeBuildMCP built, installed, launched, and screenshotted the iOS wrapper on iPhone 17 Pro, iOS 26.5.
+- `plutil -lint ios/App/App/Info.plist ios/App/App/PrivacyInfo.xcprivacy` passes.
 - `npm run check` verifies the live public URL verifier checks final canonical/Open Graph/Twitter metadata, preview image URLs, public support contact metadata, robots, sitemap, public contract URLs, and public example URLs.
 - `npm run check` verifies the local public-readiness script exists.
 - `npm run check` verifies the local final-metadata configurator exists, is syntax-checked, covers canonical/Open Graph/Twitter/support/privacy fields, has no network hooks, and has an isolated write-path checker.
@@ -247,7 +253,7 @@ Passed checks:
 - Google Play closed-testing production-access requirement if using a new personal developer account.
 - Public support URL with real contact information.
 - Public privacy URL with developer identity and inquiry route.
-- Native iOS or Android wrapper and signed build.
+- Signed iOS archive, Android wrapper if Google Play is wanted, and signed Android app bundle.
 - Store-size screenshots from the native build.
 - Apple privacy labels or Google Play Data safety submission.
 - Store review contact details.

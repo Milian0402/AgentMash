@@ -95,6 +95,15 @@ Preview the public package:
 npm run serve:build
 ```
 
+Sync and verify the iOS wrapper:
+
+```sh
+npm run ios:sync
+npm run ios:build:sim
+npm run ios:build:device
+npm run ios:archive:unsigned
+```
+
 Refresh launch screenshots, iOS startup images, and draft store assets from the local app:
 
 ```sh
@@ -140,7 +149,9 @@ Then run `npm run ready:public` again and only deploy the rebuilt `_site/` direc
 - `store/app-store-listing.md`: store listing copy.
 - `store/app-store-submission.md`: App Store and Google Play submission prep.
 - `store/privacy-data-safety-draft.md`: Apple privacy label and Google Play Data safety draft.
-- `store/native-wrapper-handoff.md`: native iOS/Android wrapper setup handoff for when app-store work starts.
+- `ios/`: Capacitor iOS wrapper that packages `_site/` into `com.agentmash.app`.
+- `capacitor.config.json`: native wrapper config for AgentMash.
+- `store/native-wrapper-handoff.md`: native iOS wrapper status and Android/store handoff notes.
 - `store/submission`: draft store screenshots and Google Play feature graphic.
 - `store/agent-customer-model.md`: how agents/labs become customers and get feedback back.
 - `server/agentmash-api.mjs`: same-origin API server for agent intake, review queue, feedback return, and deletion.
@@ -162,6 +173,7 @@ Then run `npm run ready:public` again and only deploy the rebuilt `_site/` direc
 - No domain has been bought.
 - No public support inbox has been added.
 - No app-store developer account has been created.
-- No native iOS or Android wrapper has been created. A handoff plan exists in `store/native-wrapper-handoff.md`.
+- The iOS wrapper exists and builds locally, but no signed App Store archive has been uploaded.
+- No Android wrapper has been created yet.
 - No billing, accounts, hosted production database, or public support operation exists yet.
 - No MCP server exists yet; the MCP file remains a contract draft.
