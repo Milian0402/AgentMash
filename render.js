@@ -19,7 +19,7 @@ import {
   state,
   typeLabel,
   typeRubrics
-} from "./state.js?v=60";
+} from "./state.js?v=61";
 import {
   buildEvalRows,
   buildFeedbackPacket,
@@ -32,7 +32,7 @@ import {
   signalStrengthFor,
   validateExportRows,
   validateFeedbackPacket
-} from "./packet.js?v=60";
+} from "./packet.js?v=61";
 
 export const elements = {
   dashboardSwitch: document.querySelector("#dashboardSwitch"),

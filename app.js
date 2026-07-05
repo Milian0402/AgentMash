@@ -33,9 +33,9 @@ import {
   state,
   variantForRemix,
   writeImageData
-} from "./state.js?v=60";
-import { loadApiConfig, publishFeedbackBundle, pullReviewQueue, saveApiConfig } from "./api-client.js?v=60";
-import { payloadArtifacts, validateIntakePayload } from "./intake.js?v=60";
+} from "./state.js?v=61";
+import { loadApiConfig, publishFeedbackBundle, pullReviewQueue, saveApiConfig } from "./api-client.js?v=61";
+import { payloadArtifacts, validateIntakePayload } from "./intake.js?v=61";
 import {
   activePacket,
   closeDetailSheet,
@@ -52,9 +52,9 @@ import {
   showReviewerSaveStatus,
   toggleScoreControls,
   toggleRefinePanel
-} from "./render.js?v=60";
-import { buildExportRows, buildFeedbackBundle } from "./packet.js?v=60";
-import { installGestureHandlers, pulseDevice } from "./gestures.js?v=60";
+} from "./render.js?v=61";
+import { buildExportRows, buildFeedbackBundle } from "./packet.js?v=61";
+import { installGestureHandlers, pulseDevice } from "./gestures.js?v=61";
 
 let pendingImageData = "";
 let deferredInstallPrompt = null;

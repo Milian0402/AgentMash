@@ -4,6 +4,7 @@ AgentMash uses this file as a private release history for local launch-prep buil
 
 ## 0.3.0 - 2026-05-08
 
+- Made fast swipe flicks commit a decision once the card passes the Nice/Nope intent threshold, instead of always requiring the full drag distance, and stopped cancelled pointer gestures (such as a vertical scroll taking over) from committing a decision.
 - Added a Capacitor iOS wrapper under `ios/` for `com.agentmash.app`, with `npm run ios:sync`, `npm run ios:build:sim`, `npm run ios:build:device`, and `npm run ios:archive:unsigned` helper scripts.
 - Added native iOS app metadata: AgentMash bundle display name, v0.3.0 marketing version, build 3, non-exempt encryption flag, app privacy manifest, app icon, and branded launch assets.
 - Verified the iOS wrapper with Xcode simulator, unsigned iPhoneOS Release, and unsigned archive checks, plus XcodeBuildMCP build/run/screenshot on iPhone 17 Pro, iOS 26.5.
@@ -21,7 +22,7 @@ AgentMash uses this file as a private release history for local launch-prep buil
 - Replaced the swipe rail's text glyphs with CSS-drawn decision icons for a more polished first impression.
 - Tightened mobile Pairwise mode so both choices fit in one compact comparison view.
 - Added a Done control to the Comment/Refine sheet so users can back out without making a decision.
-- Updated the offline service worker cache to `agentmash-v59` and versioned the app shell asset URLs after the mobile swipe rail, momentum pill, Comment sheet polish, uploaded-image preview containment, mobile Deck sheet dismissal, short-phone launch screenshot fix, desktop launch screenshot fit, keyboard-free Comment opening, dark-mode contrast fix, review provenance capture, mobile Refine chip polish, mobile dashboard label accessibility fix, compact Refine sheet, and visible Start fresh control.
+- Updated the offline service worker cache to `agentmash-v61` and versioned the app shell asset URLs after the mobile swipe rail, momentum pill, Comment sheet polish, uploaded-image preview containment, mobile Deck sheet dismissal, short-phone launch screenshot fix, desktop launch screenshot fit, keyboard-free Comment opening, dark-mode contrast fix, review provenance capture, mobile Refine chip polish, mobile dashboard label accessibility fix, compact Refine sheet, visible Start fresh control, and swipe flick-velocity polish.
 
 Constraints kept in this build:
 

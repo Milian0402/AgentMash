@@ -1,11 +1,11 @@
 import {
   getActiveItem,
   state
-} from "./state.js?v=60";
+} from "./state.js?v=61";
 import {
   clearSwipeIntent,
   elements
-} from "./render.js?v=60";
+} from "./render.js?v=61";
 
 let dragState = null;
 let audioContext = null;
@@ -80,7 +80,8 @@ function onPointerDown(event) {
   dragState = {
     pointerId: event.pointerId,
     startX: event.clientX,
-    currentX: event.clientX
+    currentX: event.clientX,
+    samples: [{ x: event.clientX, t: event.timeStamp }]
   };
   elements.swipeCard.setPointerCapture(event.pointerId);
   elements.swipeCard.classList.add("is-dragging");
@@ -92,6 +93,11 @@ function onPointerMove(event) {
   }
 
   dragState.currentX = event.clientX;
+  dragState.samples.push({ x: event.clientX, t: event.timeStamp });
+  while (dragState.samples.length > 1 && event.timeStamp - dragState.samples[0].t > 100) {
+    dragState.samples.shift();
+  }
+
   const deltaX = dragState.currentX - dragState.startX;
   const rotation = Math.max(-12, Math.min(12, deltaX / 18));
   const isNice = deltaX > 70;
@@ -114,23 +120,36 @@ function onPointerUp(event, decide) {
   }
 
   const deltaX = dragState.currentX - dragState.startX;
+  const flickVelocity = measureFlickVelocity(event);
   dragState = null;
   elements.swipeCard.classList.remove("is-dragging", "swipe-nice", "swipe-pass");
   clearSwipeIntent();
 
-  if (deltaX > 120) {
-    decide("nice", "swipe");
-    return;
-  }
+  if (event.type !== "pointercancel") {
+    if (deltaX > 120 || (deltaX > 70 && flickVelocity > 0.5)) {
+      decide("nice", "swipe");
+      return;
+    }
 
-  if (deltaX < -120) {
-    decide("pass", "swipe");
-    return;
+    if (deltaX < -120 || (deltaX < -70 && flickVelocity < -0.5)) {
+      decide("pass", "swipe");
+      return;
+    }
   }
 
   elements.swipeBadge.textContent = "";
   elements.swipeCard.style.transform = "";
   elements.swipeCard.style.removeProperty("--drag-progress");
+}
+
+function measureFlickVelocity(event) {
+  const oldest = dragState.samples[0];
+  const elapsed = event.timeStamp - oldest.t;
+  if (elapsed <= 0) {
+    return 0;
+  }
+
+  return (event.clientX - oldest.x) / elapsed;
 }
 
 export function pulseDevice(kind = "decision") {
