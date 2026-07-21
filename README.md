@@ -2,7 +2,7 @@
 
 A local-first swipe app plus optional same-origin API for turning fast human judgement on AI-generated websites, logos, copy, and product images into structured feedback packets.
 
-Status: private launch-prep build. The app has not been deployed, listed, sold, or submitted to an app store.
+Status: public development build. The app has not been deployed, listed, sold, or submitted to an app store.
 
 ## What It Does
 
@@ -177,3 +177,7 @@ Then run `npm run ready:public` again and only deploy the rebuilt `_site/` direc
 - No Android wrapper has been created yet.
 - No billing, accounts, hosted production database, or public support operation exists yet.
 - No MCP server exists yet; the MCP file remains a contract draft.
+
+## License
+
+MIT. See [LICENSE](LICENSE).

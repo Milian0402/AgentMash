@@ -1,12 +1,12 @@
 # Publishing Runbook
 
-AgentMash is currently a private static PWA in `Milian0402/AgentMash` and is being prepared for public launch.
+AgentMash is currently a public development repository and is being prepared for a hosted launch.
 
 No deployment, paid account, domain purchase, app-store submission, or human outreach has been performed.
 
 ## Current Status
 
-- Private GitHub repo exists.
+- Public GitHub repo exists.
 - `main` contains the static app.
 - Local preview runs with `npm run serve`.
 - The app uses native ES modules, so local preview should run over HTTP instead of `file://`.
